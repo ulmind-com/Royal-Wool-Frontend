@@ -1,6 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
+import { CategoryTiles } from "@/components/commerce/category-tiles";
+import { ProductRail } from "@/components/commerce/product-rail";
 import { Glass } from "@/components/ui/glass";
 
 export const Route = createFileRoute("/")({
@@ -113,19 +115,25 @@ function Home() {
         </ul>
       </section>
 
-      {/* ── Section placeholders in the §5 order, so the structure is reviewable ── */}
-      <SectionStub
-        anchor="fibre"
-        eyebrow="02 · Shop by fibre"
-        title="Tilting category tiles"
-        note="Built from /categories/tree in Phase 4."
-      />
-      <SectionStub
+      {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
+      <CategoryTiles />
+
+      <ProductRail
         anchor="sections"
-        eyebrow="03 · Admin-driven rails"
-        title="Best sellers, featured, new"
-        note="Order and titles come straight from /home-sections/resolved."
+        eyebrow="03 · Fresh off the winder"
+        title="New arrivals"
+        note="The latest shades to leave the dye house."
+        filters={{ sort: "newest" }}
       />
+
+      <ProductRail
+        anchor="bestsellers"
+        eyebrow="03b · Loved most"
+        title="Best sellers"
+        note="What crafters reorder skein after skein."
+        filters={{ sort: "popular" }}
+      />
+
       <SectionStub
         anchor="upcoming"
         eyebrow="04 · Upcoming products"

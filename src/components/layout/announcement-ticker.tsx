@@ -1,16 +1,31 @@
-/**
- * Thin marquee strip. Copy is provisional in Phase 1 — Phase 2 swaps the
- * free-delivery threshold and support line for values from GET /settings.
- */
-const ITEMS = [
-  "Free delivery on qualifying orders — threshold from store settings",
-  "Skin-safe, tested dyes — gentle enough for baby knits",
-  "Support 10am–7pm IST, all days",
-  "Small-batch colour, wound for stitch definition",
-];
+import { useQuery } from "@tanstack/react-query";
 
+import { useSettings } from "@/hooks/use-settings";
+import { activeCouponsQuery } from "@/lib/api/queries";
+
+/**
+ * Thin marquee strip. The delivery threshold and coupon line are read from the
+ * store's own settings/coupons, so the strip can never advertise a stale offer.
+ */
 export function AnnouncementTicker() {
-  const row = [...ITEMS, ...ITEMS];
+  const { freeAbove, formatMoney, returnWindowDays } = useSettings();
+  const { data: coupons } = useQuery(activeCouponsQuery);
+  const coupon = coupons?.[0];
+
+  const items = [
+    freeAbove
+      ? `Free delivery on orders above ${formatMoney(freeAbove)}`
+      : "Tracked delivery across India",
+    coupon
+      ? `Use code ${coupon.code} — ${coupon.description ?? "live offer"}`
+      : "Skin-safe, tested dyes — gentle enough for baby knits",
+    returnWindowDays
+      ? `Easy returns within ${returnWindowDays} days`
+      : "Support 10am–7pm IST, all days",
+    "Small-batch colour, wound for stitch definition",
+  ];
+
+  const row = [...items, ...items];
 
   return (
     <div

@@ -1,9 +1,12 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Bell, Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Glass } from "@/components/ui/glass";
-import { NAV_PLACEHOLDER, BRAND } from "@/lib/site";
+import { categoryTreeQuery } from "@/lib/api/queries";
+import type { CategoryNode } from "@/lib/api/types";
+import { BRAND } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 function Wordmark() {
@@ -32,12 +35,19 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [openColumn, setOpenColumn] = useState<string | null>(null);
 
+  // Top-level categories become mega-menu columns; their children become links.
+  const { data: tree } = useQuery(categoryTreeQuery);
+  const groups: CategoryNode[] = (tree ?? []).filter((c) => !c.parent_id).slice(0, 5);
+  const activeGroup = groups.find((g) => g.slug === openColumn);
+  const activeItems = activeGroup?.children ?? [];
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   return (
     <header
@@ -74,18 +84,30 @@ export function Header() {
         {/* desktop mega-menu triggers */}
         <nav aria-label="Main" className="hidden min-w-0 justify-center lg:flex">
           <ul className="flex items-center gap-1" onMouseLeave={() => setOpenColumn(null)}>
-            {NAV_PLACEHOLDER.map((group) => (
-              <li key={group.label}>
-                <button
-                  type="button"
-                  data-cursor="link"
-                  onMouseEnter={() => setOpenColumn(group.label)}
-                  onFocus={() => setOpenColumn(group.label)}
-                  aria-expanded={openColumn === group.label}
-                  className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
-                >
-                  {group.label}
-                </button>
+            {groups.map((group) => (
+              <li key={group.id}>
+                {group.children?.length ? (
+                  <button
+                    type="button"
+                    data-cursor="link"
+                    onMouseEnter={() => setOpenColumn(group.slug)}
+                    onFocus={() => setOpenColumn(group.slug)}
+                    aria-expanded={openColumn === group.slug}
+                    className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                  >
+                    {group.name}
+                  </button>
+                ) : (
+                  <Link
+                    to="/collections/$slug"
+                    params={{ slug: group.slug }}
+                    data-cursor="link"
+                    onMouseEnter={() => setOpenColumn(null)}
+                    className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                  >
+                    {group.name}
+                  </Link>
+                )}
               </li>
             ))}
             <li>
@@ -147,23 +169,32 @@ export function Header() {
       </div>
 
       {/* desktop mega-menu panel */}
-      {openColumn ? (
+      {activeGroup && activeItems.length ? (
         <div
           className="absolute inset-x-0 top-full hidden px-6 pb-6 lg:block"
-          onMouseEnter={() => setOpenColumn(openColumn)}
+          onMouseEnter={() => setOpenColumn(activeGroup.slug)}
           onMouseLeave={() => setOpenColumn(null)}
         >
           <Glass variant="panel" refract className="mx-auto max-w-[1200px]">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-8">
               <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3">
-                {NAV_PLACEHOLDER.find((g) => g.label === openColumn)?.items.map((item) => (
+                <Link
+                  to="/collections/$slug"
+                  params={{ slug: activeGroup.slug }}
+                  data-cursor="link"
+                  className="border-b border-border pb-2 text-lg text-marigold transition-colors hover:text-fleece"
+                >
+                  All {activeGroup.name}
+                </Link>
+                {activeItems.map((item) => (
                   <Link
-                    key={item}
-                    to="/collections"
+                    key={item.id}
+                    to="/collections/$slug"
+                    params={{ slug: item.slug }}
                     data-cursor="link"
                     className="border-b border-border pb-2 text-lg text-fleece-dim transition-colors hover:text-marigold"
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 ))}
               </div>
@@ -183,18 +214,26 @@ export function Header() {
         <div className="border-t border-border px-4 pb-6 pt-4 lg:hidden">
           <nav aria-label="Mobile">
             <ul className="space-y-5">
-              {NAV_PLACEHOLDER.map((group) => (
-                <li key={group.label}>
-                  <p className="font-data text-2xs text-marigold">{group.label}</p>
+              {groups.map((group) => (
+                <li key={group.id}>
+                  <Link
+                    to="/collections/$slug"
+                    params={{ slug: group.slug }}
+                    onClick={() => setMenuOpen(false)}
+                    className="font-data text-2xs text-marigold"
+                  >
+                    {group.name}
+                  </Link>
                   <ul className="mt-2 space-y-2">
-                    {group.items.map((item) => (
-                      <li key={item}>
+                    {(group.children ?? []).map((item) => (
+                      <li key={item.id}>
                         <Link
-                          to="/collections"
+                          to="/collections/$slug"
+                          params={{ slug: item.slug }}
                           onClick={() => setMenuOpen(false)}
                           className="block text-lg text-fleece-dim"
                         >
-                          {item}
+                          {item.name}
                         </Link>
                       </li>
                     ))}

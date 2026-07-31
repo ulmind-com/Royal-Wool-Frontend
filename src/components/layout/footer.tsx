@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Mail, MapPin, Phone } from "lucide-react";
 
+import { useSettings } from "@/hooks/use-settings";
 import { BRAND, POLICY_LINKS } from "@/lib/site";
 import { WHATSAPP_DISPLAY, waGeneral } from "@/lib/whatsapp";
 
-/**
- * Shop name / address / phone / email are placeholders in Phase 1.
- * Phase 2 fills them from GET /settings -> settings.shop.
- */
 export function Footer() {
+  const { shop } = useSettings();
+
   return (
     <footer className="relative mt-24 border-t border-border bg-ink-2">
       <div className="mx-auto w-full max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10">
@@ -74,10 +73,12 @@ export function Footer() {
             <div>
               <p className="font-data text-2xs text-marigold">Reach us</p>
               <ul className="mt-4 space-y-3 text-fleece-dim">
-                <li className="flex items-start gap-3">
-                  <MapPin className="mt-1 h-4 w-4 shrink-0 text-fleece-dim/70" />
-                  <span data-store-address>Store address loads from store settings</span>
-                </li>
+                {shop?.address ? (
+                  <li className="flex items-start gap-3">
+                    <MapPin className="mt-1 h-4 w-4 shrink-0 text-fleece-dim/70" />
+                    <span>{shop.address}</span>
+                  </li>
+                ) : null}
                 <li className="flex items-center gap-3">
                   <Phone className="h-4 w-4 shrink-0 text-fleece-dim/70" />
                   <a
@@ -87,13 +88,20 @@ export function Footer() {
                     aria-label="WhatsApp Royal Wool"
                     className="font-data text-2xs transition-colors hover:text-fleece"
                   >
-                    {WHATSAPP_DISPLAY}
+                    {shop?.phone ?? WHATSAPP_DISPLAY}
                   </a>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 shrink-0 text-fleece-dim/70" />
-                  <span className="font-data text-2xs">Email loads from settings</span>
-                </li>
+                {shop?.email ? (
+                  <li className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 shrink-0 text-fleece-dim/70" />
+                    <a
+                      href={`mailto:${shop.email}`}
+                      className="font-data text-2xs transition-colors hover:text-fleece"
+                    >
+                      {shop.email}
+                    </a>
+                  </li>
+                ) : null}
                 <li className="flex items-center gap-3">
                   <Instagram className="h-4 w-4 shrink-0 text-fleece-dim/70" />
                   <span className="font-data text-2xs">@royalwool</span>
