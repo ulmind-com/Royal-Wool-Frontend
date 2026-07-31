@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageShell, Prose } from "@/components/layout/page-shell";
+import { useSettings } from "@/hooks/use-settings";
 
 export const Route = createFileRoute("/returns-policy")({
   head: () => ({
