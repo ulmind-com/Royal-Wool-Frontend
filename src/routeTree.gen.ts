@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as OffersRouteImport } from './routes/offers'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as UpcomingRouteImport } from './routes/upcoming'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
@@ -37,6 +38,11 @@ const CartRoute = CartRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/offers': typeof OffersRoute
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
   '/account/notifications': typeof AccountNotificationsRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/offers': typeof OffersRoute
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
   '/account/notifications': typeof AccountNotificationsRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/offers': typeof OffersRoute
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
   '/account/notifications': typeof AccountNotificationsRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/offers'
     | '/search'
     | '/upcoming'
     | '/account/notifications'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/offers'
     | '/search'
     | '/upcoming'
     | '/account/notifications'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/offers'
     | '/search'
     | '/upcoming'
     | '/account/notifications'
@@ -199,6 +211,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  OffersRoute: typeof OffersRoute
   SearchRoute: typeof SearchRoute
   UpcomingRoute: typeof UpcomingRoute
   AccountNotificationsRoute: typeof AccountNotificationsRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  OffersRoute: OffersRoute,
   SearchRoute: SearchRoute,
   UpcomingRoute: UpcomingRoute,
   AccountNotificationsRoute: AccountNotificationsRoute,
