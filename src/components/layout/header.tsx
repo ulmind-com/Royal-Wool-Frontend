@@ -1,9 +1,12 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Bell, Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Glass } from "@/components/ui/glass";
-import { NAV_PLACEHOLDER, BRAND } from "@/lib/site";
+import { categoryTreeQuery } from "@/lib/api/queries";
+import type { CategoryNode } from "@/lib/api/types";
+import { BRAND } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 function Wordmark() {
@@ -32,12 +35,19 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [openColumn, setOpenColumn] = useState<string | null>(null);
 
+  // Top-level categories become mega-menu columns; their children become links.
+  const { data: tree } = useQuery(categoryTreeQuery);
+  const groups: CategoryNode[] = (tree ?? []).filter((c) => !c.parent_id).slice(0, 5);
+  const activeGroup = groups.find((g) => g.slug === openColumn);
+  const activeItems = activeGroup?.children ?? [];
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   return (
     <header
@@ -74,18 +84,30 @@ export function Header() {
         {/* desktop mega-menu triggers */}
         <nav aria-label="Main" className="hidden min-w-0 justify-center lg:flex">
           <ul className="flex items-center gap-1" onMouseLeave={() => setOpenColumn(null)}>
-            {NAV_PLACEHOLDER.map((group) => (
-              <li key={group.label}>
-                <button
-                  type="button"
-                  data-cursor="link"
-                  onMouseEnter={() => setOpenColumn(group.label)}
-                  onFocus={() => setOpenColumn(group.label)}
-                  aria-expanded={openColumn === group.label}
-                  className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
-                >
-                  {group.label}
-                </button>
+            {groups.map((group) => (
+              <li key={group.id}>
+                {group.children?.length ? (
+                  <button
+                    type="button"
+                    data-cursor="link"
+                    onMouseEnter={() => setOpenColumn(group.slug)}
+                    onFocus={() => setOpenColumn(group.slug)}
+                    aria-expanded={openColumn === group.slug}
+                    className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                  >
+                    {group.name}
+                  </button>
+                ) : (
+                  <Link
+                    to="/collections/$slug"
+                    params={{ slug: group.slug }}
+                    data-cursor="link"
+                    onMouseEnter={() => setOpenColumn(null)}
+                    className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                  >
+                    {group.name}
+                  </Link>
+                )}
               </li>
             ))}
             <li>
