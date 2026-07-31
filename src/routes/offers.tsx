@@ -29,7 +29,7 @@ function OffersPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
       <p className="font-data text-2xs text-marigold">Offers</p>
-      <h1 className="mt-4 font-display text-fluid-3xl font-light tracking-[-0.03em] text-fleece">
+      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-fleece">
         Coupons on the rack
       </h1>
       <p className="mt-4 max-w-xl text-fleece-dim">

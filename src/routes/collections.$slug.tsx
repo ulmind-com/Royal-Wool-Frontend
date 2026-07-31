@@ -52,7 +52,7 @@ function CategoryPage() {
         <span className="text-fleece-dim">{title}</span>
       </nav>
 
-      <h1 className="mt-4 font-display text-fluid-3xl font-light capitalize tracking-[-0.03em] text-fleece">
+      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light capitalize tracking-[-0.03em] text-fleece">
         {title}
       </h1>
 

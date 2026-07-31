@@ -139,7 +139,7 @@ function ProductPage() {
         {product.brand ? (
           <p className="font-data text-2xs text-marigold">{product.brand}</p>
         ) : null}
-        <h1 className="mt-3 font-display text-fluid-2xl font-light tracking-[-0.03em] text-fleece">
+        <h1 className="mt-3 font-display text-4xl sm:text-5xl font-light tracking-[-0.03em] text-fleece">
           {product.title}
         </h1>
 
