@@ -107,72 +107,81 @@
   --ink-2: oklch(0.181 0.029 300);
   --fleece: oklch(0.929 0.019 82);
   --fleece-dim: oklch(0.676 0.021 80);
-  --madder: oklch(0.53 0.163 31);
-  --marigold: oklch(0.781 0.132 76);
+  --madder: oklch(0.5 0.163 31);
+  --marigold: oklch(0.62 0.13 68);
   --indigo: oklch(0.446 0.132 271);
 
   --dye-flow: linear-gradient(120deg, var(--indigo), var(--madder) 55%, var(--marigold));
 
-  /* dark-first semantic mapping */
+  /* light-first ("day house") semantic mapping */
+  --background: oklch(0.968 0.012 84);
+  --foreground: var(--ink);
+  --card: oklch(0.99 0.006 84);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.99 0.006 84);
+  --popover-foreground: var(--ink);
+  --primary: var(--madder);
+  --primary-foreground: var(--fleece);
+  --secondary: oklch(0.915 0.016 84);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.915 0.016 84);
+  --muted-foreground: oklch(0.44 0.024 80);
+  --accent: var(--marigold);
+  --accent-foreground: var(--fleece);
+  --destructive: oklch(0.52 0.2 27);
+  --destructive-foreground: var(--fleece);
+  --border: oklch(0.116 0.021 303 / 13%);
+  --input: oklch(0.116 0.021 303 / 18%);
+  --ring: var(--indigo);
+
+  --chart-1: var(--madder);
+  --chart-2: var(--marigold);
+  --chart-3: var(--indigo);
+  --chart-4: oklch(0.56 0.1 160);
+  --chart-5: var(--muted-foreground);
+
+  --sidebar: oklch(0.99 0.006 84);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--madder);
+  --sidebar-primary-foreground: var(--fleece);
+  --sidebar-accent: oklch(0.915 0.016 84);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: oklch(0.116 0.021 303 / 13%);
+  --sidebar-ring: var(--indigo);
+
+  /* cursor-driven specular highlight position (updated on pointermove) */
+  --mx: 50%;
+  --my: 50%;
+
+  color-scheme: light;
+}
+
+.dark {
+  /* the site is light-only; .dark exists only so shadcn variants resolve */
+  color-scheme: light;
+}
+
+/* Kept for backwards compatibility: the whole site is light now, so this is a no-op. */
+.light-section {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Deliberately dark grounding band (footer, cinematic strips). */
+.ink-section {
   --background: var(--ink);
   --foreground: var(--fleece);
   --card: var(--ink-2);
   --card-foreground: var(--fleece);
   --popover: var(--ink-2);
   --popover-foreground: var(--fleece);
-  --primary: var(--madder);
-  --primary-foreground: var(--fleece);
   --secondary: oklch(0.24 0.032 300);
   --secondary-foreground: var(--fleece);
   --muted: oklch(0.221 0.028 300);
   --muted-foreground: var(--fleece-dim);
-  --accent: var(--marigold);
-  --accent-foreground: var(--ink);
-  --destructive: oklch(0.58 0.2 27);
-  --destructive-foreground: var(--fleece);
+  --marigold: oklch(0.781 0.132 76);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: var(--indigo);
-
-  --chart-1: var(--madder);
-  --chart-2: var(--marigold);
-  --chart-3: var(--indigo);
-  --chart-4: oklch(0.66 0.1 160);
-  --chart-5: var(--fleece-dim);
-
-  --sidebar: var(--ink-2);
-  --sidebar-foreground: var(--fleece);
-  --sidebar-primary: var(--madder);
-  --sidebar-primary-foreground: var(--fleece);
-  --sidebar-accent: oklch(0.24 0.032 300);
-  --sidebar-accent-foreground: var(--fleece);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: var(--indigo);
-
-  /* cursor-driven specular highlight position (updated on pointermove) */
-  --mx: 50%;
-  --my: 50%;
-}
-
-.dark {
-  /* the site is dark by default; .dark exists only so shadcn variants resolve */
-  color-scheme: dark;
-}
-
-/* Light breathing sections: lookbook, policy/legal pages */
-.light-section {
-  --background: var(--fleece);
-  --foreground: var(--ink);
-  --card: oklch(0.965 0.012 82);
-  --card-foreground: var(--ink);
-  --popover: oklch(0.965 0.012 82);
-  --popover-foreground: var(--ink);
-  --secondary: oklch(0.895 0.018 82);
-  --secondary-foreground: var(--ink);
-  --muted: oklch(0.895 0.018 82);
-  --muted-foreground: oklch(0.44 0.024 80);
-  --border: oklch(0.116 0.021 303 / 14%);
-  --input: oklch(0.116 0.021 303 / 18%);
   background-color: var(--background);
   color: var(--foreground);
 }
