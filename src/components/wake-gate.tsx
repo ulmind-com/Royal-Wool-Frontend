@@ -28,7 +28,7 @@ export function WakeGate() {
   return (
     <div
       className="fixed inset-0 z-[70] grid place-items-center px-4"
-      style={{ backgroundColor: "color-mix(in oklab, var(--ink) 88%, transparent)" }}
+      style={{ backgroundColor: "color-mix(in oklab, var(--fleece) 92%, transparent)" }}
       role="status"
       aria-live="polite"
     >

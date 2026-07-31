@@ -95,9 +95,9 @@ export function CustomCursor() {
             backgroundColor:
               state === "default"
                 ? "var(--marigold)"
-                : "color-mix(in oklab, var(--ink) 45%, transparent)",
+                : "color-mix(in oklab, var(--ink) 82%, transparent)",
             backdropFilter: state === "default" ? "none" : "blur(6px)",
-            color: "var(--ink)",
+            color: "var(--fleece)",
             transition:
               "width 320ms var(--ease-enter), height 320ms var(--ease-enter), margin 320ms var(--ease-enter), background-color 320ms var(--ease-enter)",
           }}
