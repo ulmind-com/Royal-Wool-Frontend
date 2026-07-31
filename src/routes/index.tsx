@@ -4,6 +4,7 @@ import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 import { CategoryTiles } from "@/components/commerce/category-tiles";
 import { ProductRail } from "@/components/commerce/product-rail";
 import { UpcomingRail } from "@/components/commerce/upcoming-rail";
+import { HeroSlider } from "@/components/commerce/hero-slider";
 
 import { Glass } from "@/components/ui/glass";
 
