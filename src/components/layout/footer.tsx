@@ -9,7 +9,7 @@ export function Footer() {
   const { shop } = useSettings();
 
   return (
-    <footer className="relative mt-24 border-t border-border bg-ink-2">
+    <footer className="ink-section relative mt-24 border-t border-border">
       <div className="mx-auto w-full max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)]">
           <div className="min-w-0">
