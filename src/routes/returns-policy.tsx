@@ -17,13 +17,20 @@ export const Route = createFileRoute("/returns-policy")({
     ],
     links: [{ rel: "canonical", href: "/returns-policy" }],
   }),
-  component: () => (
+  component: ReturnsPolicyPage,
+});
+
+function ReturnsPolicyPage() {
+  const { returnWindowDays, cancelWindowHours } = useSettings();
+
+  return (
     <PageShell light eyebrow="Policy" title="Returns & exchanges">
       <Prose>
         <h2>Window</h2>
         <p>
-          The return window is set in our store settings and shown on every product page and order.
-          The CTA only appears while an order is still eligible.
+          {returnWindowDays != null
+            ? `You can raise a return within ${returnWindowDays} days of delivery. The return option stays visible on your order for as long as it's eligible.`
+            : "You can raise a return within the window shown on your order, and the return option stays visible for as long as it's eligible."}
         </p>
         <h2>Condition</h2>
         <p>
@@ -37,10 +44,11 @@ export const Route = createFileRoute("/returns-policy")({
         </p>
         <h2>Cancellations</h2>
         <p>
-          Orders can be cancelled from the order page within the cancel window configured in our
-          settings, as long as the order hasn't shipped.
+          {cancelWindowHours != null
+            ? `Orders can be cancelled from the order page within ${cancelWindowHours} hours of placing them, as long as they haven't shipped.`
+            : "Orders can be cancelled from the order page as long as they haven't shipped."}
         </p>
       </Prose>
     </PageShell>
-  ),
-});
+  );
+}
