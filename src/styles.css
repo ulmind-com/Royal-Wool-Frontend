@@ -266,7 +266,7 @@
     pointer-events: none;
     background: radial-gradient(
       420px circle at var(--mx) var(--my),
-      color-mix(in oklab, var(--fleece) 8%, transparent),
+      color-mix(in oklab, var(--ink) 7%, transparent),
       transparent 60%
     );
     opacity: 0;
