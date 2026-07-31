@@ -36,7 +36,7 @@ function CategoryPage() {
   // Wait for the tree before asking for products, otherwise the first request
   // would fetch the whole catalogue and then immediately be replaced.
   const products = useQuery({
-    ...productsQuery({ category_id: category?.id, limit: 48 }),
+    ...productsQuery({ ...(category?.id ? { category_id: category.id } : {}), limit: 48 }),
     enabled: Boolean(category?.id),
   });
 
