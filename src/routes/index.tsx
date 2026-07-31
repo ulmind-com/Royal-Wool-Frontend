@@ -3,6 +3,8 @@ import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
 import { CategoryTiles } from "@/components/commerce/category-tiles";
 import { ProductRail } from "@/components/commerce/product-rail";
+import { UpcomingRail } from "@/components/commerce/upcoming-rail";
+
 import { Glass } from "@/components/ui/glass";
 
 export const Route = createFileRoute("/")({
@@ -134,12 +136,8 @@ function Home() {
         filters={{ sort: "popular" }}
       />
 
-      <SectionStub
-        anchor="upcoming"
-        eyebrow="04 · Upcoming products"
-        title="Six ranges, pinned rail"
-        note="Six glass cards with WhatsApp notify CTAs. Full page already at /upcoming."
-      />
+      <UpcomingRail />
+
       <SectionStub
         anchor="story"
         eyebrow="05 · Brand story"
