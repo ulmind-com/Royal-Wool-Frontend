@@ -33,7 +33,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
       )}
       style={{
         backgroundImage:
-          "linear-gradient(135deg, color-mix(in oklab, var(--fleece) 8%, transparent), color-mix(in oklab, var(--fleece) 2%, transparent))",
+          "linear-gradient(135deg, color-mix(in oklab, var(--ink) 8%, transparent), color-mix(in oklab, var(--ink) 2%, transparent))",
       }}
     >
       <Link
@@ -79,19 +79,19 @@ export function ProductCard({ product, className }: { product: Product; classNam
 
         <div className="p-4">
           {product.brand ? (
-            <p className="font-data text-2xs text-fleece-dim/80">{product.brand}</p>
+            <p className="font-data text-2xs text-muted-foreground/80">{product.brand}</p>
           ) : null}
-          <h3 className="mt-1 truncate font-display text-lg font-light text-fleece">
+          <h3 className="mt-1 truncate font-display text-lg font-light text-foreground">
             {product.title}
           </h3>
 
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-data text-sm text-fleece">
+            <span className="font-data text-sm text-foreground">
               {product.price_varies ? "From " : ""}
               {formatMoney(displayPrice(product))}
             </span>
             {struck ? (
-              <span className="font-data text-2xs text-fleece-dim/70 line-through">
+              <span className="font-data text-2xs text-muted-foreground/70 line-through">
                 {formatMoney(struck)}
               </span>
             ) : null}
@@ -108,7 +108,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
                 />
               ))}
               {(product.colors?.length ?? 0) > swatches.length ? (
-                <li className="font-data text-[10px] text-fleece-dim/70">
+                <li className="font-data text-[10px] text-muted-foreground/70">
                   +{(product.colors?.length ?? 0) - swatches.length}
                 </li>
               ) : null}
@@ -122,7 +122,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
         aria-label={`Save ${product.title} to wishlist`}
         title="Wishlist opens up once you sign in"
         data-cursor="link"
-        className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-border text-fleece-dim backdrop-blur-md transition-colors hover:text-marigold"
+        className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground backdrop-blur-md transition-colors hover:text-marigold"
       >
         <Heart className="h-4 w-4" />
       </button>

@@ -32,7 +32,7 @@ function UpcomingPage() {
       <h1 className="mt-4 max-w-3xl font-display text-5xl font-light">
         Six ranges on the <span className="italic text-marigold">dyeing rack</span>
       </h1>
-      <p className="mt-6 max-w-xl text-lg text-fleece-dim">
+      <p className="mt-6 max-w-xl text-lg text-muted-foreground">
         Ask for a WhatsApp ping and we'll message you the day each range goes live. In Phase 7 this
         becomes a pinned horizontal rail with a 3D yarn ball per range.
       </p>
@@ -64,8 +64,8 @@ function UpcomingPage() {
               />
 
               <div className="min-w-0">
-                <h2 className="font-display text-2xl font-light text-fleece">{range.name}</h2>
-                <p className="mt-2 text-sm text-fleece-dim">{range.blurb}</p>
+                <h2 className="font-display text-2xl font-light text-foreground">{range.name}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">{range.blurb}</p>
               </div>
 
               <a
@@ -74,7 +74,7 @@ function UpcomingPage() {
                 rel="noopener"
                 aria-label={`Notify me on WhatsApp when ${range.name} is available`}
                 data-cursor="link"
-                className="sheen mt-auto inline-flex items-center justify-center rounded-full border border-border px-5 py-2.5 font-data text-2xs text-fleece transition-colors hover:border-marigold hover:text-marigold"
+                className="sheen mt-auto inline-flex items-center justify-center rounded-full border border-border px-5 py-2.5 font-data text-2xs text-foreground transition-colors hover:border-marigold hover:text-marigold"
               >
                 Notify me on WhatsApp
               </a>

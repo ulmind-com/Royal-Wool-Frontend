@@ -17,7 +17,7 @@ function Wordmark() {
       className="group flex items-baseline gap-2"
       aria-label={`${BRAND.name} home`}
     >
-      <span className="font-display text-2xl font-semibold tracking-[-0.04em] text-fleece">
+      <span className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
         Royal
       </span>
       <span className="font-display text-2xl font-light italic tracking-[-0.04em] text-marigold">
@@ -28,7 +28,7 @@ function Wordmark() {
 }
 
 const ICON_BTN =
-  "relative grid h-10 w-10 shrink-0 place-items-center rounded-full text-fleece/80 transition-colors duration-[var(--dur-micro)] hover:bg-fleece/10 hover:text-fleece";
+  "relative grid h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/80 transition-colors duration-[var(--dur-micro)] hover:bg-foreground/10 hover:text-foreground";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -61,7 +61,7 @@ export function Header() {
         scrolled
           ? {
               backgroundImage:
-                "linear-gradient(135deg, color-mix(in oklab, var(--fleece) 8%, transparent), color-mix(in oklab, var(--fleece) 2%, transparent))",
+                "linear-gradient(135deg, color-mix(in oklab, var(--ink) 8%, transparent), color-mix(in oklab, var(--ink) 2%, transparent))",
             }
           : undefined
       }
@@ -93,7 +93,7 @@ export function Header() {
                     onMouseEnter={() => setOpenColumn(group.slug)}
                     onFocus={() => setOpenColumn(group.slug)}
                     aria-expanded={openColumn === group.slug}
-                    className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                    className="rounded-full px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {group.name}
                   </button>
@@ -103,7 +103,7 @@ export function Header() {
                     params={{ slug: group.slug }}
                     data-cursor="link"
                     onMouseEnter={() => setOpenColumn(null)}
-                    className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                    className="rounded-full px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {group.name}
                   </Link>
@@ -114,7 +114,7 @@ export function Header() {
               <Link
                 to="/upcoming"
                 data-cursor="link"
-                className="rounded-full px-4 py-2 font-data text-2xs text-marigold transition-colors hover:text-fleece"
+                className="rounded-full px-4 py-2 font-data text-2xs text-marigold transition-colors hover:text-foreground"
               >
                 Upcoming
               </Link>
@@ -123,7 +123,7 @@ export function Header() {
               <Link
                 to="/offers"
                 data-cursor="link"
-                className="rounded-full px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                className="rounded-full px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 Offers
               </Link>
@@ -136,11 +136,11 @@ export function Header() {
             to="/search"
             data-cursor="link"
             aria-label="Search yarns"
-            className="hidden items-center gap-3 rounded-full border border-border px-4 py-2 text-fleece-dim transition-colors hover:text-fleece md:flex"
+            className="hidden items-center gap-3 rounded-full border border-border px-4 py-2 text-muted-foreground transition-colors hover:text-foreground md:flex"
           >
             <Search className="h-4 w-4" />
             <span className="font-data text-2xs">Search</span>
-            <kbd className="font-data text-2xs text-fleece-dim/70">⌘K</kbd>
+            <kbd className="font-data text-2xs text-muted-foreground/70">⌘K</kbd>
           </Link>
           <Link to="/search" className={cn(ICON_BTN, "md:hidden")} aria-label="Search yarns">
             <Search className="h-5 w-5" />
@@ -161,7 +161,7 @@ export function Header() {
           </Link>
           <Link to="/cart" className={ICON_BTN} aria-label="Cart" data-cursor="link">
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-madder px-1 font-data text-[10px] leading-none text-fleece">
+            <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-madder px-1 font-data text-[10px] leading-none text-foreground">
               0
             </span>
           </Link>
@@ -182,7 +182,7 @@ export function Header() {
                   to="/collections/$slug"
                   params={{ slug: activeGroup.slug }}
                   data-cursor="link"
-                  className="border-b border-border pb-2 text-lg text-marigold transition-colors hover:text-fleece"
+                  className="border-b border-border pb-2 text-lg text-marigold transition-colors hover:text-foreground"
                 >
                   All {activeGroup.name}
                 </Link>
@@ -192,15 +192,15 @@ export function Header() {
                     to="/collections/$slug"
                     params={{ slug: item.slug }}
                     data-cursor="link"
-                    className="border-b border-border pb-2 text-lg text-fleece-dim transition-colors hover:text-marigold"
+                    className="border-b border-border pb-2 text-lg text-muted-foreground transition-colors hover:text-marigold"
                   >
                     {item.name}
                   </Link>
                 ))}
               </div>
               <div className="hidden w-64 shrink-0 flex-col justify-between md:flex">
-                <p className="font-data text-2xs text-fleece-dim">Curated by hand</p>
-                <p className="font-display text-2xl font-light text-fleece">
+                <p className="font-data text-2xs text-muted-foreground">Curated by hand</p>
+                <p className="font-display text-2xl font-light text-foreground">
                   Small-batch colour, wound for stitch definition.
                 </p>
               </div>
@@ -231,7 +231,7 @@ export function Header() {
                           to="/collections/$slug"
                           params={{ slug: item.slug }}
                           onClick={() => setMenuOpen(false)}
-                          className="block text-lg text-fleece-dim"
+                          className="block text-lg text-muted-foreground"
                         >
                           {item.name}
                         </Link>
@@ -251,7 +251,7 @@ export function Header() {
                 <Link
                   to="/offers"
                   onClick={() => setMenuOpen(false)}
-                  className="font-data text-2xs text-fleece-dim"
+                  className="font-data text-2xs text-muted-foreground"
                 >
                   Offers
                 </Link>

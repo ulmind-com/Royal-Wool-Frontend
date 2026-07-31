@@ -38,13 +38,13 @@ export function ProductRail({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-data text-2xs text-marigold">{eyebrow}</p>
-            <h2 className="mt-3 font-display text-4xl font-light text-fleece">{title}</h2>
-            {note ? <p className="mt-3 max-w-xl text-fleece-dim">{note}</p> : null}
+            <h2 className="mt-3 font-display text-4xl font-light text-foreground">{title}</h2>
+            {note ? <p className="mt-3 max-w-xl text-muted-foreground">{note}</p> : null}
           </div>
           <Link
             to={viewAllTo}
             data-cursor="link"
-            className="rounded-full border border-border px-5 py-2.5 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+            className="rounded-full border border-border px-5 py-2.5 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
           >
             View all
           </Link>

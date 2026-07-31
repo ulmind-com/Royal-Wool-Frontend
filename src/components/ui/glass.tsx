@@ -29,10 +29,10 @@ const glassVariants = cva(
 
 const GLASS_STYLE: React.CSSProperties = {
   backgroundImage:
-    "linear-gradient(135deg, color-mix(in oklab, var(--fleece) 10%, transparent), color-mix(in oklab, var(--fleece) 3%, transparent))",
-  borderColor: "color-mix(in oklab, var(--fleece) 14%, transparent)",
+    "linear-gradient(135deg, color-mix(in oklab, var(--fleece) 82%, transparent), color-mix(in oklab, var(--fleece) 58%, transparent))",
+  borderColor: "color-mix(in oklab, var(--ink) 10%, transparent)",
   boxShadow:
-    "inset 0 1px 0 color-mix(in oklab, var(--fleece) 20%, transparent), inset 0 -1px 0 color-mix(in oklab, var(--ink) 35%, transparent), 0 24px 60px -20px color-mix(in oklab, var(--ink) 70%, transparent)",
+    "inset 0 1px 0 color-mix(in oklab, var(--fleece) 90%, transparent), 0 22px 55px -26px color-mix(in oklab, var(--ink) 28%, transparent)",
 };
 
 export interface GlassProps
@@ -101,7 +101,7 @@ export const Glass = React.forwardRef<HTMLDivElement, GlassProps>(function Glass
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit]"
           style={{
-            backgroundColor: "color-mix(in oklab, var(--ink) 62%, transparent)",
+            backgroundColor: "color-mix(in oklab, var(--fleece) 88%, transparent)",
           }}
         />
       ) : null}
@@ -128,7 +128,7 @@ function RefractionLayer() {
           height="100%"
           filter={`url(#${REFRACT_ID})`}
           fill="currentColor"
-          className="text-fleece"
+          className="text-foreground"
         />
       </svg>
     </span>

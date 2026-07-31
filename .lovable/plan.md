@@ -1,60 +1,30 @@
-# Phase 2 — Live data layer
+## Goal
 
-Goal: everything the shell and catalog pages show comes from the real backend, with the Render cold start (30–50s) handled gracefully instead of looking broken.
+Make Royal Wool a light/day-mode site only — no dark theme, no toggle. Same brand character (madder red, marigold, indigo accents), but on warm fleece-light surfaces.
 
-Confirmed live from the backend just now: `/settings` (currency ₹, tax 5%, cancel 24h, return 7d, COD disabled, shop address/phone, delivery slabs, free_above 1500), `/categories/tree` (nested, with images), `/products` (colors → sizes, per-variant price/mrp/discount/stock), `/coupons/active` (FLAT100), `/site-media` (sectioned image lists). Catalog rows are still the clothing demo data — that's expected and stays as placeholder content.
+## Approach
 
-## 1. API client
+The palette already has a light variant: `.light-section` in `src/styles.css` (used today by lookbook/legal pages). Promote that mapping to the global default instead of inventing a new palette, so pages stay visually consistent.
 
-`src/lib/api/client.ts`
-- Single `apiFetch<T>(path, init)` on `API_BASE_URL`, JSON in/out, `AbortSignal` pass-through.
-- Attaches `Authorization: Bearer <rw_token>` when a token exists (read lazily, browser-only) so Phase 3 auth needs no client change.
-- Typed `ApiError` carrying status + server `detail`, so UI can distinguish 404 (not found → `notFound()`) from 5xx/offline.
-- Retry policy tuned for the free tier: up to 3 attempts with backoff on network errors / 502 / 503 / 504, long timeout (60s). GET only — never retries writes.
+### 1. `src/styles.css` (the bulk of the work)
+- Repoint the semantic tokens in `:root` to the light mapping: `--background: fleece`, `--foreground: ink`, light `--card`/`--popover`/`--muted`/`--secondary`, dark-on-light `--border`/`--input`.
+- Adjust accents for contrast on light: keep `--madder` as primary with light text, darken `--marigold` slightly where it is used as text (prices, eyebrows) so it passes contrast, keep `--indigo` for links/focus.
+- Add light-appropriate elevation: soft warm shadows instead of relying on dark-surface separation.
+- Make `.light-section` a no-op (it now matches the default) and add an optional `.ink-section` for any deliberately dark band we want to keep (e.g. footer or hero) — decided in step 3.
+- Tune `grain` opacity/blend for light backgrounds (`overlay` at 3% reads as dirt on light; switch to `multiply` at ~2%).
+- Set `color-scheme: light`, `<meta name="theme-color">` to the light background in `__root.tsx`.
 
-`src/lib/api/types.ts` — hand-written interfaces for Settings, Category, Product, ProductColor, ProductSize, Coupon, SiteMedia, plus normalizers (`variantPrice`, `inStock`, `productMinPrice`, `discountPct`) so no component recomputes pricing.
+### 2. Replace hardcoded dark-only color classes with semantic tokens
+Files using literal `text-fleece` / `bg-ink` / `fleece-dim` that would become invisible or low-contrast on light:
+`header.tsx`, `footer.tsx`, `announcement-ticker.tsx`, `whatsapp-fab.tsx`, `page-shell.tsx`, `glass.tsx`, `wake-gate.tsx`, `custom-cursor.tsx`, `product-card.tsx`, `product-rail.tsx`, `category-tiles.tsx`, and routes `index`, `product.$id`, `offers`, `search`, `collections.index`, `collections.$slug`, `upcoming`, `__root` (404 + error screens).
+Mapping: `text-fleece` → `text-foreground`, `text-fleece-dim` → `text-muted-foreground`, `bg-ink`/`bg-ink-2` → `bg-background`/`bg-card`, cursor and glass specular highlights switch from light-on-dark to dark-on-light.
 
-`src/lib/api/queries.ts` — `queryOptions` factories: `settingsQuery`, `categoryTreeQuery`, `productsQuery(filters)`, `productQuery(id)`, `activeCouponsQuery`, `siteMediaQuery`. Long `staleTime` for settings/categories (rarely change), shorter for products.
+### 3. Glass + cursor rework for light
+- `<Glass>`: the liquid-glass look is built on white-at-low-opacity over dark. On light it needs inverted treatment — translucent white with a subtle warm border and a soft shadow, and the specular highlight becomes a faint ink tint rather than a white glow.
+- Custom cursor: hook glyph and ring recolor to ink/madder so it is visible.
 
-## 2. Cold-start experience
+### 4. Verify
+Run the site in a headless browser across home, a category page, a PDP with variants, offers, cart/checkout, and one legal page; screenshot each and check for invisible text, blown-out glass panels, and console errors.
 
-- `src/components/wake-gate.tsx`: on first load, kick `settingsQuery`. If it hasn't resolved in ~2.5s, show a full-bleed glass panel — "Warming the dye house…" with the thread animating and an honest note that the first visit can take up to a minute. Auto-dismisses on resolve, and offers a WhatsApp link if it fails outright.
-- One shared `<DataError retry>` glass block for failed sections, and skeletons matching final layout (no layout shift).
-
-## 3. Settings everywhere
-
-`src/hooks/use-settings.ts` → `useSuspenseQuery(settingsQuery)` plus derived helpers: `formatMoney`, `freeAbove`, `returnWindowDays`, `cancelWindowHours`, `codEnabled`, `deliveryRule`.
-
-Wire the values that are currently hardcoded or described as "loaded from settings":
-- Announcement ticker: real free-delivery threshold and active coupon code.
-- Footer + `/contact`: shop name, address, phone, email from `/settings` (with the WhatsApp number staying ours).
-- `/shipping`, `/returns-policy`, `/faq`: inject the real numbers into the prose instead of the "comes from settings" placeholder sentences.
-- `/offers`: real coupon cards from `/coupons/active`, tap-to-copy code, min-order and validity rendered.
-
-## 4. Navigation from the real tree
-
-- `categoryTreeQuery` drives the header mega-menu (parents as columns, children as links) and the footer shop column, replacing `NAV_PLACEHOLDER`.
-- Category imagery from the tree's `image` field, honouring `image_scale`.
-- `/collections` lists top-level categories; `/collections/$slug` resolves slug → id from the tree, then loads `/products?category_id=…`, and throws `notFound()` for an unknown slug.
-
-## 5. Catalog surfaces
-
-- `ProductCard`: glass card, colour swatches from `colors[]`, price from the cheapest in-stock variant with MRP strikethrough and discount badge, out-of-stock treatment, wishlist heart stubbed until Phase 3.
-- Home: "New arrivals" and "Shop by category" rails fed by real data; hero and 3D remain Phase 5 placeholders.
-- `/product/$id`: real title, brand, description, colour/size picker driven by the variant matrix (disabled + "out of stock" per size), live price recalc on variant change, add-to-bag disabled until a valid in-stock variant is chosen. 3D yarn ball still a placeholder panel. Product JSON-LD from loader data.
-- `/search`: query params → `/products` with `q`, sort and price filters; shareable URLs.
-- `/upcoming`: attempt the "upcoming" category from the tree, fall back to the existing curated list — no visual regression either way.
-
-## 6. Correctness rules baked in
-
-- Money and stock are never derived from `product.price` alone — always the variant matrix.
-- Bill totals are never computed client-side; that stays a `/orders/quote` call in Phase 6.
-- Every route with a loader gets `errorComponent` + `notFoundComponent`; loaders prime the cache via `ensureQueryData` and components read with `useSuspenseQuery`.
-
-## Technical notes
-
-Reads go straight from the browser/SSR to the existing REST API — no server functions, no Supabase, nothing proxied. `VITE_API_BASE_URL` stays the single override point. Retries are capped so a genuinely down backend surfaces an error instead of spinning forever.
-
-## Out of scope for Phase 2
-
-OTP auth and account pages, cart/checkout/quote/Razorpay, wishlist and notification writes, the R3F yarn ball, and the GSAP "Thread" scroll indicator.
+## Notes
+One judgment call I'll make unless you say otherwise: keep the footer on the deep ink background as a grounding band (a common pattern for light sites) while everything above it goes light. Say the word if you want the footer light too.

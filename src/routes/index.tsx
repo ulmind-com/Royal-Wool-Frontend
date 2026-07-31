@@ -50,7 +50,7 @@ function Home() {
               Colour you can
               <span className="italic text-marigold"> feel</span> between your fingers.
             </h1>
-            <p className="mt-8 max-w-lg text-lg text-fleece-dim">
+            <p className="mt-8 max-w-lg text-lg text-muted-foreground">
               Acrylic, cotton and blends wound for stitch definition — dyed in small lots so every
               skein in your project matches.
             </p>
@@ -65,7 +65,7 @@ function Home() {
               <Link
                 to="/upcoming"
                 data-cursor="link"
-                className="inline-flex items-center rounded-full border border-border px-7 py-3.5 font-data text-2xs text-fleece transition-colors hover:border-marigold hover:text-marigold"
+                className="inline-flex items-center rounded-full border border-border px-7 py-3.5 font-data text-2xs text-foreground transition-colors hover:border-marigold hover:text-marigold"
               >
                 See what's coming
               </Link>
@@ -79,7 +79,7 @@ function Home() {
             data-cursor="drag"
           >
             <div className="flex h-full flex-col justify-between">
-              <p className="font-data text-2xs text-fleece-dim">Hero canvas · Phase 5</p>
+              <p className="font-data text-2xs text-muted-foreground">Hero canvas · Phase 5</p>
               <div
                 className="mx-auto h-40 w-40 rounded-full sm:h-56 sm:w-56"
                 style={{
@@ -88,7 +88,7 @@ function Home() {
                 }}
                 aria-hidden
               />
-              <p className="font-data text-2xs text-fleece-dim">
+              <p className="font-data text-2xs text-muted-foreground">
                 A rotating 3D yarn ball lands here, with banners driving the copy layer.
               </p>
             </div>
@@ -107,8 +107,8 @@ function Home() {
             <li key={title}>
               <Glass variant="card" className="h-full">
                 <Icon className="h-5 w-5 text-marigold" aria-hidden />
-                <p className="mt-3 font-data text-2xs text-fleece">{title}</p>
-                <p className="mt-1 text-sm text-fleece-dim">{copy}</p>
+                <p className="mt-3 font-data text-2xs text-foreground">{title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{copy}</p>
               </Glass>
             </li>
           ))}

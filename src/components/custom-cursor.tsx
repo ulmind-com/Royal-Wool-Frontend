@@ -95,7 +95,7 @@ export function CustomCursor() {
             backgroundColor:
               state === "default"
                 ? "var(--marigold)"
-                : "color-mix(in oklab, var(--ink) 45%, transparent)",
+                : "color-mix(in oklab, var(--ink) 82%, transparent)",
             backdropFilter: state === "default" ? "none" : "blur(6px)",
             color: "var(--fleece)",
             transition:
@@ -117,7 +117,7 @@ export function CustomCursor() {
         >
           <path
             d="M6 3.5 L16.5 15.5 a4 4 0 1 1-6 2.4"
-            stroke="var(--fleece)"
+            stroke="var(--ink)"
             strokeWidth="1.6"
             strokeLinecap="round"
           />

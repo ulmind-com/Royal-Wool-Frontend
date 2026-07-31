@@ -30,7 +30,7 @@ function CollectionsPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
       <p className="font-data text-2xs text-marigold">Collections</p>
-      <h1 className="mt-4 max-w-3xl font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-fleece">
+      <h1 className="mt-4 max-w-3xl font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-foreground">
         Every yarn we wind
       </h1>
 
@@ -42,7 +42,7 @@ function CollectionsPage() {
                 to="/collections/$slug"
                 params={{ slug: c.slug }}
                 data-cursor="link"
-                className="inline-flex rounded-full border border-border px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                className="inline-flex rounded-full border border-border px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {c.name}
               </Link>

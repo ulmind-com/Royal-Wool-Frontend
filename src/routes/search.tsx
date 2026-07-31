@@ -48,7 +48,7 @@ function SearchPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
       <p className="font-data text-2xs text-marigold">Search</p>
-      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-fleece">
+      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-foreground">
         Find your colour
       </h1>
 
@@ -60,13 +60,13 @@ function SearchPage() {
         }}
         role="search"
       >
-        <SearchIcon className="h-4 w-4 shrink-0 text-fleece-dim" aria-hidden />
+        <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Try “cotton”, “baby soft”, “mustard”"
           aria-label="Search yarns"
-          className="min-w-0 flex-1 bg-transparent font-data text-2xs text-fleece outline-none placeholder:text-fleece-dim/60"
+          className="min-w-0 flex-1 bg-transparent font-data text-2xs text-foreground outline-none placeholder:text-muted-foreground/60"
         />
         <button
           type="submit"
@@ -89,7 +89,7 @@ function SearchPage() {
           <DataError error={results.error} retry={() => void results.refetch()} />
         ) : results.data?.length ? (
           <>
-            <p className="mb-6 font-data text-2xs text-fleece-dim">
+            <p className="mb-6 font-data text-2xs text-muted-foreground">
               {results.data.length} result{results.data.length === 1 ? "" : "s"} for “{q}”
             </p>
             <ProductGrid products={results.data} />
