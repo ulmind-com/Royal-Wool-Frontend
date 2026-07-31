@@ -16,6 +16,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as UpcomingRouteImport } from './routes/upcoming'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
+import { Route as AccountReturnsRouteImport } from './routes/account.returns'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -56,6 +57,11 @@ const AccountOrdersRoute = AccountOrdersRouteImport.update({
   path: '/account/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountReturnsRoute = AccountReturnsRouteImport.update({
+  id: '/account/returns',
+  path: '/account/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   id: '/collections/',
   path: '/collections/',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/account/returns': typeof AccountReturnsRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account/': typeof AccountIndexRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/account/returns': typeof AccountReturnsRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account': typeof AccountIndexRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/account/returns': typeof AccountReturnsRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account/': typeof AccountIndexRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/upcoming'
     | '/account/orders'
+    | '/account/returns'
     | '/collections/$slug'
     | '/product/$id'
     | '/account/'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/upcoming'
     | '/account/orders'
+    | '/account/returns'
     | '/collections/$slug'
     | '/product/$id'
     | '/account'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/upcoming'
     | '/account/orders'
+    | '/account/returns'
     | '/collections/$slug'
     | '/product/$id'
     | '/account/'
@@ -166,6 +178,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   UpcomingRoute: typeof UpcomingRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
+  AccountReturnsRoute: typeof AccountReturnsRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
   ProductIdRoute: typeof ProductIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
@@ -224,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/returns': {
+      id: '/account/returns'
+      path: '/account/returns'
+      fullPath: '/account/returns'
+      preLoaderRoute: typeof AccountReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/': {
       id: '/collections/'
       path: '/collections'
@@ -262,6 +282,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   UpcomingRoute: UpcomingRoute,
   AccountOrdersRoute: AccountOrdersRoute,
+  AccountReturnsRoute: AccountReturnsRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
   ProductIdRoute: ProductIdRoute,
   AccountIndexRoute: AccountIndexRoute,
