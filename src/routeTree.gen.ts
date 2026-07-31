@@ -17,6 +17,7 @@ import { Route as UpcomingRouteImport } from './routes/upcoming'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as OrderIdSuccessRouteImport } from './routes/order.$id.success'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrderIdSuccessRoute = OrderIdSuccessRouteImport.update({
+  id: '/order/$id/success',
+  path: '/order/$id/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/order/$id/success': typeof OrderIdSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/collections': typeof CollectionsIndexRoute
+  '/order/$id/success': typeof OrderIdSuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/order/$id/success': typeof OrderIdSuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/product/$id'
     | '/collections/'
+    | '/order/$id/success'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/product/$id'
     | '/collections'
+    | '/order/$id/success'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/collections/$slug'
     | '/product/$id'
     | '/collections/'
+    | '/order/$id/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   CollectionsSlugRoute: typeof CollectionsSlugRoute
   ProductIdRoute: typeof ProductIdRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  OrderIdSuccessRoute: typeof OrderIdSuccessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/order/$id/success': {
+      id: '/order/$id/success'
+      path: '/order/$id/success'
+      fullPath: '/order/$id/success'
+      preLoaderRoute: typeof OrderIdSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsSlugRoute: CollectionsSlugRoute,
   ProductIdRoute: ProductIdRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  OrderIdSuccessRoute: OrderIdSuccessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
