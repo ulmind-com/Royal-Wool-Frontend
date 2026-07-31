@@ -1,6 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
+import { CategoryTiles } from "@/components/commerce/category-tiles";
+import { ProductRail } from "@/components/commerce/product-rail";
 import { Glass } from "@/components/ui/glass";
 
 export const Route = createFileRoute("/")({
