@@ -38,65 +38,8 @@ const TRUST = [
 function Home() {
   return (
     <>
-      {/* ── Hero shell. The 3D yarn ball mounts into the right cell in Phase 5. ── */}
-      <section className="relative overflow-hidden" data-thread-anchor="hero">
-        <div
-          className="pointer-events-none absolute -right-40 -top-40 h-[680px] w-[680px] rounded-full opacity-[0.28] blur-3xl"
-          style={{ backgroundImage: "var(--dye-flow)" }}
-          aria-hidden
-        />
-        <div className="relative mx-auto grid w-full max-w-[1600px] items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-32">
-          <div className="min-w-0">
-            <p className="font-data text-2xs text-marigold">Small-batch dye house · India</p>
-            <h1 className="mt-6 font-display text-6xl font-light">
-              Colour you can
-              <span className="italic text-marigold"> feel</span> between your fingers.
-            </h1>
-            <p className="mt-8 max-w-lg text-lg text-muted-foreground">
-              Acrylic, cotton and blends wound for stitch definition — dyed in small lots so every
-              skein in your project matches.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                to="/collections"
-                data-cursor="link"
-                className="sheen inline-flex items-center rounded-full bg-madder px-7 py-3.5 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
-              >
-                Shop all yarns
-              </Link>
-              <Link
-                to="/upcoming"
-                data-cursor="link"
-                className="inline-flex items-center rounded-full border border-border px-7 py-3.5 font-data text-2xs text-foreground transition-colors hover:border-marigold hover:text-marigold"
-              >
-                See what's coming
-              </Link>
-            </div>
-          </div>
-
-          <Glass
-            variant="panel"
-            refract
-            className="aspect-[4/3] w-full lg:aspect-square"
-            data-cursor="drag"
-          >
-            <div className="flex h-full flex-col justify-between">
-              <p className="font-data text-2xs text-muted-foreground">Hero canvas · Phase 5</p>
-              <div
-                className="mx-auto h-40 w-40 rounded-full sm:h-56 sm:w-56"
-                style={{
-                  backgroundImage: "var(--dye-flow)",
-                  boxShadow: "0 40px 80px -30px color-mix(in oklab, var(--madder) 60%, transparent)",
-                }}
-                aria-hidden
-              />
-              <p className="font-data text-2xs text-muted-foreground">
-                A rotating 3D yarn ball lands here, with banners driving the copy layer.
-              </p>
-            </div>
-          </Glass>
-        </div>
-      </section>
+      {/* ── Hero: admin-driven auto slider ── */}
+      <HeroSlider />
 
       {/* ── Trust bar ── */}
       <section
