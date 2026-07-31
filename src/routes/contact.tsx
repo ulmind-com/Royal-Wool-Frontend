@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageShell, Prose } from "@/components/layout/page-shell";
+import { useSettings } from "@/hooks/use-settings";
 import { WHATSAPP_DISPLAY, waGeneral } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/contact")({
@@ -17,12 +18,16 @@ export const Route = createFileRoute("/contact")({
     ],
     links: [{ rel: "canonical", href: "/contact" }],
   }),
-  component: () => (
+  component: ContactPage,
+});
+
+function ContactPage() {
+  const { shop } = useSettings();
+
+  return (
     <PageShell light eyebrow="Contact" title="Talk to a human">
       <Prose>
-        <p>
-          Fastest route is WhatsApp — we answer between 10am and 7pm IST, every day.
-        </p>
+        <p>Fastest route is WhatsApp — we answer between 10am and 7pm IST, every day.</p>
         <p>
           <strong>WhatsApp:</strong>{" "}
           <a
@@ -36,14 +41,31 @@ export const Route = createFileRoute("/contact")({
             {WHATSAPP_DISPLAY}
           </a>
         </p>
-        <p>
-          <strong>Phone &amp; email:</strong> loaded from our store settings so they're always
-          current (wired in Phase 2).
-        </p>
-        <p>
-          <strong>Store address:</strong> loaded from store settings.
-        </p>
+        {shop?.phone ? (
+          <p>
+            <strong>Phone:</strong>{" "}
+            <a href={`tel:${shop.phone}`} className="underline decoration-madder underline-offset-4">
+              {shop.phone}
+            </a>
+          </p>
+        ) : null}
+        {shop?.email ? (
+          <p>
+            <strong>Email:</strong>{" "}
+            <a
+              href={`mailto:${shop.email}`}
+              className="underline decoration-madder underline-offset-4"
+            >
+              {shop.email}
+            </a>
+          </p>
+        ) : null}
+        {shop?.address ? (
+          <p>
+            <strong>Store address:</strong> {shop.address}
+          </p>
+        ) : null}
       </Prose>
     </PageShell>
-  ),
-});
+  );
+}
