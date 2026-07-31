@@ -15,6 +15,7 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as UpcomingRouteImport } from './routes/upcoming'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as AccountNotificationsRouteImport } from './routes/account.notifications'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AccountReturnsRouteImport } from './routes/account.returns'
 import { Route as AccountWishlistRouteImport } from './routes/account.wishlist'
@@ -51,6 +52,11 @@ const UpcomingRoute = UpcomingRouteImport.update({
 const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/account/',
   path: '/account/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
+  id: '/account/notifications',
+  path: '/account/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountOrdersRoute = AccountOrdersRouteImport.update({
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/search': typeof SearchRoute
   '/upcoming': typeof UpcomingRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/search'
     | '/upcoming'
+    | '/account/notifications'
     | '/account/orders'
     | '/account/returns'
     | '/account/wishlist'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/search'
     | '/upcoming'
+    | '/account/notifications'
     | '/account/orders'
     | '/account/returns'
     | '/account/wishlist'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/search'
     | '/upcoming'
+    | '/account/notifications'
     | '/account/orders'
     | '/account/returns'
     | '/account/wishlist'
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   SearchRoute: typeof SearchRoute
   UpcomingRoute: typeof UpcomingRoute
+  AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountReturnsRoute: typeof AccountReturnsRoute
   AccountWishlistRoute: typeof AccountWishlistRoute
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account/'
       preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/notifications': {
+      id: '/account/notifications'
+      path: '/account/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AccountNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/orders': {
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   SearchRoute: SearchRoute,
   UpcomingRoute: UpcomingRoute,
+  AccountNotificationsRoute: AccountNotificationsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountReturnsRoute: AccountReturnsRoute,
   AccountWishlistRoute: AccountWishlistRoute,
