@@ -169,23 +169,32 @@ export function Header() {
       </div>
 
       {/* desktop mega-menu panel */}
-      {openColumn ? (
+      {activeGroup && activeItems.length ? (
         <div
           className="absolute inset-x-0 top-full hidden px-6 pb-6 lg:block"
-          onMouseEnter={() => setOpenColumn(openColumn)}
+          onMouseEnter={() => setOpenColumn(activeGroup.slug)}
           onMouseLeave={() => setOpenColumn(null)}
         >
           <Glass variant="panel" refract className="mx-auto max-w-[1200px]">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-8">
               <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3">
-                {NAV_PLACEHOLDER.find((g) => g.label === openColumn)?.items.map((item) => (
+                <Link
+                  to="/collections/$slug"
+                  params={{ slug: activeGroup.slug }}
+                  data-cursor="link"
+                  className="border-b border-border pb-2 text-lg text-marigold transition-colors hover:text-fleece"
+                >
+                  All {activeGroup.name}
+                </Link>
+                {activeItems.map((item) => (
                   <Link
-                    key={item}
-                    to="/collections"
+                    key={item.id}
+                    to="/collections/$slug"
+                    params={{ slug: item.slug }}
                     data-cursor="link"
                     className="border-b border-border pb-2 text-lg text-fleece-dim transition-colors hover:text-marigold"
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 ))}
               </div>
@@ -205,18 +214,26 @@ export function Header() {
         <div className="border-t border-border px-4 pb-6 pt-4 lg:hidden">
           <nav aria-label="Mobile">
             <ul className="space-y-5">
-              {NAV_PLACEHOLDER.map((group) => (
-                <li key={group.label}>
-                  <p className="font-data text-2xs text-marigold">{group.label}</p>
+              {groups.map((group) => (
+                <li key={group.id}>
+                  <Link
+                    to="/collections/$slug"
+                    params={{ slug: group.slug }}
+                    onClick={() => setMenuOpen(false)}
+                    className="font-data text-2xs text-marigold"
+                  >
+                    {group.name}
+                  </Link>
                   <ul className="mt-2 space-y-2">
-                    {group.items.map((item) => (
-                      <li key={item}>
+                    {(group.children ?? []).map((item) => (
+                      <li key={item.id}>
                         <Link
-                          to="/collections"
+                          to="/collections/$slug"
+                          params={{ slug: item.slug }}
                           onClick={() => setMenuOpen(false)}
                           className="block text-lg text-fleece-dim"
                         >
-                          {item}
+                          {item.name}
                         </Link>
                       </li>
                     ))}
