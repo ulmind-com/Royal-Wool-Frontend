@@ -14,6 +14,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as UpcomingRouteImport } from './routes/upcoming'
+import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -42,6 +43,11 @@ const SearchRoute = SearchRouteImport.update({
 const UpcomingRoute = UpcomingRouteImport.update({
   id: '/upcoming',
   path: '/upcoming',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountIndexRoute = AccountIndexRouteImport.update({
+  id: '/account/',
+  path: '/account/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/upcoming': typeof UpcomingRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
+  '/account/': typeof AccountIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/order/$id/success': typeof OrderIdSuccessRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/upcoming': typeof UpcomingRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
+  '/account': typeof AccountIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/order/$id/success': typeof OrderIdSuccessRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/upcoming': typeof UpcomingRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
+  '/account/': typeof AccountIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/order/$id/success': typeof OrderIdSuccessRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/collections/$slug'
     | '/product/$id'
+    | '/account/'
     | '/collections/'
     | '/order/$id/success'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/collections/$slug'
     | '/product/$id'
+    | '/account'
     | '/collections'
     | '/order/$id/success'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/collections/$slug'
     | '/product/$id'
+    | '/account/'
     | '/collections/'
     | '/order/$id/success'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   UpcomingRoute: typeof UpcomingRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
   ProductIdRoute: typeof ProductIdRoute
+  AccountIndexRoute: typeof AccountIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   OrderIdSuccessRoute: typeof OrderIdSuccessRoute
 }
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpcomingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/': {
+      id: '/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/': {
       id: '/collections/'
       path: '/collections'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   UpcomingRoute: UpcomingRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
   ProductIdRoute: ProductIdRoute,
+  AccountIndexRoute: AccountIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   OrderIdSuccessRoute: OrderIdSuccessRoute,
 }
