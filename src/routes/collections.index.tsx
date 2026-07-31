@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { PageShell } from "@/components/layout/page-shell";
 
-export const Route = createFileRoute("/collections")({
+export const Route = createFileRoute("/collections/")({
   head: () => ({
     meta: [
       { title: "All Yarns — Royal Wool" },
