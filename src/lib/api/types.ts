@@ -117,6 +117,11 @@ export interface MediaItem {
   subtitle: string;
   order: number;
   active: boolean;
+  /* Optional hero-slide fields — admin-managed, safe to be absent. */
+  eyebrow?: string;
+  cta_label?: string;
+  cta_href?: string;
+  align?: "left" | "right";
 }
 
 export type SiteMedia = Record<string, MediaItem[]>;
