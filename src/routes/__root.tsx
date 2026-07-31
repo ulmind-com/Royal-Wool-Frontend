@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "author", content: "Royal Wool" },
-      { name: "theme-color", content: "#0D0A12" },
+      { name: "theme-color", content: "#F7F3EA" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Royal Wool" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -29,7 +29,7 @@ export function AnnouncementTicker() {
 
   return (
     <div
-      className="relative overflow-hidden border-b border-border"
+      className="ink-section relative overflow-hidden border-b border-border"
       style={{ backgroundImage: "var(--dye-flow)" }}
       role="region"
       aria-label="Store announcements"

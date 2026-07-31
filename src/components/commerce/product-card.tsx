@@ -69,7 +69,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
           ) : null}
           {!stocked ? (
             <span
-              className="absolute inset-x-0 bottom-0 py-2 text-center font-data text-2xs text-foreground"
+              className="absolute inset-x-0 bottom-0 py-2 text-center font-data text-2xs text-fleece"
               style={{ backgroundColor: "color-mix(in oklab, var(--ink) 78%, transparent)" }}
             >
               Sold out
