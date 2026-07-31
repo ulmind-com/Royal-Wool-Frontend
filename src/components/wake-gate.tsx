@@ -53,7 +53,7 @@ export function WakeGate() {
         {!isError ? (
           <div
             className="mx-auto mt-8 h-px w-48 overflow-hidden"
-            style={{ backgroundColor: "color-mix(in oklab, var(--fleece) 14%, transparent)" }}
+            style={{ backgroundColor: "color-mix(in oklab, var(--ink) 14%, transparent)" }}
             aria-hidden
           >
             <div className="h-px w-1/3 animate-[thread-pull_1.6s_var(--ease-enter)_infinite] bg-marigold" />
@@ -73,7 +73,7 @@ export function WakeGate() {
               target="_blank"
               rel="noopener"
               data-cursor="link"
-              className="inline-flex items-center rounded-full border border-border px-5 py-2.5 font-data text-2xs text-fleece"
+              className="inline-flex items-center rounded-full border border-border px-5 py-2.5 font-data text-2xs text-foreground"
             >
               Order on WhatsApp
             </a>

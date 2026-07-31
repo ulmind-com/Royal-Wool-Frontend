@@ -24,9 +24,9 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-6xl font-light text-fleece">404</h1>
+        <h1 className="font-display text-6xl font-light text-foreground">404</h1>
         <p className="mt-4 font-data text-2xs text-marigold">A dropped stitch</p>
-        <p className="mt-3 text-fleece-dim">
+        <p className="mt-3 text-muted-foreground">
           This page unravelled. The yarn ball animation lands here in the 3D phase.
         </p>
         <div className="mt-8">
@@ -52,8 +52,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-3xl font-light text-fleece">This page didn't load</h1>
-        <p className="mt-3 text-fleece-dim">Something snagged. Retry, or head back to the shop.</p>
+        <h1 className="font-display text-3xl font-light text-foreground">This page didn't load</h1>
+        <p className="mt-3 text-muted-foreground">Something snagged. Retry, or head back to the shop.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => {
@@ -66,7 +66,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-data text-2xs text-fleece"
+            className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 font-data text-2xs text-foreground"
           >
             Go home
           </a>

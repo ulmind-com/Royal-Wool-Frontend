@@ -18,7 +18,7 @@ export function CategoryTiles() {
     <section data-thread-anchor="fibre" className="mt-20" aria-label="Shop by fibre">
       <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
         <p className="font-data text-2xs text-marigold">02 · Shop by fibre</p>
-        <h2 className="mt-3 font-display text-4xl font-light text-fleece">
+        <h2 className="mt-3 font-display text-4xl font-light text-foreground">
           Pick your fibre, then your shade
         </h2>
 
@@ -60,7 +60,7 @@ export function CategoryTiles() {
                     }}
                     aria-hidden
                   />
-                  <span className="absolute bottom-4 left-5 font-display text-2xl font-light text-fleece">
+                  <span className="absolute bottom-4 left-5 font-display text-2xl font-light text-foreground">
                     {c.name}
                   </span>
                 </Link>

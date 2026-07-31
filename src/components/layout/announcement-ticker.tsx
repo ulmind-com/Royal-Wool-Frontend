@@ -44,7 +44,7 @@ export function AnnouncementTicker() {
           {row.map((item, i) => (
             <span
               key={`${item}-${i}`}
-              className="flex shrink-0 items-center gap-10 whitespace-nowrap font-data text-2xs text-fleece/80"
+              className="flex shrink-0 items-center gap-10 whitespace-nowrap font-data text-2xs text-foreground/80"
             >
               {item}
               <span aria-hidden className="text-marigold">

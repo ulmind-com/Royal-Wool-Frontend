@@ -29,10 +29,10 @@ function OffersPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
       <p className="font-data text-2xs text-marigold">Offers</p>
-      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-fleece">
+      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-foreground">
         Coupons on the rack
       </h1>
-      <p className="mt-4 max-w-xl text-fleece-dim">
+      <p className="mt-4 max-w-xl text-muted-foreground">
         Tap a code to copy it, then paste it at checkout.
       </p>
 
@@ -79,12 +79,12 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
 
   return (
     <Glass variant="card" className="h-full">
-      <p className="font-display text-3xl font-light text-fleece">{headline}</p>
+      <p className="font-display text-3xl font-light text-foreground">{headline}</p>
       {coupon.description ? (
-        <p className="mt-2 text-sm text-fleece-dim">{coupon.description}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{coupon.description}</p>
       ) : null}
 
-      <ul className="mt-4 space-y-1 font-data text-2xs text-fleece-dim/80">
+      <ul className="mt-4 space-y-1 font-data text-2xs text-muted-foreground/80">
         {coupon.min_order ? <li>Min order {formatMoney(coupon.min_order)}</li> : null}
         {coupon.max_discount ? <li>Up to {formatMoney(coupon.max_discount)} off</li> : null}
         {coupon.first_order_only ? <li>First order only</li> : null}
@@ -96,7 +96,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
       {/* tear-off edge */}
       <div
         className="my-5 border-t border-dashed"
-        style={{ borderColor: "color-mix(in oklab, var(--fleece) 22%, transparent)" }}
+        style={{ borderColor: "color-mix(in oklab, var(--ink) 22%, transparent)" }}
         aria-hidden
       />
 
@@ -105,7 +105,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
         onClick={() => void copy()}
         data-cursor="link"
         aria-label={`Copy coupon code ${coupon.code}`}
-        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-data text-2xs text-fleece transition-colors hover:border-marigold hover:text-marigold"
+        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-data text-2xs text-foreground transition-colors hover:border-marigold hover:text-marigold"
       >
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         {copied ? "Copied" : coupon.code}

@@ -44,15 +44,15 @@ function CategoryPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
-      <nav aria-label="Breadcrumb" className="font-data text-2xs text-fleece-dim/70">
-        <Link to="/collections" data-cursor="link" className="hover:text-fleece">
+      <nav aria-label="Breadcrumb" className="font-data text-2xs text-muted-foreground/70">
+        <Link to="/collections" data-cursor="link" className="hover:text-foreground">
           Collections
         </Link>
         <span aria-hidden> / </span>
-        <span className="text-fleece-dim">{title}</span>
+        <span className="text-muted-foreground">{title}</span>
       </nav>
 
-      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light capitalize tracking-[-0.03em] text-fleece">
+      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light capitalize tracking-[-0.03em] text-foreground">
         {title}
       </h1>
 
@@ -64,7 +64,7 @@ function CategoryPage() {
                 to="/collections/$slug"
                 params={{ slug: c.slug }}
                 data-cursor="link"
-                className="inline-flex rounded-full border border-border px-4 py-2 font-data text-2xs text-fleece-dim transition-colors hover:text-fleece"
+                className="inline-flex rounded-full border border-border px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {c.name}
               </Link>

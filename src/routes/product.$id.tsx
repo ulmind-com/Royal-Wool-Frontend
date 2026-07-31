@@ -108,7 +108,7 @@ function ProductPage() {
             />
           )}
         </div>
-        <p className="mt-3 font-data text-2xs text-fleece-dim/70">
+        <p className="mt-3 font-data text-2xs text-muted-foreground/70">
           The 3D yarn-ball viewer replaces this frame in the 3D phase.
         </p>
 
@@ -139,17 +139,17 @@ function ProductPage() {
         {product.brand ? (
           <p className="font-data text-2xs text-marigold">{product.brand}</p>
         ) : null}
-        <h1 className="mt-3 font-display text-4xl sm:text-5xl font-light tracking-[-0.03em] text-fleece">
+        <h1 className="mt-3 font-display text-4xl sm:text-5xl font-light tracking-[-0.03em] text-foreground">
           {product.title}
         </h1>
 
         <Glass variant="panel" className="mt-8">
           <div className="flex items-baseline gap-3">
-            <span className="font-display text-3xl font-light text-fleece">
+            <span className="font-display text-3xl font-light text-foreground">
               {formatMoney(price)}
             </span>
             {product.struck_price && product.struck_price > price ? (
-              <span className="font-data text-2xs text-fleece-dim/70 line-through">
+              <span className="font-data text-2xs text-muted-foreground/70 line-through">
                 {formatMoney(product.struck_price)}
               </span>
             ) : null}
@@ -162,7 +162,7 @@ function ProductPage() {
 
           {colors.length ? (
             <fieldset className="mt-8">
-              <legend className="font-data text-2xs text-fleece-dim">
+              <legend className="font-data text-2xs text-muted-foreground">
                 Colour{color ? ` · ${color.name}` : ""}
               </legend>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -193,7 +193,7 @@ function ProductPage() {
 
           {sizes.length ? (
             <fieldset className="mt-6">
-              <legend className="font-data text-2xs text-fleece-dim">Weight / pack</legend>
+              <legend className="font-data text-2xs text-muted-foreground">Weight / pack</legend>
               <div className="mt-3 flex flex-wrap gap-2">
                 {sizes.map((s) => (
                   <button
@@ -206,8 +206,8 @@ function ProductPage() {
                     className={cn(
                       "rounded-full border px-4 py-2 font-data text-2xs transition-colors disabled:line-through disabled:opacity-40",
                       s.size === size?.size
-                        ? "border-marigold text-fleece"
-                        : "border-border text-fleece-dim hover:text-fleece",
+                        ? "border-marigold text-foreground"
+                        : "border-border text-muted-foreground hover:text-foreground",
                     )}
                   >
                     {s.size}
@@ -217,7 +217,7 @@ function ProductPage() {
             </fieldset>
           ) : null}
 
-          <p className="mt-6 font-data text-2xs text-fleece-dim">
+          <p className="mt-6 font-data text-2xs text-muted-foreground">
             {stock === 0
               ? "Sold out in this combination"
               : stock <= (product.low_stock_threshold ?? 5)
@@ -240,7 +240,7 @@ function ProductPage() {
               target="_blank"
               rel="noopener"
               data-cursor="link"
-              className="inline-flex items-center rounded-full border border-border px-6 py-3 font-data text-2xs text-fleece"
+              className="inline-flex items-center rounded-full border border-border px-6 py-3 font-data text-2xs text-foreground"
             >
               Ask on WhatsApp
             </a>
@@ -250,11 +250,11 @@ function ProductPage() {
         {product.description ? (
           <div className="mt-10">
             <p className="font-data text-2xs text-marigold">Details</p>
-            <p className="mt-3 whitespace-pre-line text-fleece-dim">{product.description}</p>
+            <p className="mt-3 whitespace-pre-line text-muted-foreground">{product.description}</p>
           </div>
         ) : null}
 
-        <p className="mt-8 font-data text-2xs text-fleece-dim/70">
+        <p className="mt-8 font-data text-2xs text-muted-foreground/70">
           {product.returnable === false
             ? "This item is not returnable."
             : `Returnable within ${product.return_days ?? returnWindowDays ?? 7} days.`}
