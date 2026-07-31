@@ -7,24 +7,6 @@ export const BRAND = {
   tagline: "Premium knitting & crochet yarn, dyed in small batches.",
 } as const;
 
-/**
- * Mega-menu placeholder columns for Phase 1.
- * Phase 4 replaces this with GET /categories/tree.
- */
-export const NAV_PLACEHOLDER = [
-  {
-    label: "Shop by Fibre",
-    items: ["Acrylic", "Cotton", "Wool Blend", "Bamboo", "Chenille"],
-  },
-  {
-    label: "Shop by Craft",
-    items: ["Knitting", "Crochet", "Amigurumi", "Macramé", "Weaving"],
-  },
-  {
-    label: "Shop by Weight",
-    items: ["Lace", "Fingering", "DK", "Worsted", "Chunky"],
-  },
-] as const;
 
 export const POLICY_LINKS = [
   { to: "/about", label: "About" },
