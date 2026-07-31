@@ -17,6 +17,7 @@ import { Route as UpcomingRouteImport } from './routes/upcoming'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AccountReturnsRouteImport } from './routes/account.returns'
+import { Route as AccountWishlistRouteImport } from './routes/account.wishlist'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -62,6 +63,11 @@ const AccountReturnsRoute = AccountReturnsRouteImport.update({
   path: '/account/returns',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountWishlistRoute = AccountWishlistRouteImport.update({
+  id: '/account/wishlist',
+  path: '/account/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   id: '/collections/',
   path: '/collections/',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/upcoming': typeof UpcomingRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
+  '/account/wishlist': typeof AccountWishlistRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account/': typeof AccountIndexRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/upcoming': typeof UpcomingRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
+  '/account/wishlist': typeof AccountWishlistRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account': typeof AccountIndexRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/upcoming': typeof UpcomingRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
+  '/account/wishlist': typeof AccountWishlistRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account/': typeof AccountIndexRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/account/orders'
     | '/account/returns'
+    | '/account/wishlist'
     | '/collections/$slug'
     | '/product/$id'
     | '/account/'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/account/orders'
     | '/account/returns'
+    | '/account/wishlist'
     | '/collections/$slug'
     | '/product/$id'
     | '/account'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/account/orders'
     | '/account/returns'
+    | '/account/wishlist'
     | '/collections/$slug'
     | '/product/$id'
     | '/account/'
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   UpcomingRoute: typeof UpcomingRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountReturnsRoute: typeof AccountReturnsRoute
+  AccountWishlistRoute: typeof AccountWishlistRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
   ProductIdRoute: typeof ProductIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountReturnsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/wishlist': {
+      id: '/account/wishlist'
+      path: '/account/wishlist'
+      fullPath: '/account/wishlist'
+      preLoaderRoute: typeof AccountWishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/': {
       id: '/collections/'
       path: '/collections'
@@ -283,6 +303,7 @@ const rootRouteChildren: RootRouteChildren = {
   UpcomingRoute: UpcomingRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountReturnsRoute: AccountReturnsRoute,
+  AccountWishlistRoute: AccountWishlistRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
   ProductIdRoute: ProductIdRoute,
   AccountIndexRoute: AccountIndexRoute,
