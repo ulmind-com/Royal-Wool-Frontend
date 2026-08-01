@@ -6,6 +6,7 @@ import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
 import { ProductRail } from "@/components/commerce/product-rail";
 import { SpotlightSection } from "@/components/commerce/spotlight-section";
 import { YarnFanCarousel } from "@/components/commerce/yarn-fan-carousel";
+import { YarnStackScroll } from "@/components/commerce/yarn-stack-scroll";
 import { YarnWeightRail } from "@/components/commerce/yarn-weight-rail";
 
 import { UpcomingRail } from "@/components/commerce/upcoming-rail";
@@ -84,6 +85,8 @@ function Home() {
       <SpotlightSection />
 
       <YarnWeightRail />
+
+      <YarnStackScroll />
 
       <YarnFanCarousel />
 
