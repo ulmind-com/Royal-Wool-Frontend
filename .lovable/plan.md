@@ -1,17 +1,16 @@
 ## Problem
 
-On the live home page the hero panel is too tall and its content overruns the frame — the "See what's coming" button is cut off at the bottom edge, and the trust cards (Quality guarantee / Safe for babies / Pan-India delivery / Loved by crafters) get squeezed right up against the hero with no breathing room. The headline also sits on a scrim that's too weak where the yarn image is light, so the copy reads poorly.
+The slide progress dots sit at `bottom-6 left-6/sm:left-10/lg:left-16` — exactly under the "Shop all yarns" button. The copy column's `pb-12` isn't enough, so the dashes collide with the CTA and look cramped/squashed.
 
-## Fix (frontend only, `hero-slider.tsx` + `index.tsx`)
+## Fix (frontend only, `src/components/commerce/hero-slider.tsx`)
 
-1. **Height + fit** — replace `clamp(420px, 62vh, 600px)` with a shorter, more controlled `clamp(380px, 52vh, 520px)`, and make the copy column scroll-safe: cap the headline at `text-3xl / sm:text-4xl / lg:text-5xl` so eyebrow + headline + subtitle + button always fit inside the frame with padding to spare. Reduce vertical rhythm (`mt-4/mt-5/mt-8` → `mt-3/mt-4/mt-6`).
+1. **Move the dots next to the arrows** — group the progress dots and the prev/next arrows into a single bottom-right control cluster (`absolute bottom-5 right-5 sm:bottom-6 sm:right-6`, dots then arrows with a divider gap). This removes the overlap with the CTA entirely and reads as one deliberate control unit.
+2. **Give the copy column room back** — reduce the now-unneeded bottom offset (`pb-12` → `pb-8`) so the headline block sits vertically centred instead of pushed up.
+3. **Polish the dots** — slightly taller track (`h-1.5`), rounded, with the active one filling as a timer; keep the same aria labels and `aria-current` behaviour.
+4. **Mobile** — on small screens the cluster stays bottom-right; dots shrink (active 40px / inactive 16px) so the row never wraps at 390px width.
 
-2. **Readability** — strengthen the left-weighted scrim (opaque fleece to ~52% width, then fade), and add a subtle bottom fade so the dots/arrows and button never sit on busy image detail. Keep the image focal point at `object-[80%_center]` so the yarn stays visible on the right.
-
-3. **Trust bar spacing** — give the trust section real top padding (`pt-10`) instead of butting against the hero, and let the cards breathe: consistent card height, tighter icon-to-title spacing, and `sm:grid-cols-2 lg:grid-cols-4` retained with a slightly larger gap so the two-line copy ("Consistent gauge, batch-matched dye lots") no longer looks cramped.
-
-4. **Mobile** — on small screens the scrim becomes a full-width vertical gradient (top-to-bottom) instead of left-to-right, so the headline is legible over the whole image.
+No data, motion timing, or admin-driven content changes.
 
 ## Verification
 
-Playwright screenshots of `/` at desktop (1280) and mobile (390) widths to confirm the button is fully visible, the headline is legible on all three slides, and the trust cards are not clipped.
+Playwright screenshots of `/` at 1280px and 390px widths confirming no overlap between the CTA and the dots, and that the arrows + dots row fits inside the frame.
