@@ -10,13 +10,18 @@ import type { CategoryNode } from "@/lib/api/types";
 
 /**
  * "Shop by Category" — image tile with the name underneath, one per top-level
- * category from /categories/tree. Everything (order, image, name, how many
- * tiles) is admin-controlled; the fallback photos in /public/assets/categories
- * only fill in for categories that don't have an image uploaded yet.
+ * category from /categories/tree. Order, name, count of tiles and links stay
+ * admin-driven.
+ *
+ * Images: the backend currently still returns the old clothing-store photos,
+ * so the wool photos in /public/assets/categories are used for the tiles.
+ * Once real yarn images are uploaded from the admin panel, flip
+ * PREFER_LOCAL_IMAGES to false and the API image takes over automatically.
  */
 
+const PREFER_LOCAL_IMAGES = true;
 
-const FALLBACK_IMAGES = [
+const CATEGORY_IMAGES = [
   "/assets/categories/yarn-pink.jpg",
   "/assets/categories/yarn-rust.jpg",
   "/assets/categories/yarn-coral.jpg",
@@ -24,8 +29,11 @@ const FALLBACK_IMAGES = [
 ];
 
 function tileImage(category: CategoryNode, index: number): string {
-  return category.image ?? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]!;
+  const local = CATEGORY_IMAGES[index % CATEGORY_IMAGES.length]!;
+  if (PREFER_LOCAL_IMAGES) return local;
+  return category.image ?? local;
 }
+
 
 function CategoryTile({
   category,
