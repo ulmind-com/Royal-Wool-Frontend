@@ -619,6 +619,8 @@ export default function CircularGallery({
   font = "600 26px Inter, system-ui, sans-serif",
   scrollSpeed = 2,
   scrollEase = 0.05,
+  autoplay = true,
+  autoplayDelay = 3500,
   onItemClick,
   className,
   ariaLabel = "Draggable product gallery",
@@ -630,6 +632,8 @@ export default function CircularGallery({
   font?: string;
   scrollSpeed?: number;
   scrollEase?: number;
+  autoplay?: boolean;
+  autoplayDelay?: number;
   onItemClick?: (index: number) => void;
   className?: string;
   ariaLabel?: string;
@@ -652,13 +656,25 @@ export default function CircularGallery({
         font,
         scrollSpeed,
         scrollEase,
+        autoplay,
+        autoplayDelay,
         onItemClick: (i) => clickRef.current?.(i),
       });
     } catch (error) {
       console.error("CircularGallery: WebGL unavailable", error);
     }
     return () => app?.destroy();
-  }, [items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase]);
+  }, [
+    items,
+    bend,
+    textColor,
+    borderRadius,
+    font,
+    scrollSpeed,
+    scrollEase,
+    autoplay,
+    autoplayDelay,
+  ]);
 
   return (
     <div
