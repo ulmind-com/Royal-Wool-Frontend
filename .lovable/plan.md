@@ -1,16 +1,20 @@
-## Problem
+## Goal
 
-The slide progress dots sit at `bottom-6 left-6/sm:left-10/lg:left-16` — exactly under the "Shop all yarns" button. The copy column's `pb-12` isn't enough, so the dashes collide with the CTA and look cramped/squashed.
+Replace the four glass trust **cards** on the home page with a clean, borderless icon row — icon on top, bold title under it, one line of supporting copy below — matching the reference screenshot but in Royal Wool's own type and palette.
 
-## Fix (frontend only, `src/components/commerce/hero-slider.tsx`)
+## Change (frontend only)
 
-1. **Move the dots next to the arrows** — group the progress dots and the prev/next arrows into a single bottom-right control cluster (`absolute bottom-5 right-5 sm:bottom-6 sm:right-6`, dots then arrows with a divider gap). This removes the overlap with the CTA entirely and reads as one deliberate control unit.
-2. **Give the copy column room back** — reduce the now-unneeded bottom offset (`pb-12` → `pb-8`) so the headline block sits vertically centred instead of pushed up.
-3. **Polish the dots** — slightly taller track (`h-1.5`), rounded, with the active one filling as a timer; keep the same aria labels and `aria-current` behaviour.
-4. **Mobile** — on small screens the cluster stays bottom-right; dots shrink (active 40px / inactive 16px) so the row never wraps at 390px width.
+`src/routes/index.tsx` — the `TRUST` section:
 
-No data, motion timing, or admin-driven content changes.
+1. **Drop the cards.** Remove `<Glass variant="card">`, `min-h-[9rem]`, borders and backgrounds. Each item becomes a plain centred stack on the page background.
+2. **Layout.** 4-up on desktop (`grid-cols-4`), 2-up on tablet, 2-up on mobile with tighter type. Generous vertical rhythm (`py-14 sm:py-16`) and a hairline divider above/below the row so it reads as a deliberate trust band rather than floating text.
+3. **Icons.** Keep the existing lucide icons (BadgeCheck, Baby, Truck, Heart) at a larger size (~28px), `strokeWidth={1.5}`, in `text-marigold`, centred. Optional subtle hover lift on the whole item.
+4. **Typography.** Title in `font-display` (not the mono `font-data`) at `text-base sm:text-lg`, `text-foreground`; sub-line in `text-sm text-muted-foreground`, max-width constrained and centred so it wraps to at most two lines.
+5. **Vertical hairlines** between columns on `lg` (`lg:divide-x divide-border/60`) for the premium editorial feel — omitted on mobile.
+6. Keep the existing copy and `data-thread-anchor="trust"` / aria-label untouched. No `Glass` import removal issues elsewhere — it's still used by other sections in the file.
+
+Note: the reference shows an OEKO-TEX badge and "60,000+ Customers". I'll keep your current wording/icons unless you want those exact claims swapped in.
 
 ## Verification
 
-Playwright screenshots of `/` at 1280px and 390px widths confirming no overlap between the CTA and the dots, and that the arrows + dots row fits inside the frame.
+Playwright screenshots of `/` at 1280px and 390px confirming no clipping, even baselines, and readable two-line wraps.
