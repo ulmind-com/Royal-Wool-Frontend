@@ -1,20 +1,25 @@
 ## Goal
 
-Replace the four glass trust **cards** on the home page with a clean, borderless icon row — icon on top, bold title under it, one line of supporting copy below — matching the reference screenshot but in Royal Wool's own type and palette.
+Remove the current "Shop by fibre" tiles from the home page and build a new, premium **Shop by Category** section: image tile on top, category name below, click opens that category's own page. Fully driven by the admin panel — it renders however many categories exist (4 shown now), no hardcoded list.
 
-## Change (frontend only)
+## What gets built
 
-`src/routes/index.tsx` — the `TRUST` section:
+**New component `src/components/commerce/category-showcase.tsx`**
+- Reads top-level categories from `GET /categories/tree` (existing `categoryTreeQuery`), sorted by the admin `order` field, `parent_id === null` only.
+- Each tile: square/portrait image area using `category.image` (admin-uploaded, honours `image_scale`), name centered underneath in the display font, plus a small item-count/"Explore" line.
+- Premium treatment: soft fleece surface with hairline border, dye-glow radial behind the yarn ball, gentle scale + lift on hover, marigold underline sweep on the name, staggered fade-up on scroll-in (Framer Motion, respects reduced motion).
+- Grid: 2 cols mobile, 4 cols desktop, auto-flowing so 3, 5, 6+ categories still look balanced.
+- Loading skeletons, error state and empty state via existing `data-state` components.
+- Each tile is a `<Link to="/collections/$slug" params={{ slug }}>` — the existing category page already lists that category's products with subcategory chips, so clicking works for every category with no extra routes.
 
-1. **Drop the cards.** Remove `<Glass variant="card">`, `min-h-[9rem]`, borders and backgrounds. Each item becomes a plain centred stack on the page background.
-2. **Layout.** 4-up on desktop (`grid-cols-4`), 2-up on tablet, 2-up on mobile with tighter type. Generous vertical rhythm (`py-14 sm:py-16`) and a hairline divider above/below the row so it reads as a deliberate trust band rather than floating text.
-3. **Icons.** Keep the existing lucide icons (BadgeCheck, Baby, Truck, Heart) at a larger size (~28px), `strokeWidth={1.5}`, in `text-marigold`, centred. Optional subtle hover lift on the whole item.
-4. **Typography.** Title in `font-display` (not the mono `font-data`) at `text-base sm:text-lg`, `text-foreground`; sub-line in `text-sm text-muted-foreground`, max-width constrained and centred so it wraps to at most two lines.
-5. **Vertical hairlines** between columns on `lg` (`lg:divide-x divide-border/60`) for the premium editorial feel — omitted on mobile.
-6. Keep the existing copy and `data-thread-anchor="trust"` / aria-label untouched. No `Glass` import removal issues elsewhere — it's still used by other sections in the file.
+**Fallback visuals** — if a category has no image yet in the admin panel, the tile shows a tinted yarn-ball placeholder. The four uploaded yarn photos get registered as CDN assets and used as ordered fallbacks so the section looks finished today; the moment the admin sets a category image, that image wins.
 
-Note: the reference shows an OEKO-TEX badge and "60,000+ Customers". I'll keep your current wording/icons unless you want those exact claims swapped in.
+**Home page (`src/routes/index.tsx`)**
+- Delete the `<CategoryTiles />` usage and the old "02 · Shop by fibre" section; drop `src/components/commerce/category-tiles.tsx`.
+- Insert `<CategoryShowcase />` in its place, heading "Shop by Category" with a short supporting line and a "View all collections" link.
 
-## Verification
+## Technical notes
 
-Playwright screenshots of `/` at 1280px and 390px confirming no clipping, even baselines, and readable two-line wraps.
+- No backend changes: uses `categoryTreeQuery` (`/categories/tree`) which already returns `id, name, slug, image, order, image_scale, children`.
+- Styling stays on semantic tokens (`foreground`, `muted-foreground`, `border`, `marigold`, `--dye-flow`) — no hardcoded colors.
+- Images lazy-loaded with `alt` = category name; section uses `<h2>` + `<ul>/<li>` semantics.
