@@ -326,6 +326,10 @@ class App {
   private moved = 0;
   private onCheckDebounce: () => void;
   private ro?: ResizeObserver;
+  private autoTimer?: ReturnType<typeof setInterval>;
+  private resumeTimer?: ReturnType<typeof setTimeout>;
+  private hovered = false;
+  private autoEnabled = false;
 
   constructor(
     private container: HTMLElement,
@@ -343,7 +347,62 @@ class App {
     this.createMedias();
     this.update();
     this.addEventListeners();
+    this.setupAutoplay();
   }
+
+  /** Glides one card out to the left and pulls the next one in from the right. */
+  private setupAutoplay() {
+    if (!this.options.autoplay) return;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+    this.autoEnabled = true;
+    this.startAutoplay();
+  }
+
+  private startAutoplay() {
+    if (!this.autoEnabled || this.autoTimer) return;
+    this.autoTimer = setInterval(() => {
+      if (this.isDown || this.hovered || document.hidden) return;
+      const first = this.medias[0];
+      if (!first?.width) return;
+      // Slower ease while autoplaying keeps the drift premium and calm.
+      this.scroll.ease = Math.min(this.options.scrollEase, 0.028);
+      this.scroll.target -= first.width;
+      this.onCheck();
+    }, this.options.autoplayDelay);
+  }
+
+  private stopAutoplay() {
+    if (this.autoTimer) {
+      clearInterval(this.autoTimer);
+      this.autoTimer = undefined;
+    }
+  }
+
+  /** Any manual gesture wins; autoplay picks up again shortly after. */
+  private pauseForInteraction() {
+    if (!this.autoEnabled) return;
+    this.scroll.ease = this.options.scrollEase;
+    this.stopAutoplay();
+    if (this.resumeTimer) clearTimeout(this.resumeTimer);
+    this.resumeTimer = setTimeout(() => this.startAutoplay(), 2500);
+  }
+
+  private onEnter = () => {
+    this.hovered = true;
+  };
+
+  private onLeave = () => {
+    this.hovered = false;
+  };
+
+  private onVisibility = () => {
+    if (document.hidden) this.stopAutoplay();
+    else this.startAutoplay();
+  };
+
 
   private createRenderer() {
     this.renderer = new Renderer({
