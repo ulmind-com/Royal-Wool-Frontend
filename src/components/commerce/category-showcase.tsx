@@ -122,7 +122,8 @@ function CategoryTile({
           </h3>
           <p className="mt-1.5 font-data text-2xs text-muted-foreground">{tile.note}</p>
         </div>
-      </Link>
+      </TileLink>
+
     </motion.li>
   );
 }
