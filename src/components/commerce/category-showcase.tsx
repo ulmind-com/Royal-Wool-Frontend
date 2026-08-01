@@ -39,8 +39,8 @@ function CategoryTile({
 
   return (
     <motion.li
-      initial={reduced ? undefined : { opacity: 0, y: 26 }}
-      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+      initial={reduced ? false : { opacity: 0, y: 26 }}
+      whileInView={reduced ? {} : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.6, delay: Math.min(index, 5) * 0.08, ease: [0.22, 1, 0.36, 1] }}
     >
