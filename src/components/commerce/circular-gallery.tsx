@@ -576,6 +576,9 @@ class App {
     this.container.addEventListener("touchmove", this.onTouchMove, { passive: true });
     this.container.addEventListener("touchend", this.onTouchUp);
     this.container.addEventListener("keydown", this.onKeyDown);
+    this.container.addEventListener("mouseenter", this.onEnter);
+    this.container.addEventListener("mouseleave", this.onLeave);
+    document.addEventListener("visibilitychange", this.onVisibility);
     // Drag can leave the canvas; finish the gesture wherever it ends.
     window.addEventListener("mousemove", this.onTouchMove);
     window.addEventListener("mouseup", this.onTouchUp);
@@ -588,12 +591,17 @@ class App {
 
   destroy() {
     window.cancelAnimationFrame(this.raf);
+    this.stopAutoplay();
+    if (this.resumeTimer) clearTimeout(this.resumeTimer);
     this.container.removeEventListener("wheel", this.onWheel);
     this.container.removeEventListener("mousedown", this.onTouchDown);
     this.container.removeEventListener("touchstart", this.onTouchDown);
     this.container.removeEventListener("touchmove", this.onTouchMove);
     this.container.removeEventListener("touchend", this.onTouchUp);
     this.container.removeEventListener("keydown", this.onKeyDown);
+    this.container.removeEventListener("mouseenter", this.onEnter);
+    this.container.removeEventListener("mouseleave", this.onLeave);
+    document.removeEventListener("visibilitychange", this.onVisibility);
     window.removeEventListener("mousemove", this.onTouchMove);
     window.removeEventListener("mouseup", this.onTouchUp);
     window.removeEventListener("resize", this.onResize);
