@@ -122,7 +122,7 @@ export function HeroSlider() {
           />
 
           {/* Copy layer */}
-          <div className="relative flex h-full items-center px-6 pb-12 sm:px-10 lg:px-16">
+          <div className="relative flex h-full items-center px-6 pb-8 sm:px-10 lg:px-16">
             <AnimatePresence mode="wait">
               <div key={slide.id} className="max-w-[34rem] min-w-0">
                 <motion.p {...rise(0)} className="font-data text-2xs text-marigold">
@@ -169,10 +169,10 @@ export function HeroSlider() {
             </AnimatePresence>
           </div>
 
-          {/* Controls */}
+          {/* Controls — dots + arrows as one bottom-right cluster */}
           {count > 1 ? (
-            <>
-              <div className="absolute bottom-6 left-6 flex items-center gap-3 sm:left-10 lg:left-16">
+            <div className="absolute bottom-5 right-5 flex items-center gap-4 sm:bottom-6 sm:right-6 sm:gap-5">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {slides.map((s, i) => (
                   <button
                     key={s.id}
@@ -181,8 +181,8 @@ export function HeroSlider() {
                     aria-label={`Go to slide ${i + 1}`}
                     aria-current={i === index}
                     data-cursor="link"
-                    className="h-1 overflow-hidden rounded-full bg-foreground/20 transition-all duration-500"
-                    style={{ width: i === index ? 56 : 20 }}
+                    className="h-1.5 shrink-0 overflow-hidden rounded-full bg-foreground/20 transition-all duration-500"
+                    style={{ width: i === index ? 40 : 16 }}
                   >
                     <span
                       className="block h-full rounded-full bg-madder"
@@ -195,7 +195,7 @@ export function HeroSlider() {
                 ))}
               </div>
 
-              <div className="absolute bottom-5 right-5 flex gap-2 sm:bottom-6 sm:right-6">
+              <div className="flex gap-2">
                 {[
                   { dir: -1, Icon: ChevronLeft, label: "Previous slide" },
                   { dir: 1, Icon: ChevronRight, label: "Next slide" },
@@ -206,14 +206,15 @@ export function HeroSlider() {
                     onClick={() => go(index + dir)}
                     aria-label={label}
                     data-cursor="link"
-                    className="grid h-10 w-10 place-items-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-colors hover:border-marigold hover:text-marigold"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-colors hover:border-marigold hover:text-marigold"
                   >
                     <Icon className="h-4 w-4" aria-hidden />
                   </button>
                 ))}
               </div>
-            </>
+            </div>
           ) : null}
+
         </div>
       </div>
     </section>
