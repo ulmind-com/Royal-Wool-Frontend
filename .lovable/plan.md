@@ -1,28 +1,32 @@
 ## Goal
 
-"Shop by Category" section-এ এখন backend-এর পুরনো clothing category (Mens/Womens…) দেখাচ্ছে। এখন থেকে frontend-এ wool-এর নিজের ৪টা category হার্ডকোড করা হবে — তোর দেওয়া ৪টা wool ছবি সহ। পরে backend ready হলে এক লাইনে API-তে ফিরিয়ে দেওয়া যাবে।
+Home page-এর "New Arrivals" rail-টা সরিয়ে সেখানে React Bits-এর **CircularGallery** (WebGL, `ogl`) বসানো — তোর দেওয়া yarn ছবিগুলো দিয়ে, প্রতিটা tile dynamic ও click করলে সেই product-এর page খুলবে।
 
-## ৪টি wool category (ছবি অনুযায়ী)
+## What gets built
 
-| Image | Category name | Subtext |
-|---|---|---|
-| yarn-pink.jpg | Cotton Delight | Soft cotton · 8 ply |
-| yarn-rust.jpg | Acrylic Rainbow | Multi-tone acrylic |
-| yarn-coral.jpg | Aroma Cotton | Skin-friendly cotton |
-| yarn-yellow.jpg | Hobby India | Everyday knitting wool |
+1. **Dependency**: `ogl` install।
 
-নাম/subtext পছন্দ না হলে বলে দিলে বদলে দেব — এগুলো এক জায়গায় একটা list-এ থাকবে, বদলানো সহজ।
+2. **Component**: `src/components/commerce/circular-gallery.tsx` — React Bits-এর source, project-এর জন্য adapted:
+   - TypeScript + typed props (`items: { image, text, href? }[]`)
+   - CSS inline/Tailwind-এ (আলাদা `.css` file না, Tailwind v4 setup-এর সাথে মেলাতে)
+   - **Click → product page**: pointer-down/up-এর distance ছোট হলে (drag নয়, tap) সেই index-এর item-এর `href`-এ router navigate। Media-র x-position থেকে কোন card-এ click হলো তা হিসাব করা হবে।
+   - **Scroll fix**: original component global `wheel` listener লাগায়, যা page scroll-কে hijack করে। এখানে wheel/drag শুধু container-এর ভিতরে bind হবে, আর reduced-motion থাকলে RAF loop বন্ধ থাকবে — বাকি site-এর Lenis smooth scroll অটুট থাকবে।
+   - SSR-safe: `<ClientOnly>`/mount-gate, WebGL না থাকলে graceful fallback (নিচের point 4)।
 
-## Changes
+3. **Assets**: তোর দেওয়া yarn ছবিগুলো (Cotton Candy black/blue/lilac, Cotton Delight coral/pink/rust, Hobby India red/yellow/green) Lovable asset pointer হিসেবে `src/assets/`-এ যোগ হবে — repo-তে binary copy হবে না।
 
-1. `src/data/wool-categories.ts` (new) — ৪টা entry: `name`, `slug`, `image`, `blurb`, `order`. একটাই source of truth।
-2. `src/components/commerce/category-showcase.tsx`
-   - API query (`categoryTreeQuery`)-এর উপর নির্ভরতা এই section থেকে সরানো; static list রেন্ডার হবে (loading/error state আর লাগবে না, তাই section সাথে সাথেই দেখাবে)।
-   - বর্তমান premium tile design (dye glow, hover lift, arrow badge, underline, staggered fade-up) অপরিবর্তিত থাকবে।
-   - উপরে স্পষ্ট comment: backend-এ আসল wool category seed হলে `USE_STATIC_CATEGORIES = false` করলেই `/categories/tree` আবার নিয়ন্ত্রণ নেবে (API branch কোডে রাখা হবে, মুছবে না)।
-3. Click behaviour — tile → `/collections/$slug`; backend-এ ওই slug না থাকলে সেই পেজ খালি দেখাবে, তাই আপাতত প্রতিটা tile-এর link যাবে `/search?q=<category name>`-এ, যেন এখনই relevant product দেখায়। Backend ready হলে static branch off করলেই আবার asol collection page-এ যাবে।
+4. **Section**: `src/components/commerce/new-arrivals-gallery.tsx`
+   - Data source: `productsQuery({ sort: "newest", limit: 12 })` — API থেকে আসা product-এর title + image + `/product/$id` link ব্যবহার হবে (পুরোপুরি dynamic, admin panel থেকে control)।
+   - যতক্ষণ backend-এ আসল yarn product নেই, ততক্ষণ তোর ছবিগুলো fallback হিসেবে দেখাবে (category showcase-এ যেমন `PREFER_LOCAL_IMAGES` flag আছে, একইভাবে একটা flag থাকবে যাতে পরে backend ready হলে switch করা যায়)।
+   - Heading: `03 · Fresh off the winder` / **New arrivals** + "View all" link — বর্তমান rail-এর style ধরে রাখা হবে।
+   - Height ~560px desktop / ~420px mobile, light theme-এর সাথে মিলিয়ে `textColor` = ink token-এর hex, `bend={3}`, `borderRadius={0.05}`, `scrollEase={0.02}`।
+   - WebGL unavailable / reduced motion হলে existing `ProductRail`-এর grid fallback দেখাবে।
 
-## Notes
+5. **Wire-up**: `src/routes/index.tsx`-এ প্রথম `<ProductRail anchor="sections" … sort:newest>` সরিয়ে `<NewArrivalsGallery />` বসানো। Best sellers rail যেমন আছে তেমনই থাকবে।
 
-- ছবিগুলো ইতিমধ্যে `public/assets/categories/` (pink, rust, coral, yellow) আছে, নতুন upload লাগবে না।
-- অন্য কোনো section (hero, trust band, upcoming, rails) ছোঁয়া হবে না।
+## Technical notes
+
+- `ogl` pure-JS WebGL, edge/SSR bundle-এ যাবে না কারণ component client-only import হবে।
+- Font labels-এর জন্য project-এর display font ব্যবহার হবে (`fontUrl` দিয়ে Google Fonts stylesheet), তাই canvas label আর site typography মিলবে।
+- Cleanup: unmount-এ RAF cancel + listeners removed + canvas removed (source-এর `destroy()` ধরে রাখা হবে)।
+- Verification: Playwright-এ home page load করে canvas render, drag, এবং একটা tile click করে `/product/...`-এ navigation check করা হবে; console error zero হতে হবে।
