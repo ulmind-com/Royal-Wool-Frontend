@@ -8,19 +8,20 @@ import { useReducedMotion } from "@/hooks/use-motion";
 import { categoryTreeQuery } from "@/lib/api/queries";
 import type { CategoryNode } from "@/lib/api/types";
 
-import fallback1 from "@/assets/cat-fallback-1.jpg.asset.json";
-import fallback2 from "@/assets/cat-fallback-2.jpg.asset.json";
-import fallback3 from "@/assets/cat-fallback-3.jpg.asset.json";
-import fallback4 from "@/assets/cat-fallback-4.jpg.asset.json";
-
 /**
  * "Shop by Category" — image tile with the name underneath, one per top-level
  * category from /categories/tree. Everything (order, image, name, how many
- * tiles) is admin-controlled; the fallback photos only fill in for categories
- * that don't have an image uploaded yet.
+ * tiles) is admin-controlled; the fallback photos in /public/assets/categories
+ * only fill in for categories that don't have an image uploaded yet.
  */
 
-const FALLBACK_IMAGES = [fallback1.url, fallback2.url, fallback3.url, fallback4.url];
+
+const FALLBACK_IMAGES = [
+  "/assets/categories/yarn-red.jpg",
+  "/assets/categories/yarn-pink.jpg",
+  "/assets/categories/yarn-green.jpg",
+  "/assets/categories/yarn-yellow.jpg",
+];
 
 function tileImage(category: CategoryNode, index: number): string {
   return category.image ?? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]!;
