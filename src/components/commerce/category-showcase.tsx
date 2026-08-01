@@ -17,9 +17,9 @@ import type { CategoryNode } from "@/lib/api/types";
 
 
 const FALLBACK_IMAGES = [
-  "/assets/categories/yarn-red.jpg",
   "/assets/categories/yarn-pink.jpg",
-  "/assets/categories/yarn-green.jpg",
+  "/assets/categories/yarn-rust.jpg",
+  "/assets/categories/yarn-coral.jpg",
   "/assets/categories/yarn-yellow.jpg",
 ];
 
