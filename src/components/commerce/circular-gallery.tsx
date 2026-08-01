@@ -351,8 +351,9 @@ class App {
     });
     this.gl = this.renderer.gl;
     this.gl.clearColor(0, 0, 0, 0);
-    this.gl.canvas.style.display = "block";
-    this.container.appendChild(this.gl.canvas);
+    const canvas = this.gl.canvas as HTMLCanvasElement;
+    canvas.style.display = "block";
+    this.container.appendChild(canvas);
   }
 
   private createMedias() {
@@ -532,7 +533,7 @@ class App {
     window.removeEventListener("mouseup", this.onTouchUp);
     window.removeEventListener("resize", this.onResize);
     this.ro?.disconnect();
-    const canvas = this.renderer?.gl?.canvas;
+    const canvas = this.renderer?.gl?.canvas as HTMLCanvasElement | undefined;
     if (canvas?.parentNode) canvas.parentNode.removeChild(canvas);
   }
 }
