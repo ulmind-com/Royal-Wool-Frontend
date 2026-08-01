@@ -1,23 +1,28 @@
 ## Goal
 
-The 4 yarn-ball photos should live in the project's `public/assets` folder (as plain files, served by path) and be used by the "Shop by Category" section. As soon as the admin panel provides a category image, it takes over automatically.
+"Shop by Category" section-এ এখন backend-এর পুরনো clothing category (Mens/Womens…) দেখাচ্ছে। এখন থেকে frontend-এ wool-এর নিজের ৪টা category হার্ডকোড করা হবে — তোর দেওয়া ৪টা wool ছবি সহ। পরে backend ready হলে এক লাইনে API-তে ফিরিয়ে দেওয়া যাবে।
 
-## What changes
+## ৪টি wool category (ছবি অনুযায়ী)
 
-1. **Copy the images into `public/assets/categories/`**
-   - `yarn-red.jpg`, `yarn-pink.jpg`, `yarn-green.jpg`, `yarn-yellow.jpg`
-   - Served at `/assets/categories/yarn-red.jpg` etc.
+| Image | Category name | Subtext |
+|---|---|---|
+| yarn-pink.jpg | Cotton Delight | Soft cotton · 8 ply |
+| yarn-rust.jpg | Acrylic Rainbow | Multi-tone acrylic |
+| yarn-coral.jpg | Aroma Cotton | Skin-friendly cotton |
+| yarn-yellow.jpg | Hobby India | Everyday knitting wool |
 
-2. **Point the category section at those paths**
-   - In `src/components/commerce/category-showcase.tsx`, replace the four `.asset.json` imports with a plain array of `/assets/categories/...` paths.
-   - Keep the existing logic unchanged: `category.image ?? fallback[index % 4]` — so any admin-uploaded image wins, and the fallbacks just fill the gaps.
+নাম/subtext পছন্দ না হলে বলে দিলে বদলে দেব — এগুলো এক জায়গায় একটা list-এ থাকবে, বদলানো সহজ।
 
-3. **Remove the now-unused CDN pointers**
-   - Delete `src/assets/cat-fallback-{1..4}.jpg.asset.json` (and their CDN objects) so there's only one source of truth for these photos.
+## Changes
 
-4. **Verify**
-   - Load `/` in a headless browser, confirm the 4 tiles render the photos from `/assets/categories/...` with no 404s, then screenshot.
+1. `src/data/wool-categories.ts` (new) — ৪টা entry: `name`, `slug`, `image`, `blurb`, `order`. একটাই source of truth।
+2. `src/components/commerce/category-showcase.tsx`
+   - API query (`categoryTreeQuery`)-এর উপর নির্ভরতা এই section থেকে সরানো; static list রেন্ডার হবে (loading/error state আর লাগবে না, তাই section সাথে সাথেই দেখাবে)।
+   - বর্তমান premium tile design (dye glow, hover lift, arrow badge, underline, staggered fade-up) অপরিবর্তিত থাকবে।
+   - উপরে স্পষ্ট comment: backend-এ আসল wool category seed হলে `USE_STATIC_CATEGORIES = false` করলেই `/categories/tree` আবার নিয়ন্ত্রণ নেবে (API branch কোডে রাখা হবে, মুছবে না)।
+3. Click behaviour — tile → `/collections/$slug`; backend-এ ওই slug না থাকলে সেই পেজ খালি দেখাবে, তাই আপাতত প্রতিটা tile-এর link যাবে `/search?q=<category name>`-এ, যেন এখনই relevant product দেখায়। Backend ready হলে static branch off করলেই আবার asol collection page-এ যাবে।
 
 ## Notes
 
-The section itself (dynamic count, order, names, links to `/collections/$slug`, hover/scroll animations) stays exactly as built — this change is only about where the fallback photos are stored.
+- ছবিগুলো ইতিমধ্যে `public/assets/categories/` (pink, rust, coral, yellow) আছে, নতুন upload লাগবে না।
+- অন্য কোনো section (hero, trust band, upcoming, rails) ছোঁয়া হবে না।
