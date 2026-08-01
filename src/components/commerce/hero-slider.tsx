@@ -58,7 +58,7 @@ export function HeroSlider() {
         <div
           className="group relative isolate overflow-hidden rounded-[32px] border border-border"
           style={{
-            height: "clamp(420px, 62vh, 600px)",
+            height: "clamp(380px, 52vh, 520px)",
             boxShadow: "0 40px 90px -50px color-mix(in oklab, var(--ink) 45%, transparent)",
           }}
           onMouseEnter={() => setPaused(true)}
@@ -83,7 +83,7 @@ export function HeroSlider() {
               src={slide.url}
               alt={slide.title || "Royal Wool yarn"}
               loading={index === 0 ? "eager" : "lazy"}
-              className="absolute inset-0 h-full w-full object-cover object-[78%_center]"
+              className="absolute inset-0 h-full w-full object-cover object-[80%_center]"
               initial={{ opacity: 0, scale: reduced ? 1 : 1.06 }}
               animate={{
                 opacity: 1,
@@ -94,18 +94,35 @@ export function HeroSlider() {
             />
           </AnimatePresence>
 
-          {/* Readability scrim, left-weighted */}
+          {/* Readability scrim — vertical on mobile, left-weighted from md up */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 md:hidden"
             style={{
               backgroundImage:
-                "linear-gradient(90deg, color-mix(in oklab, var(--fleece) 94%, transparent) 0%, color-mix(in oklab, var(--fleece) 78%, transparent) 38%, transparent 72%)",
+                "linear-gradient(180deg, color-mix(in oklab, var(--fleece) 95%, transparent) 0%, color-mix(in oklab, var(--fleece) 86%, transparent) 55%, color-mix(in oklab, var(--fleece) 60%, transparent) 100%)",
+            }}
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 hidden md:block"
+            style={{
+              backgroundImage:
+                "linear-gradient(90deg, color-mix(in oklab, var(--fleece) 97%, transparent) 0%, color-mix(in oklab, var(--fleece) 92%, transparent) 38%, color-mix(in oklab, var(--fleece) 62%, transparent) 56%, transparent 80%)",
+            }}
+            aria-hidden
+          />
+          {/* Bottom fade so controls and CTA never sit on busy detail */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-28"
+            style={{
+              backgroundImage:
+                "linear-gradient(180deg, transparent, color-mix(in oklab, var(--fleece) 70%, transparent))",
             }}
             aria-hidden
           />
 
           {/* Copy layer */}
-          <div className="relative flex h-full items-center px-6 sm:px-10 lg:px-16">
+          <div className="relative flex h-full items-center px-6 pb-12 sm:px-10 lg:px-16">
             <AnimatePresence mode="wait">
               <div key={slide.id} className="max-w-[34rem] min-w-0">
                 <motion.p {...rise(0)} className="font-data text-2xs text-marigold">
@@ -113,19 +130,19 @@ export function HeroSlider() {
                 </motion.p>
                 <motion.h1
                   {...rise(0.08)}
-                  className="mt-4 font-display text-4xl font-light leading-[1.05] sm:text-5xl lg:text-6xl"
+                  className="mt-3 font-display text-3xl font-light leading-[1.06] sm:text-4xl lg:text-5xl"
                 >
                   {slide.title || "Premium knitting & crochet yarn"}
                 </motion.h1>
                 {slide.subtitle ? (
                   <motion.p
                     {...rise(0.16)}
-                    className="mt-5 max-w-lg text-base text-muted-foreground sm:text-lg"
+                    className="mt-4 max-w-lg text-sm text-muted-foreground sm:text-base"
                   >
                     {slide.subtitle}
                   </motion.p>
                 ) : null}
-                <motion.div {...rise(0.24)} className="mt-8 flex flex-wrap items-center gap-4">
+                <motion.div {...rise(0.24)} className="mt-6 flex flex-wrap items-center gap-4">
                   {isInternal ? (
                     <Link
                       to={href}
