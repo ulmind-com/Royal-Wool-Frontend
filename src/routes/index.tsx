@@ -2,7 +2,9 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
 import { CategoryShowcase } from "@/components/commerce/category-showcase";
+import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
 import { ProductRail } from "@/components/commerce/product-rail";
+
 import { UpcomingRail } from "@/components/commerce/upcoming-rail";
 import { HeroSlider } from "@/components/commerce/hero-slider";
 
@@ -74,13 +76,8 @@ function Home() {
       {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
       <CategoryShowcase />
 
-      <ProductRail
-        anchor="sections"
-        eyebrow="03 · Fresh off the winder"
-        title="New arrivals"
-        note="The latest shades to leave the dye house."
-        filters={{ sort: "newest" }}
-      />
+      <NewArrivalsGallery />
+
 
       <ProductRail
         anchor="bestsellers"
