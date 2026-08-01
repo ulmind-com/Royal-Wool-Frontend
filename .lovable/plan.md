@@ -1,24 +1,34 @@
 ## Goal
-"New arrivals" CircularGallery টা যেমন আছে তেমনই থাকবে — শুধু কয়েক সেকেন্ড পরপর নিজে থেকে একটা করে item বাঁ দিকে বেরিয়ে যাবে আর ডান দিক থেকে একটা করে ঢুকবে, premium slow feel নিয়ে।
 
-## Changes
+Home page-এ New Arrivals-এর পরে একটা নতুন "Spotlight" section — বাঁ দিকে 3D tilt card (তোর দেওয়া component), ডান দিকে screenshot-এর মতো editorial copy (eyebrow, দুই লাইনের headline, description, spec row, "Learn more →" link)।
 
-### 1. `src/components/commerce/circular-gallery.tsx`
-- নতুন optional props: `autoplay?: boolean` (default true) আর `autoplayDelay?: number` (default ~3500ms).
-- App class-এ একটা autoplay timer: প্রতি delay-তে `scroll.target -= itemWidth` (এক item ডান দিক থেকে ঢোকা = বাঁ দিকে এক ধাপ move), তারপর existing `onCheck()` snap logic-ই position ঠিক রাখবে। ইতিমধ্যেই infinite wrap আছে (`extra` offset), তাই loop seamless থাকবে।
-- Pause/resume:
-  - pointer down / drag / wheel / arrow key হলে autoplay pause, interaction শেষ হওয়ার ~2.5s পরে আবার resume।
-  - container hover-এ pause (mouseenter/mouseleave)।
-  - tab hidden (`visibilitychange`) হলে timer বন্ধ, ফিরলে আবার চালু — background-এ CPU নষ্ট হবে না।
-- `destroy()`-এ timer + নতুন listener গুলো clear।
-- Reduced motion: `prefers-reduced-motion` থাকলে autoplay একেবারেই চালু হবে না।
-- Smoothness: autoplay চলার সময় ease একটু slow (premium glide) রাখা হবে, manual scroll-এ আগের ease-ই থাকবে।
+## Layout
 
-### 2. `src/components/commerce/new-arrivals-gallery.tsx`
-- `<CircularGallery>`-এ `autoplay` আর `autoplayDelay={3500}` pass করা। বাকি layout/props (bend, scrollEase, items, onItemClick) অপরিবর্তিত।
+```text
+┌──────────────────────────┬──────────────────────────────┐
+│  [3D tilt card]          │  SPOTLIGHT · COTTON DELIGHT  │
+│   yarn image             │  Spun for softness.          │
+│   title + subtitle       │  Made to last.               │
+│   ↗ link (top-right)     │  ───                         │
+│   [Shop the range] btn   │  short paragraph             │
+│                          │  COMPOSITION | GAUGE | CARE  │
+│                          │  LEARN MORE  →               │
+└──────────────────────────┴──────────────────────────────┘
+```
+Mobile-এ card উপরে, copy নিচে।
 
-## Not changing
-Design, spacing, images, data flow, click-to-product navigation — সব যেমন আছে তেমনই।
+## What gets built
 
-## Verify
-Playwright দিয়ে ~8s অপেক্ষা করে দুটো screenshot নিয়ে দেখা হবে যে item গুলো নিজে থেকে এক ধাপ এক ধাপ সরছে, hover-এ থামছে, click করলে product page খুলছে, console error নেই।
+1. `src/components/ui/3d-card.tsx` — তোর দেওয়া `InteractiveTravelCard` component, framer-motion tilt logic হুবহু রেখে, কিন্তু JSX-টা সম্পূর্ণ করে লেখা হবে (তোর paste-এ markup গুলো ফাঁকা এসেছে)। হার্ডকোড করা color নয় — project-এর semantic token ব্যবহার করব, তাই light theme-এর সাথে মিলে যাবে। `prefers-reduced-motion` হলে tilt বন্ধ।
+2. `src/components/commerce/spotlight-section.tsx` — section wrapper: card + editorial column, স্ক্রলে staggered fade-up, existing section rhythm (`max-w-[1600px]`, eyebrow font-data, font-display headline) অনুযায়ী।
+3. `src/routes/index.tsx` — `<NewArrivalsGallery />`-এর পরে `<SpotlightSection />` বসবে, একটা SectionStub সরে যাবে না (শুধু নতুন section যোগ হচ্ছে)।
+
+## Content & image
+
+- ছবি: existing yarn asset `src/assets/yarn/delight-pink.jpg.asset.json` (তোর আগে দেওয়া Cotton Delight ছবি)। চাইলে পরে বদলানো যাবে।
+- Copy: Cotton Delight-কে spotlight করে premium wording; card link + button যাবে `/search?q=Cotton%20Delight`।
+- Text/image/link সব component prop হিসেবে, তাই পরে admin/API থেকে feed করা সহজ হবে।
+
+## Dependencies
+
+`framer-motion` আর `lucide-react` আগেই install করা আছে — নতুন কিছু লাগবে না।
