@@ -1,31 +1,29 @@
 ## Goal
 
-Replace the flat "Shop by Yarn Weight" tiles with the chosen **Kinetic Glass** 3D card direction — premium, tactile, animated on hover — while keeping the section compact and fully data-driven.
+Add the next home section as a **fanned arc card carousel** (like the 21st.dev carousel-07 reference): cards spread in a shallow fan, the centre card upright and full-colour, side cards rotated, scaled down and dimmed — and they glide **right → left** one at a time, automatically.
 
-## What changes
+## Where it goes
 
-Only `src/components/commerce/yarn-weight-rail.tsx` (tile visuals + motion). Data, links, admin-driven category logic and copy stay exactly as they are.
+Replaces the placeholder `story` stub in `src/routes/index.tsx` (right after Best sellers' neighbours in the current order, before the Lookbook stub). Existing sections stay untouched.
 
-### The card
-- Wrap each tile in a perspective container (`perspective: 1200px`) with a `preserve-3d` inner card.
-- Hover/focus: card tilts (`rotateX ~8deg`, `rotateY ~-10deg`) + slight scale, eased with `cubic-bezier(0.23, 1, 0.32, 1)` over ~0.6s.
-- Depth layers via `translateZ`: number badge furthest forward, strand mark mid, text block behind — so the tilt reads as real parallax.
-- Diagonal light sweep: a translucent white gradient band that slides across the glass on hover.
-- Shadow bloom + a soft floating ground shadow ellipse under the card that fades in on hover.
-- Inner bevel ring for the glass edge; keeps the existing `<Glass variant="card">` base so the liquid-glass look stays consistent with the rest of the site.
+## The section
 
-### Details kept on-brand
-- Badge becomes a rounded-square marigold chip with inset highlight (numbers stay position-derived: 1…N).
-- Weight name in the existing display serif, hook spec in a soft pill using the mono data font, note stays one line with ellipsis.
-- Colors use existing tokens only (`--marigold`, `--ink`, `--background`, `--foreground`) — no hardcoded hex.
+New component `src/components/commerce/yarn-fan-carousel.tsx`:
 
-### Constraints respected
-- Cards stay short — the height only grows slightly (roughly +12–16px) to give the 3D room to breathe; still a 7-up row on desktop, snap rail on mobile.
-- Reduced motion: no tilt, no sweep, no lift — just a static glass card (existing `useReducedMotion` already wired in).
-- Touch devices get a light press/scale response instead of hover tilt.
+- **Cards**: portrait 3:4 rounded cards, each showing one of the 9 uploaded yarn photos already in `src/assets/yarn/` (Cotton Delight pink/rust/coral, Cotton Candy sky/lilac/onyx, Hobby India lemon/mint/red).
+- **Fan geometry**: 5 visible slots (`-2 -1 0 +1 +2`). Offsets per slot: rotate ≈ `∓9°/∓4.5°/0`, translateY lift for the centre, scale `0.86 / 0.93 / 1`, brightness/blur falls off toward the edges so the centre reads sharp. Centre card gets the strongest shadow and sits on top via z-index.
+- **Card content**: a floating white-glass pill label at the top (range name, uppercase tracked mono, like `ADVENTURE` in the reference), and at the bottom a display-serif title + one-line italic caption over a soft bottom gradient scrim. Both fade/slide in only on the active card.
+- **Motion**: `framer-motion` layout/transform springs; index advances every ~4s, each step slides the stack one position leftwards. Pauses on hover, focus, drag, and when the tab is hidden. Reduced motion → static fan, no autoplay.
+- **Interaction**: drag/swipe horizontally, arrow keys, prev/next glass arrows and dot indicators; clicking the centre card opens that product/collection.
 
-## Technical notes
+## Data (dynamic-ready)
 
-- Tilt is CSS-transform based on the group hover state (no per-card pointer listeners), so 7 cards stay cheap; `transform-gpu` + `will-change` on the card only.
-- No changes to `categoryTreeQuery`, tile mapping, `TileLink`, or `/collections/$slug` routing.
-- Verified afterwards with Playwright: hover state screenshot, tile height check, click-through to a category page, console clean.
+Same pattern as New Arrivals: fetch newest products from the API, map to card items (`image`, `label`, `title`, `caption`, `href`); when the backend has no wool products yet, fall back to a local list built from the uploaded yarn asset pointers. One flag flips to API images once the admin panel is seeded.
+
+## Styling rules
+
+Tokens only — `--marigold`, `--ink`, `--background`, `--foreground`, `--border`; `<Glass>` for the pills and arrows so it matches the rest of the site. No hardcoded colours. Section header follows the existing eyebrow/`font-display` heading pattern (`05 · Lookbook`-style numbering kept consistent).
+
+## Verification
+
+Playwright: screenshot the fan at rest and after one auto-advance, confirm centre card swap, drag works, click routes to a product page, mobile width (785px) shows 3 slots without overflow, console clean.
