@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
-import { CategoryTiles } from "@/components/commerce/category-tiles";
+import { CategoryShowcase } from "@/components/commerce/category-showcase";
 import { ProductRail } from "@/components/commerce/product-rail";
 import { UpcomingRail } from "@/components/commerce/upcoming-rail";
 import { HeroSlider } from "@/components/commerce/hero-slider";
@@ -72,7 +72,7 @@ function Home() {
 
 
       {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
-      <CategoryTiles />
+      <CategoryShowcase />
 
       <ProductRail
         anchor="sections"
