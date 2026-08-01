@@ -5,6 +5,7 @@ import { CategoryShowcase } from "@/components/commerce/category-showcase";
 import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
 import { ProductRail } from "@/components/commerce/product-rail";
 import { SpotlightSection } from "@/components/commerce/spotlight-section";
+import { YarnFanCarousel } from "@/components/commerce/yarn-fan-carousel";
 import { YarnWeightRail } from "@/components/commerce/yarn-weight-rail";
 
 import { UpcomingRail } from "@/components/commerce/upcoming-rail";
@@ -97,12 +98,8 @@ function Home() {
 
       <UpcomingRail />
 
-      <SectionStub
-        anchor="story"
-        eyebrow="05 · Brand story"
-        title="Parallax dye-house sequence"
-        note="Full-bleed media from /site-media, scroll-scrubbed."
-      />
+      <YarnFanCarousel />
+
       <SectionStub
         anchor="lookbook"
         eyebrow="06 · Lookbook"
