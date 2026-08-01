@@ -515,6 +515,7 @@ class App {
 
   private onWheel = (e: WheelEvent) => {
     const delta = e.deltaY;
+    this.pauseForInteraction();
     this.scroll.target += (delta > 0 ? this.options.scrollSpeed : -this.options.scrollSpeed) * 0.2;
     this.onCheckDebounce();
   };
@@ -522,10 +523,12 @@ class App {
   private onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
+      this.pauseForInteraction();
       this.scroll.target += this.options.scrollSpeed * 5;
       this.onCheckDebounce();
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
+      this.pauseForInteraction();
       this.scroll.target -= this.options.scrollSpeed * 5;
       this.onCheckDebounce();
     }
