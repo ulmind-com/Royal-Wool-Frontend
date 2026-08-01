@@ -104,6 +104,8 @@ export function NewArrivalsGallery() {
               bend={3}
               borderRadius={0.05}
               scrollEase={0.02}
+              autoplay
+              autoplayDelay={3500}
               textColor="#0D0A12"
               font="600 26px Inter, system-ui, sans-serif"
               ariaLabel="New arrivals gallery — drag to browse, tap to open a product"
