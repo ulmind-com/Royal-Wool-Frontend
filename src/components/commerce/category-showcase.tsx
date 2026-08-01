@@ -69,12 +69,13 @@ function CategoryTile({
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.6, delay: Math.min(index, 5) * 0.08, ease: [0.22, 1, 0.36, 1] }}
     >
-      <Link
-        {...(tile.href as never)}
+      <TileLink
+        href={tile.href}
         data-cursor="product"
         aria-label={`Shop ${tile.name}`}
         className="group block focus-visible:outline-none"
       >
+
         <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card transition-all duration-[var(--dur-slow)] ease-[var(--ease-enter)] group-hover:-translate-y-1.5 group-hover:border-marigold/50 group-hover:shadow-[0_36px_70px_-40px_color-mix(in_oklab,var(--ink)_45%,transparent)] group-focus-visible:border-marigold">
           {/* dye glow behind the yarn ball */}
           <div
