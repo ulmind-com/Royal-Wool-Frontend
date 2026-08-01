@@ -1,34 +1,29 @@
 ## Goal
 
-Spotlight-এর পরে নতুন section: **Shop by Yarn Weight** — screenshot-এর idea (weight 1–7, number badge, label), কিন্তু layout ও aesthetic আলাদা এবং premium: liquid-glass tile rail, hardcoded লাল box নয়, project-এর marigold/ink token আর `<Glass>` primitive দিয়ে।
+"Shop by Yarn Weight" tiles become data-driven from the backend (admin-controlled), each tile opens that group's own product listing page, and the tiles get shorter/more compact.
 
-## Layout
+## What changes
 
-```text
-09 · Yarn weight
-Shop by Yarn Weight                        [ hook scale: 2.25 – 12 mm ]
-──────────────────────────────────────────────────────────────────────
-┌───────┐┌───────┐┌───────┐┌───────┐┌───────┐┌───────┐┌───────┐
-│  (1)  ││  (2)  ││  (3)  ││  (4)  ││  (5)  ││  (6)  ││  (7)  │
-│ glass ││       ││       ││       ││       ││       ││       │
-│ twist ││       ││       ││       ││       ││       ││       │
-│S.Fine ││ Fine  ││ Light ││Medium ││ Bulky ││S.Bulky││ Jumbo │
-│2.25mm ││ 3mm   ││ 4mm   ││ 5mm   ││ 7mm   ││ 9mm   ││ 12mm  │
-└───────┘└───────┘└───────┘└───────┘└───────┘└───────┘└───────┘
-```
+### 1. Dynamic source (admin controlled)
+The section currently reads a hardcoded array (`src/data/yarn-weights.ts`). New behaviour:
 
-- Desktop: 7-column rail; প্রতিটা tile-এ thickness bar/twist graphic — 1 সরু → 7 মোটা (এটাই screenshot থেকে মূল differentiator)।
-- Tablet: 4 columns; mobile: horizontal snap-scroll rail with edge fade (কিছু কাটা যাবে না)।
-- Hover: liquid-glass sheen sweep + tile lift + marigold glow, badge number scale-up; scroll-এ staggered fade-up, `useReducedMotion` respect।
+- Fetch `/categories/tree` (existing `categoryTreeQuery`, already cached).
+- Look for a parent node whose name/slug matches "yarn weight" / "weight" (case-insensitive); use its children as the tiles. If no such parent exists, fall back to a top-level group match, then to the built-in 1–7 list so the page never looks broken.
+- Each tile pulls name, image, product/child count, and order straight from the API — so once you add or rename weight categories in the admin panel, the section updates with no code change.
+- Tile order follows the API order (or `sort_order` if present); numbering badge is derived from position, so 5 or 9 categories work as well as 7.
+- Spec line ("Hook 5 mm" etc.) comes from the category's description/blurb when the admin has set one, otherwise from the local weight table by matching name.
+- Loading = compact skeleton tiles; error = existing `DataError`; empty = section hides itself rather than showing an empty rail.
 
-## Files
+### 2. Real category pages on click
+- API-backed tiles link to `/collections/$slug` (the existing category listing route), so clicking opens exactly that category's products.
+- Only the fallback tiles keep the `/search?q=...` link, since they have no real slug yet.
 
-1. `src/data/yarn-weights.ts` — ৭টা entry: `{ id, weight, name, hookMm, wpi, note, query }`. পুরোপুরি data-driven, পরে admin/API থেকে feed করা সহজ।
-2. `src/components/commerce/yarn-weight-rail.tsx` — section + `WeightTile`; `<Glass variant="panel">` reuse, inline SVG twist/thickness graphic, click → `/search?q=<weight name>`.
-3. `src/routes/index.tsx` — `<SpotlightSection />`-এর পরে `<YarnWeightRail />`; existing stub গুলো যেমন আছে থাকবে।
+### 3. Shorter cards
+- Reduce padding (`p-5` → `p-4`), remove the fixed `min-h-[2.75rem]` note block, shrink the strand graphic (`h-12` → `h-8`), tighten gaps, and cap the note to one line with ellipsis.
+- Net result: noticeably lower tiles with the same width, still aligned in a row, liquid-glass look and hover bloom unchanged.
 
-## Notes
+## Technical notes
 
-- ছবি generate করব না — number badge + procedural twist graphic দিয়েই art হবে, তাই সব weight-এ consistent আর fast load।
-- সব color semantic token (`--marigold`, `--ink`, `card`, `border`) — hardcoded hex নেই, light theme-এ মিলে যাবে।
-- নতুন dependency লাগবে না (framer-motion, lucide-react আছে)।
+- New `src/components/commerce/yarn-weight-rail.tsx` internals: `useQuery(categoryTreeQuery)` + a `toWeightTiles(tree)` mapper; keeps `YARN_WEIGHTS` only as fallback/spec lookup.
+- No backend or business-logic changes; purely storefront wiring against endpoints that already exist.
+- Verified with Playwright afterwards (tile heights, click through to a category page, no console errors).
