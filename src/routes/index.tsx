@@ -42,24 +42,34 @@ function Home() {
       {/* ── Hero: admin-driven auto slider ── */}
       <HeroSlider />
 
-      {/* ── Trust bar ── */}
+      {/* ── Trust band: icon over text, no cards ── */}
       <section
-        className="mx-auto w-full max-w-[1600px] px-4 pt-10 pb-8 sm:px-6 lg:px-10"
+        className="mx-auto w-full max-w-[1600px] px-4 pt-12 sm:px-6 lg:px-10"
         data-thread-anchor="trust"
         aria-label="Why Royal Wool"
       >
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-y-10 border-y border-border/60 py-14 sm:py-16 lg:grid-cols-4 lg:divide-x lg:divide-border/60">
           {TRUST.map(({ icon: Icon, title, copy }) => (
-            <li key={title} className="h-full">
-              <Glass variant="card" className="flex h-full min-h-[9rem] flex-col">
-                <Icon className="h-5 w-5 shrink-0 text-marigold" aria-hidden />
-                <p className="mt-3 font-data text-2xs text-foreground">{title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy}</p>
-              </Glass>
+            <li
+              key={title}
+              className="group flex flex-col items-center px-4 text-center transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:px-6"
+            >
+              <Icon
+                className="h-7 w-7 shrink-0 text-marigold"
+                strokeWidth={1.5}
+                aria-hidden
+              />
+              <p className="mt-5 font-display text-base font-normal text-foreground sm:text-lg">
+                {title}
+              </p>
+              <p className="mt-2 max-w-[16rem] text-sm leading-relaxed text-muted-foreground">
+                {copy}
+              </p>
             </li>
           ))}
         </ul>
       </section>
+
 
       {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
       <CategoryTiles />
