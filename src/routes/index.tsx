@@ -82,6 +82,8 @@ function Home() {
 
       <SpotlightSection />
 
+      <YarnWeightRail />
+
 
 
 
