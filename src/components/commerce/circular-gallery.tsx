@@ -451,6 +451,7 @@ class App {
 
   private onTouchDown = (e: MouseEvent | TouchEvent) => {
     this.isDown = true;
+    this.pauseForInteraction();
     this.moved = 0;
     this.startTime = Date.now();
     this.scroll.position = this.scroll.current;
