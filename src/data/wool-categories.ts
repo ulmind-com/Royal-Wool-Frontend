@@ -19,19 +19,19 @@ export const WOOL_CATEGORIES: WoolCategory[] = [
     name: "Cotton Delight",
     slug: "cotton-delight",
     image: "/assets/categories/yarn-pink.jpg",
-    blurb: "Soft cotton · 8 ply",
+    blurb: "Soft mercerised cotton · 8 ply",
   },
   {
-    name: "Acrylic Rainbow",
-    slug: "acrylic-rainbow",
+    name: "Cotton Delight Deep",
+    slug: "cotton-delight-deep",
     image: "/assets/categories/yarn-rust.jpg",
-    blurb: "Multi-tone acrylic",
+    blurb: "Rich rust & earth shades",
   },
   {
-    name: "Aroma Cotton",
-    slug: "aroma-cotton",
+    name: "Cotton Delight Pastel",
+    slug: "cotton-delight-pastel",
     image: "/assets/categories/yarn-coral.jpg",
-    blurb: "Skin-friendly cotton",
+    blurb: "Coral & soft pastel shades",
   },
   {
     name: "Hobby India",
@@ -40,3 +40,4 @@ export const WOOL_CATEGORIES: WoolCategory[] = [
     blurb: "Everyday knitting wool",
   },
 ];
+
