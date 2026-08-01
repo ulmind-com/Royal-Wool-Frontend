@@ -222,10 +222,13 @@ export function YarnFanCarousel() {
 
       <div
         className="relative mt-12 overflow-hidden"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
+        /* Pause only for real mouse hover — touch taps must not freeze autoplay. */
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") setPaused(true);
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setPaused(false);
+        }}
       >
         <motion.div
           className="relative mx-auto h-[min(31rem,112vw)] w-full max-w-[1200px] cursor-grab active:cursor-grabbing sm:h-[32rem]"
