@@ -16,7 +16,12 @@ import type { CategoryNode } from "@/lib/api/types";
  */
 
 
-const FALLBACK_IMAGES = [fallback1.url, fallback2.url, fallback3.url, fallback4.url];
+const FALLBACK_IMAGES = [
+  "/assets/categories/yarn-red.jpg",
+  "/assets/categories/yarn-pink.jpg",
+  "/assets/categories/yarn-green.jpg",
+  "/assets/categories/yarn-yellow.jpg",
+];
 
 function tileImage(category: CategoryNode, index: number): string {
   return category.image ?? FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]!;
