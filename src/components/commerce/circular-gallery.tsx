@@ -326,8 +326,8 @@ class App {
   private moved = 0;
   private onCheckDebounce: () => void;
   private ro?: ResizeObserver;
-  private autoTimer?: ReturnType<typeof setInterval>;
-  private resumeTimer?: ReturnType<typeof setTimeout>;
+  private autoTimer: ReturnType<typeof setInterval> | undefined;
+  private resumeTimer: ReturnType<typeof setTimeout> | undefined;
   private hovered = false;
   private autoEnabled = false;
 
