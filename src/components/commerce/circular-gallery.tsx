@@ -302,6 +302,8 @@ type AppOptions = {
   font: string;
   scrollSpeed: number;
   scrollEase: number;
+  autoplay: boolean;
+  autoplayDelay: number;
   onItemClick?: (index: number) => void;
 };
 
@@ -324,6 +326,10 @@ class App {
   private moved = 0;
   private onCheckDebounce: () => void;
   private ro?: ResizeObserver;
+  private autoTimer: ReturnType<typeof setInterval> | undefined;
+  private resumeTimer: ReturnType<typeof setTimeout> | undefined;
+  private hovered = false;
+  private autoEnabled = false;
 
   constructor(
     private container: HTMLElement,
@@ -341,7 +347,62 @@ class App {
     this.createMedias();
     this.update();
     this.addEventListeners();
+    this.setupAutoplay();
   }
+
+  /** Glides one card out to the left and pulls the next one in from the right. */
+  private setupAutoplay() {
+    if (!this.options.autoplay) return;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+    this.autoEnabled = true;
+    this.startAutoplay();
+  }
+
+  private startAutoplay() {
+    if (!this.autoEnabled || this.autoTimer) return;
+    this.autoTimer = setInterval(() => {
+      if (this.isDown || this.hovered || document.hidden) return;
+      const first = this.medias[0];
+      if (!first?.width) return;
+      // Slower ease while autoplaying keeps the drift premium and calm.
+      this.scroll.ease = Math.min(this.options.scrollEase, 0.028);
+      this.scroll.target -= first.width;
+      this.onCheck();
+    }, this.options.autoplayDelay);
+  }
+
+  private stopAutoplay() {
+    if (this.autoTimer) {
+      clearInterval(this.autoTimer);
+      this.autoTimer = undefined;
+    }
+  }
+
+  /** Any manual gesture wins; autoplay picks up again shortly after. */
+  private pauseForInteraction() {
+    if (!this.autoEnabled) return;
+    this.scroll.ease = this.options.scrollEase;
+    this.stopAutoplay();
+    if (this.resumeTimer) clearTimeout(this.resumeTimer);
+    this.resumeTimer = setTimeout(() => this.startAutoplay(), 2500);
+  }
+
+  private onEnter = () => {
+    this.hovered = true;
+  };
+
+  private onLeave = () => {
+    this.hovered = false;
+  };
+
+  private onVisibility = () => {
+    if (document.hidden) this.stopAutoplay();
+    else this.startAutoplay();
+  };
+
 
   private createRenderer() {
     this.renderer = new Renderer({
@@ -390,6 +451,7 @@ class App {
 
   private onTouchDown = (e: MouseEvent | TouchEvent) => {
     this.isDown = true;
+    this.pauseForInteraction();
     this.moved = 0;
     this.startTime = Date.now();
     this.scroll.position = this.scroll.current;
@@ -453,6 +515,7 @@ class App {
 
   private onWheel = (e: WheelEvent) => {
     const delta = e.deltaY;
+    this.pauseForInteraction();
     this.scroll.target += (delta > 0 ? this.options.scrollSpeed : -this.options.scrollSpeed) * 0.2;
     this.onCheckDebounce();
   };
@@ -460,10 +523,12 @@ class App {
   private onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
+      this.pauseForInteraction();
       this.scroll.target += this.options.scrollSpeed * 5;
       this.onCheckDebounce();
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
+      this.pauseForInteraction();
       this.scroll.target -= this.options.scrollSpeed * 5;
       this.onCheckDebounce();
     }
@@ -511,6 +576,9 @@ class App {
     this.container.addEventListener("touchmove", this.onTouchMove, { passive: true });
     this.container.addEventListener("touchend", this.onTouchUp);
     this.container.addEventListener("keydown", this.onKeyDown);
+    this.container.addEventListener("mouseenter", this.onEnter);
+    this.container.addEventListener("mouseleave", this.onLeave);
+    document.addEventListener("visibilitychange", this.onVisibility);
     // Drag can leave the canvas; finish the gesture wherever it ends.
     window.addEventListener("mousemove", this.onTouchMove);
     window.addEventListener("mouseup", this.onTouchUp);
@@ -523,12 +591,17 @@ class App {
 
   destroy() {
     window.cancelAnimationFrame(this.raf);
+    this.stopAutoplay();
+    if (this.resumeTimer) clearTimeout(this.resumeTimer);
     this.container.removeEventListener("wheel", this.onWheel);
     this.container.removeEventListener("mousedown", this.onTouchDown);
     this.container.removeEventListener("touchstart", this.onTouchDown);
     this.container.removeEventListener("touchmove", this.onTouchMove);
     this.container.removeEventListener("touchend", this.onTouchUp);
     this.container.removeEventListener("keydown", this.onKeyDown);
+    this.container.removeEventListener("mouseenter", this.onEnter);
+    this.container.removeEventListener("mouseleave", this.onLeave);
+    document.removeEventListener("visibilitychange", this.onVisibility);
     window.removeEventListener("mousemove", this.onTouchMove);
     window.removeEventListener("mouseup", this.onTouchUp);
     window.removeEventListener("resize", this.onResize);
@@ -546,6 +619,8 @@ export default function CircularGallery({
   font = "600 26px Inter, system-ui, sans-serif",
   scrollSpeed = 2,
   scrollEase = 0.05,
+  autoplay = true,
+  autoplayDelay = 3500,
   onItemClick,
   className,
   ariaLabel = "Draggable product gallery",
@@ -557,6 +632,8 @@ export default function CircularGallery({
   font?: string;
   scrollSpeed?: number;
   scrollEase?: number;
+  autoplay?: boolean;
+  autoplayDelay?: number;
   onItemClick?: (index: number) => void;
   className?: string;
   ariaLabel?: string;
@@ -579,13 +656,25 @@ export default function CircularGallery({
         font,
         scrollSpeed,
         scrollEase,
+        autoplay,
+        autoplayDelay,
         onItemClick: (i) => clickRef.current?.(i),
       });
     } catch (error) {
       console.error("CircularGallery: WebGL unavailable", error);
     }
     return () => app?.destroy();
-  }, [items, bend, textColor, borderRadius, font, scrollSpeed, scrollEase]);
+  }, [
+    items,
+    bend,
+    textColor,
+    borderRadius,
+    font,
+    scrollSpeed,
+    scrollEase,
+    autoplay,
+    autoplayDelay,
+  ]);
 
   return (
     <div
