@@ -179,45 +179,102 @@ function WeightTile({
         href={item.href}
         data-cursor="link"
         aria-label={`Shop ${item.name} yarn`}
-        className="group block h-full focus-visible:outline-none"
+        className="group block h-full [perspective:1200px] focus-visible:outline-none"
       >
-        <Glass
-          variant="card"
-          refract
-          className="sheen flex h-full flex-col items-center gap-2.5 rounded-[1.25rem] p-4 text-center group-hover:-translate-y-1.5 group-hover:shadow-[0_30px_56px_-38px_color-mix(in_oklab,var(--ink)_45%,transparent)] group-focus-visible:-translate-y-1.5"
+        {/* Kinetic Glass: perspective wrapper → tilting card → depth layers */}
+        <div
+          className={
+            "relative h-full will-change-transform [transform-style:preserve-3d] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" +
+            (reduced
+              ? ""
+              : " group-hover:[transform:rotateX(9deg)_rotateY(-11deg)_scale(1.04)] group-focus-visible:[transform:rotateX(9deg)_rotateY(-11deg)_scale(1.04)] group-active:scale-[0.98]")
+          }
         >
-          {/* marigold bloom on hover */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-[var(--dur-slow)] group-hover:opacity-100"
-            style={{
-              backgroundImage:
-                "radial-gradient(110% 80% at 50% 0%, color-mix(in oklab, var(--marigold) 24%, transparent), transparent 65%)",
-            }}
-          />
+          <Glass
+            variant="card"
+            refract
+            className={
+              "flex h-full flex-col items-center gap-2.5 overflow-hidden rounded-[1.35rem] p-4 text-center [transform-style:preserve-3d] transition-shadow duration-[var(--dur-slow)]" +
+              (reduced
+                ? ""
+                : " group-hover:shadow-[0_38px_80px_-42px_color-mix(in_oklab,var(--ink)_55%,transparent)] group-focus-visible:shadow-[0_38px_80px_-42px_color-mix(in_oklab,var(--ink)_55%,transparent)]")
+            }
+          >
+            {/* diagonal light sweep */}
+            {!reduced && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full rounded-[inherit] transition-transform duration-1000 ease-in-out group-hover:translate-x-full"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(60deg, transparent 38%, color-mix(in oklab, var(--background) 42%, transparent) 50%, transparent 62%)",
+                }}
+              />
+            )}
 
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-foreground font-data text-2xs text-background transition-transform duration-[var(--dur-base)] ease-[var(--ease-enter)] group-hover:scale-110">
-            {item.weight}
-          </span>
 
-          <span className="relative block w-full">
-            <StrandMark weight={item.weight} />
-          </span>
+            {/* marigold bloom on hover */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-[var(--dur-slow)] group-hover:opacity-100"
+              style={{
+                backgroundImage:
+                  "radial-gradient(110% 80% at 50% 0%, color-mix(in oklab, var(--marigold) 24%, transparent), transparent 65%)",
+              }}
+            />
 
-          <span className="relative mt-auto block w-full">
-            <span className="block truncate font-display text-base font-normal leading-tight text-foreground">
-              {item.name}
+            {/* inner bevel ring */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-[inherit] border-[3px] border-[color-mix(in_oklab,var(--background)_45%,transparent)]"
+            />
+
+            {/* badge — front-most depth layer */}
+            <span
+              className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-marigold font-data text-2xs text-ink shadow-[inset_0_1px_2px_color-mix(in_oklab,var(--background)_60%,transparent),0_8px_18px_-8px_color-mix(in_oklab,var(--marigold)_75%,transparent)] transition-transform duration-[var(--dur-base)] ease-[var(--ease-enter)] group-hover:scale-105"
+              style={reduced ? undefined : { transform: "translateZ(46px)" }}
+            >
+              {item.weight}
             </span>
-            <span className="mt-1 block font-data text-2xs text-marigold">{item.spec}</span>
-            <span className="mt-1 block truncate text-xs leading-snug text-muted-foreground">
-              {item.note}
+
+            {/* strand mark — mid depth */}
+            <span
+              className="relative block w-full drop-shadow-[0_6px_10px_color-mix(in_oklab,var(--ink)_18%,transparent)] transition-transform duration-500 group-hover:-translate-y-0.5"
+              style={reduced ? undefined : { transform: "translateZ(28px)" }}
+            >
+              <StrandMark weight={item.weight} />
             </span>
-          </span>
-        </Glass>
+
+            {/* copy — nearest to the glass surface */}
+            <span
+              className="relative mt-auto block w-full"
+              style={reduced ? undefined : { transform: "translateZ(14px)" }}
+            >
+              <span className="block truncate font-display text-base font-normal leading-tight text-foreground">
+                {item.name}
+              </span>
+              <span className="mt-1.5 inline-block rounded-full bg-[color-mix(in_oklab,var(--ink)_7%,transparent)] px-2.5 py-0.5 font-data text-2xs text-marigold">
+                {item.spec}
+              </span>
+              <span className="mt-1.5 block truncate text-xs leading-snug text-muted-foreground">
+                {item.note}
+              </span>
+            </span>
+          </Glass>
+
+          {/* floating ground shadow */}
+          {!reduced && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -bottom-3 left-1/2 h-4 w-3/4 -translate-x-1/2 rounded-full bg-[color-mix(in_oklab,var(--ink)_18%,transparent)] opacity-0 blur-xl transition-all duration-700 group-hover:translate-y-2 group-hover:opacity-100"
+            />
+          )}
+        </div>
       </TileLink>
     </motion.li>
   );
 }
+
 
 export function YarnWeightRail() {
   const reduced = useReducedMotion();
