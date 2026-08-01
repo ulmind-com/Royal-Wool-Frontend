@@ -85,8 +85,7 @@ function Home() {
 
       <YarnWeightRail />
 
-
-
+      <YarnFanCarousel />
 
       <ProductRail
         anchor="bestsellers"
@@ -98,7 +97,6 @@ function Home() {
 
       <UpcomingRail />
 
-      <YarnFanCarousel />
 
       <SectionStub
         anchor="lookbook"
