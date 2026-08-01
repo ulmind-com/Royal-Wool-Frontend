@@ -58,7 +58,7 @@ function FanCard({
   const s = slotStyle(offset);
   return (
     <motion.div
-      className="absolute left-1/2 top-0 -ml-[calc(min(19rem,68vw)/2)] w-[min(19rem,68vw)]"
+      className="absolute left-1/2 top-0 -ml-[calc(min(21rem,70vw)/2)] w-[min(21rem,70vw)]"
       style={{ zIndex: s.zIndex }}
       initial={false}
       animate={{
@@ -228,7 +228,7 @@ export function YarnFanCarousel() {
         onBlur={() => setPaused(false)}
       >
         <motion.div
-          className="relative mx-auto h-[min(30rem,105vw)] w-full max-w-[1200px] cursor-grab active:cursor-grabbing sm:h-[34rem]"
+          className="relative mx-auto h-[min(31rem,112vw)] w-full max-w-[1200px] cursor-grab active:cursor-grabbing sm:h-[32rem]"
           style={{ perspective: 1400 }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
