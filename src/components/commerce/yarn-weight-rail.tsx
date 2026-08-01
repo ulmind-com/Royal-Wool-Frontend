@@ -184,10 +184,10 @@ function WeightTile({
         {/* Kinetic Glass: perspective wrapper → tilting card → depth layers */}
         <div
           className={
-            "relative h-full transform-gpu will-change-transform [transform-style:preserve-3d] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" +
+            "relative h-full will-change-transform [transform-style:preserve-3d] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" +
             (reduced
               ? ""
-              : " group-hover:[transform:rotateX(8deg)_rotateY(-10deg)_scale(1.04)] group-focus-visible:[transform:rotateX(8deg)_rotateY(-10deg)_scale(1.04)] group-active:scale-[0.98]")
+              : " group-hover:[transform:rotateX(9deg)_rotateY(-11deg)_scale(1.04)] group-focus-visible:[transform:rotateX(9deg)_rotateY(-11deg)_scale(1.04)] group-active:scale-[0.98]")
           }
         >
           <Glass
@@ -207,10 +207,11 @@ function WeightTile({
                 className="pointer-events-none absolute inset-0 -translate-x-full rounded-[inherit] transition-transform duration-1000 ease-in-out group-hover:translate-x-full"
                 style={{
                   backgroundImage:
-                    "linear-gradient(60deg, transparent 20%, color-mix(in oklab, var(--background) 78%, transparent) 50%, transparent 80%)",
+                    "linear-gradient(60deg, transparent 38%, color-mix(in oklab, var(--background) 42%, transparent) 50%, transparent 62%)",
                 }}
               />
             )}
+
 
             {/* marigold bloom on hover */}
             <span
