@@ -44,17 +44,17 @@ function Home() {
 
       {/* ── Trust bar ── */}
       <section
-        className="mx-auto w-full max-w-[1600px] px-4 pb-8 sm:px-6 lg:px-10"
+        className="mx-auto w-full max-w-[1600px] px-4 pt-10 pb-8 sm:px-6 lg:px-10"
         data-thread-anchor="trust"
         aria-label="Why Royal Wool"
       >
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {TRUST.map(({ icon: Icon, title, copy }) => (
-            <li key={title}>
-              <Glass variant="card" className="h-full">
-                <Icon className="h-5 w-5 text-marigold" aria-hidden />
+            <li key={title} className="h-full">
+              <Glass variant="card" className="flex h-full min-h-[9rem] flex-col">
+                <Icon className="h-5 w-5 shrink-0 text-marigold" aria-hidden />
                 <p className="mt-3 font-data text-2xs text-foreground">{title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{copy}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy}</p>
               </Glass>
             </li>
           ))}
