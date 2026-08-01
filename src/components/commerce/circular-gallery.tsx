@@ -302,6 +302,8 @@ type AppOptions = {
   font: string;
   scrollSpeed: number;
   scrollEase: number;
+  autoplay: boolean;
+  autoplayDelay: number;
   onItemClick?: (index: number) => void;
 };
 
