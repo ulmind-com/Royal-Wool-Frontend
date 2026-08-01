@@ -88,7 +88,7 @@ export const InteractiveTravelCard = React.forwardRef<
         {/* Content */}
         <div
           className="relative flex h-full flex-col justify-between p-6 sm:p-8"
-          style={reduced ? undefined : { transform: "translateZ(50px)" }}
+          style={reduced ? {} : { transform: "translateZ(50px)" }}
         >
           <div className="flex items-start justify-between gap-4">
             <div>
