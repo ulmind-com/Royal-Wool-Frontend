@@ -261,7 +261,7 @@ export function YarnWeightRail() {
               ))}
             </div>
           ) : isError && !apiTiles.length && !FALLBACK_TILES.length ? (
-            <DataError error={error} onRetry={() => void refetch()} />
+            <DataError error={error} retry={() => void refetch()} />
           ) : (
             <>
               <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-7">
