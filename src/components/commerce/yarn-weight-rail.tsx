@@ -98,10 +98,8 @@ function WeightTile({
             <span className="block font-display text-base font-normal text-foreground sm:text-lg">
               {item.name}
             </span>
-            <span className="mt-1 block whitespace-nowrap font-data text-[0.625rem] text-muted-foreground">
-              {item.hookMm} · {item.wpi}
-            </span>
-            <span className="mt-2 block min-h-[2.5rem] text-xs leading-relaxed text-muted-foreground/80">
+            <span className="mt-1 block font-data text-2xs text-marigold">Hook {item.hookMm}</span>
+            <span className="mt-2 block min-h-[2.75rem] text-xs leading-relaxed text-muted-foreground">
               {item.note}
             </span>
           </span>
