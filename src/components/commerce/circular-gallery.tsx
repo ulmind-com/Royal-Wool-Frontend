@@ -1,4 +1,5 @@
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from "ogl";
+import type { OGLRenderingContext } from "ogl";
 import { useEffect, useRef } from "react";
 
 /**
@@ -39,7 +40,7 @@ function getFontSize(font: string) {
 }
 
 function createTextTexture(
-  gl: WebGLRenderingContext,
+  gl: OGLRenderingContext,
   text: string,
   font: string,
   color: string,
@@ -71,7 +72,7 @@ class Title {
     textColor,
     font,
   }: {
-    gl: WebGLRenderingContext;
+    gl: OGLRenderingContext;
     plane: Mesh;
     text: string;
     textColor: string;
@@ -129,7 +130,7 @@ class Media {
   constructor(
     private opts: {
       geometry: Plane;
-      gl: WebGLRenderingContext;
+      gl: OGLRenderingContext;
       image: string;
       index: number;
       length: number;
@@ -306,7 +307,7 @@ type AppOptions = {
 
 class App {
   private renderer!: Renderer;
-  private gl!: WebGLRenderingContext;
+  private gl!: OGLRenderingContext;
   private camera!: Camera;
   private scene!: Transform;
   private planeGeometry!: Plane;
