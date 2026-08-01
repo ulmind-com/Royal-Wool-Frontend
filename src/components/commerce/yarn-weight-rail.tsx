@@ -94,14 +94,14 @@ function WeightTile({
             <StrandMark weight={item.weight} />
           </span>
 
-          <span className="relative mt-auto block">
+          <span className="relative mt-auto block w-full">
             <span className="block font-display text-base font-normal text-foreground sm:text-lg">
               {item.name}
             </span>
-            <span className="mt-1 block font-data text-2xs text-muted-foreground">
+            <span className="mt-1 block whitespace-nowrap font-data text-[0.625rem] text-muted-foreground">
               {item.hookMm} · {item.wpi}
             </span>
-            <span className="mt-2 block text-xs leading-relaxed text-muted-foreground/80">
+            <span className="mt-2 block min-h-[2.5rem] text-xs leading-relaxed text-muted-foreground/80">
               {item.note}
             </span>
           </span>
