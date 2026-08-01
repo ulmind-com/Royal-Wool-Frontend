@@ -63,9 +63,7 @@ export const InteractiveTravelCard = React.forwardRef<
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={
-          reduced
-            ? undefined
-            : { rotateX, rotateY, transformStyle: "preserve-3d" as const }
+          reduced ? {} : { rotateX, rotateY, transformStyle: "preserve-3d" as const }
         }
         className="group relative aspect-[4/5] w-full overflow-hidden rounded-[28px] border border-border/70 shadow-[0_30px_80px_-40px_color-mix(in_oklab,var(--foreground)_45%,transparent)]"
       >
