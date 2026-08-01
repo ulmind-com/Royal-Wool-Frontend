@@ -5,6 +5,7 @@ import { CategoryShowcase } from "@/components/commerce/category-showcase";
 import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
 import { ProductRail } from "@/components/commerce/product-rail";
 import { SpotlightSection } from "@/components/commerce/spotlight-section";
+import { YarnWeightRail } from "@/components/commerce/yarn-weight-rail";
 
 import { UpcomingRail } from "@/components/commerce/upcoming-rail";
 import { HeroSlider } from "@/components/commerce/hero-slider";
@@ -80,6 +81,8 @@ function Home() {
       <NewArrivalsGallery />
 
       <SpotlightSection />
+
+      <YarnWeightRail />
 
 
 

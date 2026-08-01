@@ -1,34 +1,34 @@
 ## Goal
 
-Home page-এ New Arrivals-এর পরে একটা নতুন "Spotlight" section — বাঁ দিকে 3D tilt card (তোর দেওয়া component), ডান দিকে screenshot-এর মতো editorial copy (eyebrow, দুই লাইনের headline, description, spec row, "Learn more →" link)।
+Spotlight-এর পরে নতুন section: **Shop by Yarn Weight** — screenshot-এর idea (weight 1–7, number badge, label), কিন্তু layout ও aesthetic আলাদা এবং premium: liquid-glass tile rail, hardcoded লাল box নয়, project-এর marigold/ink token আর `<Glass>` primitive দিয়ে।
 
 ## Layout
 
 ```text
-┌──────────────────────────┬──────────────────────────────┐
-│  [3D tilt card]          │  SPOTLIGHT · COTTON DELIGHT  │
-│   yarn image             │  Spun for softness.          │
-│   title + subtitle       │  Made to last.               │
-│   ↗ link (top-right)     │  ───                         │
-│   [Shop the range] btn   │  short paragraph             │
-│                          │  COMPOSITION | GAUGE | CARE  │
-│                          │  LEARN MORE  →               │
-└──────────────────────────┴──────────────────────────────┘
+09 · Yarn weight
+Shop by Yarn Weight                        [ hook scale: 2.25 – 12 mm ]
+──────────────────────────────────────────────────────────────────────
+┌───────┐┌───────┐┌───────┐┌───────┐┌───────┐┌───────┐┌───────┐
+│  (1)  ││  (2)  ││  (3)  ││  (4)  ││  (5)  ││  (6)  ││  (7)  │
+│ glass ││       ││       ││       ││       ││       ││       │
+│ twist ││       ││       ││       ││       ││       ││       │
+│S.Fine ││ Fine  ││ Light ││Medium ││ Bulky ││S.Bulky││ Jumbo │
+│2.25mm ││ 3mm   ││ 4mm   ││ 5mm   ││ 7mm   ││ 9mm   ││ 12mm  │
+└───────┘└───────┘└───────┘└───────┘└───────┘└───────┘└───────┘
 ```
-Mobile-এ card উপরে, copy নিচে।
 
-## What gets built
+- Desktop: 7-column rail; প্রতিটা tile-এ thickness bar/twist graphic — 1 সরু → 7 মোটা (এটাই screenshot থেকে মূল differentiator)।
+- Tablet: 4 columns; mobile: horizontal snap-scroll rail with edge fade (কিছু কাটা যাবে না)।
+- Hover: liquid-glass sheen sweep + tile lift + marigold glow, badge number scale-up; scroll-এ staggered fade-up, `useReducedMotion` respect।
 
-1. `src/components/ui/3d-card.tsx` — তোর দেওয়া `InteractiveTravelCard` component, framer-motion tilt logic হুবহু রেখে, কিন্তু JSX-টা সম্পূর্ণ করে লেখা হবে (তোর paste-এ markup গুলো ফাঁকা এসেছে)। হার্ডকোড করা color নয় — project-এর semantic token ব্যবহার করব, তাই light theme-এর সাথে মিলে যাবে। `prefers-reduced-motion` হলে tilt বন্ধ।
-2. `src/components/commerce/spotlight-section.tsx` — section wrapper: card + editorial column, স্ক্রলে staggered fade-up, existing section rhythm (`max-w-[1600px]`, eyebrow font-data, font-display headline) অনুযায়ী।
-3. `src/routes/index.tsx` — `<NewArrivalsGallery />`-এর পরে `<SpotlightSection />` বসবে, একটা SectionStub সরে যাবে না (শুধু নতুন section যোগ হচ্ছে)।
+## Files
 
-## Content & image
+1. `src/data/yarn-weights.ts` — ৭টা entry: `{ id, weight, name, hookMm, wpi, note, query }`. পুরোপুরি data-driven, পরে admin/API থেকে feed করা সহজ।
+2. `src/components/commerce/yarn-weight-rail.tsx` — section + `WeightTile`; `<Glass variant="panel">` reuse, inline SVG twist/thickness graphic, click → `/search?q=<weight name>`.
+3. `src/routes/index.tsx` — `<SpotlightSection />`-এর পরে `<YarnWeightRail />`; existing stub গুলো যেমন আছে থাকবে।
 
-- ছবি: existing yarn asset `src/assets/yarn/delight-pink.jpg.asset.json` (তোর আগে দেওয়া Cotton Delight ছবি)। চাইলে পরে বদলানো যাবে।
-- Copy: Cotton Delight-কে spotlight করে premium wording; card link + button যাবে `/search?q=Cotton%20Delight`।
-- Text/image/link সব component prop হিসেবে, তাই পরে admin/API থেকে feed করা সহজ হবে।
+## Notes
 
-## Dependencies
-
-`framer-motion` আর `lucide-react` আগেই install করা আছে — নতুন কিছু লাগবে না।
+- ছবি generate করব না — number badge + procedural twist graphic দিয়েই art হবে, তাই সব weight-এ consistent আর fast load।
+- সব color semantic token (`--marigold`, `--ink`, `card`, `border`) — hardcoded hex নেই, light theme-এ মিলে যাবে।
+- নতুন dependency লাগবে না (framer-motion, lucide-react আছে)।
