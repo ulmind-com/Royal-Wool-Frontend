@@ -1,29 +1,31 @@
 ## Goal
 
-"Shop by Yarn Weight" tiles become data-driven from the backend (admin-controlled), each tile opens that group's own product listing page, and the tiles get shorter/more compact.
+Replace the flat "Shop by Yarn Weight" tiles with the chosen **Kinetic Glass** 3D card direction — premium, tactile, animated on hover — while keeping the section compact and fully data-driven.
 
 ## What changes
 
-### 1. Dynamic source (admin controlled)
-The section currently reads a hardcoded array (`src/data/yarn-weights.ts`). New behaviour:
+Only `src/components/commerce/yarn-weight-rail.tsx` (tile visuals + motion). Data, links, admin-driven category logic and copy stay exactly as they are.
 
-- Fetch `/categories/tree` (existing `categoryTreeQuery`, already cached).
-- Look for a parent node whose name/slug matches "yarn weight" / "weight" (case-insensitive); use its children as the tiles. If no such parent exists, fall back to a top-level group match, then to the built-in 1–7 list so the page never looks broken.
-- Each tile pulls name, image, product/child count, and order straight from the API — so once you add or rename weight categories in the admin panel, the section updates with no code change.
-- Tile order follows the API order (or `sort_order` if present); numbering badge is derived from position, so 5 or 9 categories work as well as 7.
-- Spec line ("Hook 5 mm" etc.) comes from the category's description/blurb when the admin has set one, otherwise from the local weight table by matching name.
-- Loading = compact skeleton tiles; error = existing `DataError`; empty = section hides itself rather than showing an empty rail.
+### The card
+- Wrap each tile in a perspective container (`perspective: 1200px`) with a `preserve-3d` inner card.
+- Hover/focus: card tilts (`rotateX ~8deg`, `rotateY ~-10deg`) + slight scale, eased with `cubic-bezier(0.23, 1, 0.32, 1)` over ~0.6s.
+- Depth layers via `translateZ`: number badge furthest forward, strand mark mid, text block behind — so the tilt reads as real parallax.
+- Diagonal light sweep: a translucent white gradient band that slides across the glass on hover.
+- Shadow bloom + a soft floating ground shadow ellipse under the card that fades in on hover.
+- Inner bevel ring for the glass edge; keeps the existing `<Glass variant="card">` base so the liquid-glass look stays consistent with the rest of the site.
 
-### 2. Real category pages on click
-- API-backed tiles link to `/collections/$slug` (the existing category listing route), so clicking opens exactly that category's products.
-- Only the fallback tiles keep the `/search?q=...` link, since they have no real slug yet.
+### Details kept on-brand
+- Badge becomes a rounded-square marigold chip with inset highlight (numbers stay position-derived: 1…N).
+- Weight name in the existing display serif, hook spec in a soft pill using the mono data font, note stays one line with ellipsis.
+- Colors use existing tokens only (`--marigold`, `--ink`, `--background`, `--foreground`) — no hardcoded hex.
 
-### 3. Shorter cards
-- Reduce padding (`p-5` → `p-4`), remove the fixed `min-h-[2.75rem]` note block, shrink the strand graphic (`h-12` → `h-8`), tighten gaps, and cap the note to one line with ellipsis.
-- Net result: noticeably lower tiles with the same width, still aligned in a row, liquid-glass look and hover bloom unchanged.
+### Constraints respected
+- Cards stay short — the height only grows slightly (roughly +12–16px) to give the 3D room to breathe; still a 7-up row on desktop, snap rail on mobile.
+- Reduced motion: no tilt, no sweep, no lift — just a static glass card (existing `useReducedMotion` already wired in).
+- Touch devices get a light press/scale response instead of hover tilt.
 
 ## Technical notes
 
-- New `src/components/commerce/yarn-weight-rail.tsx` internals: `useQuery(categoryTreeQuery)` + a `toWeightTiles(tree)` mapper; keeps `YARN_WEIGHTS` only as fallback/spec lookup.
-- No backend or business-logic changes; purely storefront wiring against endpoints that already exist.
-- Verified with Playwright afterwards (tile heights, click through to a category page, no console errors).
+- Tilt is CSS-transform based on the group hover state (no per-card pointer listeners), so 7 cards stay cheap; `transform-gpu` + `will-change` on the card only.
+- No changes to `categoryTreeQuery`, tile mapping, `TileLink`, or `/collections/$slug` routing.
+- Verified afterwards with Playwright: hover state screenshot, tile height check, click-through to a category page, console clean.
