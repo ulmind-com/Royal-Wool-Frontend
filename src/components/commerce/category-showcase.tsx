@@ -53,6 +53,33 @@ function apiTile(category: CategoryNode): Tile {
   };
 }
 
+/** Renders the right typed Link for a static (search) or API (collection) tile. */
+function TileLink({
+  href,
+  children,
+  ...rest
+}: {
+  href: Tile["href"];
+  children: React.ReactNode;
+  className?: string;
+  "aria-label"?: string;
+  "data-cursor"?: string;
+}) {
+  if (href.to === "/search") {
+    return (
+      <Link to="/search" search={href.search} {...rest}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <Link to="/collections/$slug" params={href.params} {...rest}>
+      {children}
+    </Link>
+  );
+}
+
+
 function CategoryTile({
   tile,
   index,
