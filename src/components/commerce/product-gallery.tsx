@@ -14,11 +14,14 @@ export function ProductGallery({
   title,
   index,
   onIndex,
+  footer,
 }: {
   images: string[];
   title: string;
   index: number;
   onIndex: (i: number) => void;
+  /** Rendered directly under the main image frame, matching its width (md+). */
+  footer?: React.ReactNode;
 }) {
   const scroller = useRef<HTMLDivElement | null>(null);
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
@@ -41,7 +44,7 @@ export function ProductGallery({
     <div className="md:grid md:grid-cols-[76px_minmax(0,1fr)] md:gap-4">
       {/* Desktop thumbnail rail */}
       {images.length > 1 ? (
-        <ul className="hidden max-h-[380px] flex-col gap-3 overflow-y-auto pr-1 md:flex">
+        <ul className="hidden max-h-[380px] flex-col gap-2.5 overflow-y-auto pr-1 md:flex">
           {images.map((src, i) => (
             <li key={`${src}-${i}`}>
               <button
@@ -51,15 +54,17 @@ export function ProductGallery({
                 aria-current={i === safe}
                 data-cursor="link"
                 className={cn(
-                  "h-[76px] w-[68px] overflow-hidden rounded-xl border transition-colors",
-                  i === safe ? "border-marigold" : "border-border hover:border-marigold/60",
+                  "h-[68px] w-[68px] overflow-hidden rounded-lg border bg-card transition-all",
+                  i === safe
+                    ? "border-marigold ring-1 ring-marigold/40"
+                    : "border-border/70 hover:border-marigold/60",
                 )}
               >
                 <img
                   src={resolveMedia(src) ?? src}
                   alt=""
                   loading="lazy"
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               </button>
             </li>
@@ -67,10 +72,10 @@ export function ProductGallery({
         </ul>
       ) : null}
 
-      <div>
+      <div className="md:mx-auto md:w-full md:max-w-[400px]">
         {/* Desktop frame with cursor zoom */}
         <div
-          className="group relative mx-auto hidden aspect-square max-h-[380px] overflow-hidden rounded-3xl border border-border md:block"
+          className="group relative mx-auto hidden aspect-square max-h-[380px] overflow-hidden rounded-2xl border border-border/60 bg-card md:block"
           onPointerMove={(e) => {
             const r = e.currentTarget.getBoundingClientRect();
             setZoom({
@@ -79,17 +84,13 @@ export function ProductGallery({
             });
           }}
           onPointerLeave={() => setZoom(null)}
-          style={{
-            backgroundImage:
-              "linear-gradient(135deg, color-mix(in oklab, var(--ink) 5%, transparent), color-mix(in oklab, var(--marigold) 5%, transparent))",
-          }}
         >
           {hero ? (
             <img
               src={hero}
               alt={title}
               decoding="async"
-              className="aspect-square w-full object-cover transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)]"
+              className="aspect-square w-full object-contain transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)]"
               style={
                 zoom
                   ? { transform: "scale(1.7)", transformOrigin: `${zoom.x}% ${zoom.y}%` }
@@ -158,6 +159,8 @@ export function ProductGallery({
             </div>
           ) : null}
         </div>
+
+        {footer ? <div className="hidden md:block">{footer}</div> : null}
       </div>
     </div>
   );
