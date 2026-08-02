@@ -89,6 +89,9 @@ function Home() {
       <YarnFanCarousel />
 
       <FeaturedYarn />
+
+      <BrandBanner />
+
     </>
   );
 }
