@@ -62,10 +62,7 @@ export function YarnStackCards() {
         </p>
       </div>
 
-      <div
-        ref={containerRef}
-        className={flat ? "relative mt-10" : "relative mt-10 h-[300vh]"}
-      >
+      <div ref={containerRef} className="relative mt-10">
         {YARN_STACK_CARDS.map((card, i) => (
           <motion.div
             key={card.key}
@@ -73,7 +70,7 @@ export function YarnStackCards() {
             className={
               flat
                 ? "mx-auto w-full max-w-[1200px] px-5 pb-8 sm:px-8 lg:px-14"
-                : "sticky top-[12vh] mx-auto flex w-full max-w-[1200px] items-center px-5 sm:px-8 lg:px-14"
+                : "sticky top-0 mx-auto flex h-svh w-full max-w-[1200px] items-center px-5 sm:px-8 lg:px-14"
             }
           >
             <RangeCard card={card} index={i} />
