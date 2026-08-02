@@ -169,15 +169,15 @@ function ProductPage() {
         </nav>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-5 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:px-10">
-        <div className="lg:sticky lg:top-14 lg:self-start">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-5 sm:px-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 md:px-10">
+        <div className="md:sticky md:top-14 md:self-start">
           <ProductGallery
             images={gallery}
             title={product.title}
             index={activeImage}
             onIndex={setActiveImage}
           />
-          <div className="hidden lg:block">
+          <div className="hidden md:block">
             <ProductActions
               product={product}
               qty={qty}
@@ -400,7 +400,7 @@ function ProductPage() {
 
       {/* Mobile sticky action bar */}
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border px-4 py-3 backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border px-4 py-3 backdrop-blur-xl md:hidden"
         style={{ backgroundColor: "color-mix(in oklab, var(--fleece) 88%, transparent)" }}
       >
         <div className="flex items-center gap-3">
