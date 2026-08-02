@@ -126,24 +126,27 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
             {card.eyebrow}
           </Glass>
 
-          <h3 className="font-display text-3xl font-light leading-[1.05] tracking-[-0.02em] text-foreground sm:text-4xl lg:text-5xl">
+          <h3 className="font-display text-2xl font-light leading-[1.05] tracking-[-0.02em] text-foreground xs:text-3xl sm:text-4xl lg:text-5xl">
             {card.title}
           </h3>
 
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="max-w-md text-[0.8rem] leading-relaxed text-muted-foreground sm:text-base">
             {card.copy}
           </p>
 
-          <dl className="grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
+          <dl className="grid grid-cols-3 gap-2 border-t border-border pt-4 sm:gap-3 sm:pt-5">
             {card.specs.map((spec) => (
-              <div key={spec.label}>
+              <div key={spec.label} className="min-w-0">
                 <dt className="font-data text-2xs text-marigold">{spec.label}</dt>
-                <dd className="mt-1 text-xs leading-snug text-foreground">{spec.value}</dd>
+                <dd className="mt-1 text-[0.7rem] leading-snug text-foreground sm:text-xs">
+                  {spec.value}
+                </dd>
               </div>
             ))}
           </dl>
 
-          <div className="flex flex-wrap items-center gap-5 pt-1">
+          <div className="flex flex-wrap items-center gap-4 pt-1 sm:gap-5">
+
             <Link
               to="/search"
               search={{ q: card.query }}
