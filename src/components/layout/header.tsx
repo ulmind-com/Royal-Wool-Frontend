@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Bell, Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronDown, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { Glass } from "@/components/ui/glass";
 import { categoryTreeQuery } from "@/lib/api/queries";
@@ -23,7 +23,6 @@ function Wordmark() {
       <span className="font-display text-xl font-light italic tracking-[-0.04em] text-marigold sm:text-2xl">
         Wool
       </span>
-
     </Link>
   );
 }
@@ -31,17 +30,19 @@ function Wordmark() {
 const ICON_BTN =
   "relative grid h-11 w-11 shrink-0 place-items-center rounded-full text-foreground/80 transition-colors duration-[var(--dur-micro)] hover:bg-foreground/10 hover:text-foreground active:bg-foreground/10 sm:h-10 sm:w-10";
 
+const NAV_LINK =
+  "rounded-full px-3 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground";
+
+const NAV_LINK_ACTIVE = "font-medium text-foreground";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openColumn, setOpenColumn] = useState<string | null>(null);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const categoriesTimer = useRef<number | null>(null);
 
-  // Top-level categories become mega-menu columns; their children become links.
   const { data: tree } = useQuery(categoryTreeQuery);
-  const groups: CategoryNode[] = (tree ?? []).filter((c) => !c.parent_id).slice(0, 5);
-  const activeGroup = groups.find((g) => g.slug === openColumn);
-  const activeItems = activeGroup?.children ?? [];
+  const groups: CategoryNode[] = (tree ?? []).filter((c) => !c.parent_id);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -50,6 +51,19 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const openCategories = () => {
+    if (categoriesTimer.current) window.clearTimeout(categoriesTimer.current);
+    setCategoriesOpen(true);
+  };
+
+  const closeCategoriesSoon = () => {
+    categoriesTimer.current = window.setTimeout(() => setCategoriesOpen(false), 120);
+  };
+
+  const closeCategoriesNow = () => {
+    if (categoriesTimer.current) window.clearTimeout(categoriesTimer.current);
+    setCategoriesOpen(false);
+  };
 
   return (
     <header
@@ -70,7 +84,6 @@ export function Header() {
     >
       <div className="mx-auto grid w-full max-w-[1600px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-6 sm:py-3 lg:px-10">
         <div className="flex min-w-0 items-center gap-1 sm:gap-2">
-
           <button
             type="button"
             className={cn(ICON_BTN, "lg:hidden")}
@@ -84,51 +97,88 @@ export function Header() {
           <Wordmark />
         </div>
 
-        {/* desktop mega-menu triggers */}
+        {/* desktop nav */}
         <nav aria-label="Main" className="hidden min-w-0 justify-center lg:flex">
-          <ul className="flex items-center gap-1" onMouseLeave={() => setOpenColumn(null)}>
-            {groups.map((group) => (
-              <li key={group.id}>
-                {group.children?.length ? (
-                  <button
-                    type="button"
-                    data-cursor="link"
-                    onMouseEnter={() => setOpenColumn(group.slug)}
-                    onFocus={() => setOpenColumn(group.slug)}
-                    aria-expanded={openColumn === group.slug}
-                    className="rounded-full px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {group.name}
-                  </button>
-                ) : (
-                  <Link
-                    to="/collections/$slug"
-                    params={{ slug: group.slug }}
-                    data-cursor="link"
-                    onMouseEnter={() => setOpenColumn(null)}
-                    className="rounded-full px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {group.name}
-                  </Link>
-                )}
-              </li>
-            ))}
+          <ul className="flex items-center gap-0.5">
             <li>
               <Link
-                to="/upcoming"
+                to="/"
+                activeProps={{ className: NAV_LINK_ACTIVE }}
+                inactiveProps={{ className: "" }}
+                activeOptions={{ exact: true }}
+                className={NAV_LINK}
                 data-cursor="link"
-                className="rounded-full px-4 py-2 font-data text-2xs text-marigold transition-colors hover:text-foreground"
               >
-                Upcoming
+                Home
               </Link>
             </li>
             <li>
               <Link
-                to="/offers"
+                to="/collections"
+                activeProps={{ className: NAV_LINK_ACTIVE }}
+                inactiveProps={{ className: "" }}
+                className={NAV_LINK}
                 data-cursor="link"
-                className="rounded-full px-4 py-2 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
               >
-                Offers
+                Shop
+              </Link>
+            </li>
+            <li
+              onMouseEnter={openCategories}
+              onMouseLeave={closeCategoriesSoon}
+              onFocus={openCategories}
+              onBlur={closeCategoriesSoon}
+            >
+              <button
+                type="button"
+                data-cursor="link"
+                aria-expanded={categoriesOpen}
+                className={cn(
+                  NAV_LINK,
+                  "inline-flex items-center gap-1",
+                  categoriesOpen && NAV_LINK_ACTIVE,
+                )}
+              >
+                Categories
+                <ChevronDown
+                  className={cn(
+                    "h-3.5 w-3.5 transition-transform duration-[var(--dur-micro)]",
+                    categoriesOpen && "rotate-180",
+                  )}
+                />
+              </button>
+            </li>
+            <li>
+              <Link
+                to="/about"
+                activeProps={{ className: NAV_LINK_ACTIVE }}
+                inactiveProps={{ className: "" }}
+                className={NAV_LINK}
+                data-cursor="link"
+              >
+                About Us
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/blog"
+                activeProps={{ className: NAV_LINK_ACTIVE }}
+                inactiveProps={{ className: "" }}
+                className={NAV_LINK}
+                data-cursor="link"
+              >
+                Blog
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/contact"
+                activeProps={{ className: NAV_LINK_ACTIVE }}
+                inactiveProps={{ className: "" }}
+                className={NAV_LINK}
+                data-cursor="link"
+              >
+                Contact
               </Link>
             </li>
           </ul>
@@ -148,24 +198,7 @@ export function Header() {
           <Link to="/search" className={cn(ICON_BTN, "md:hidden")} aria-label="Search yarns">
             <Search className="h-5 w-5" />
           </Link>
-          {/* Wishlist + notifications live in the drawer on phones to keep the bar breathable */}
-          <Link
-            to="/account/wishlist"
-            className={cn(ICON_BTN, "hidden sm:grid")}
-            aria-label="Wishlist"
-            data-cursor="link"
-          >
-            <Heart className="h-5 w-5" />
-          </Link>
-          <Link
-            to="/account/notifications"
-            className={cn(ICON_BTN, "hidden sm:grid")}
-            aria-label="Notifications"
-            data-cursor="link"
-          >
-            <Bell className="h-5 w-5" />
-          </Link>
-          <Link to="/account" className={ICON_BTN} aria-label="Account" data-cursor="link">
+          <Link to="/account" className={ICON_BTN} aria-label="My Account" data-cursor="link">
             <User className="h-5 w-5" />
           </Link>
           <Link to="/cart" className={ICON_BTN} aria-label="Cart" data-cursor="link">
@@ -175,51 +208,51 @@ export function Header() {
             </span>
           </Link>
         </div>
-
       </div>
 
-      {/* desktop mega-menu panel */}
-      {activeGroup && activeItems.length ? (
+      {/* desktop categories mega-menu panel */}
+      {categoriesOpen && groups.length ? (
         <div
           className="absolute inset-x-0 top-full hidden px-6 pb-6 lg:block"
-          onMouseEnter={() => setOpenColumn(activeGroup.slug)}
-          onMouseLeave={() => setOpenColumn(null)}
+          onMouseEnter={openCategories}
+          onMouseLeave={closeCategoriesSoon}
         >
           <Glass variant="panel" refract className="mx-auto max-w-[1200px]">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-8">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3">
-                <Link
-                  to="/collections/$slug"
-                  params={{ slug: activeGroup.slug }}
-                  data-cursor="link"
-                  className="border-b border-border pb-2 text-lg text-marigold transition-colors hover:text-foreground"
-                >
-                  All {activeGroup.name}
-                </Link>
-                {activeItems.map((item) => (
+            <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+              {groups.slice(0, 4).map((group) => (
+                <div key={group.id}>
                   <Link
-                    key={item.id}
                     to="/collections/$slug"
-                    params={{ slug: item.slug }}
+                    params={{ slug: group.slug }}
                     data-cursor="link"
-                    className="border-b border-border pb-2 text-lg text-muted-foreground transition-colors hover:text-marigold"
+                    className="inline-block border-b border-border pb-2 font-display text-lg text-marigold transition-colors hover:text-foreground"
+                    onClick={closeCategoriesNow}
                   >
-                    {item.name}
+                    {group.name}
                   </Link>
-                ))}
-              </div>
-              <div className="hidden w-64 shrink-0 flex-col justify-between md:flex">
-                <p className="font-data text-2xs text-muted-foreground">Curated by hand</p>
-                <p className="font-display text-2xl font-light text-foreground">
-                  Small-batch colour, wound for stitch definition.
-                </p>
-              </div>
+                  <ul className="mt-3 space-y-2">
+                    {(group.children ?? []).slice(0, 5).map((item) => (
+                      <li key={item.id}>
+                        <Link
+                          to="/collections/$slug"
+                          params={{ slug: item.slug }}
+                          data-cursor="link"
+                          className="text-base text-muted-foreground transition-colors hover:text-marigold"
+                          onClick={closeCategoriesNow}
+                        >
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </Glass>
         </div>
       ) : null}
 
-      {/* mobile drawer — app-style sheet: scrollable, safe-area aware */}
+      {/* mobile drawer */}
       {menuOpen ? (
         <div
           className="max-h-[calc(100dvh-3.75rem)] overflow-y-auto overscroll-contain border-t border-border px-4 pb-safe pt-4 backdrop-blur-[22px] lg:hidden"
@@ -230,57 +263,104 @@ export function Header() {
         >
           <nav aria-label="Mobile">
             <ul className="divide-y divide-border/60">
-              {groups.map((group) => (
-                <li key={group.id} className="py-4">
-                  <Link
-                    to="/collections/$slug"
-                    params={{ slug: group.slug }}
-                    onClick={() => setMenuOpen(false)}
-                    className="font-data text-2xs text-marigold"
-                  >
-                    {group.name}
-                  </Link>
-                  <ul className="mt-2">
-                    {(group.children ?? []).map((item) => (
-                      <li key={item.id}>
-                        <Link
-                          to="/collections/$slug"
-                          params={{ slug: item.slug }}
-                          onClick={() => setMenuOpen(false)}
-                          className="flex min-h-11 items-center text-base text-muted-foreground active:text-foreground"
-                        >
-                          {item.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-              <li className="grid grid-cols-2 gap-3 py-5">
-                {[
-                  { to: "/upcoming" as const, label: "Upcoming", accent: true },
-                  { to: "/offers" as const, label: "Offers", accent: false },
-                  { to: "/account/wishlist" as const, label: "Wishlist", accent: false },
-                  { to: "/account/notifications" as const, label: "Alerts", accent: false },
-                ].map((l) => (
-                  <Link
-                    key={l.to}
-                    to={l.to}
-                    onClick={() => setMenuOpen(false)}
-                    className={cn(
-                      "flex min-h-11 items-center justify-center rounded-2xl border border-border font-data text-2xs",
-                      l.accent ? "text-marigold" : "text-muted-foreground",
-                    )}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+              <li>
+                <Link
+                  to="/"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/collections"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  Shop
+                </Link>
+              </li>
+              <li className="py-3">
+                <p className="font-data text-2xs text-marigold">Categories</p>
+                <ul className="mt-2 space-y-1">
+                  {groups.map((group) => (
+                    <li key={group.id}>
+                      <Link
+                        to="/collections/$slug"
+                        params={{ slug: group.slug }}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex min-h-11 items-center text-base text-muted-foreground active:text-foreground"
+                      >
+                        {group.name}
+                      </Link>
+                      <ul className="ml-4 space-y-1">
+                        {(group.children ?? []).map((item) => (
+                          <li key={item.id}>
+                            <Link
+                              to="/collections/$slug"
+                              params={{ slug: item.slug }}
+                              onClick={() => setMenuOpen(false)}
+                              className="flex min-h-10 items-center text-sm text-muted-foreground/80 active:text-foreground"
+                            >
+                              {item.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/blog"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/account"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  My Account
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/cart"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  Cart
+                </Link>
               </li>
             </ul>
           </nav>
         </div>
       ) : null}
-
     </header>
   );
 }
