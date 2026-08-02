@@ -131,7 +131,7 @@ function ShopPage() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-8 lg:px-10">
+    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-4 sm:px-6 sm:pb-24 sm:pt-5 lg:px-10">
       <header className="mx-auto max-w-2xl text-center">
         <p className="font-data text-2xs uppercase tracking-[0.18em] text-marigold">Shop</p>
         <h1 className="mt-2 font-display text-2xl font-light tracking-[-0.02em] text-foreground sm:text-4xl">
