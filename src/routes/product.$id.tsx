@@ -466,6 +466,17 @@ function ProductActions({
             data-cursor="link"
             className="grid h-9 w-9 place-items-center text-foreground disabled:opacity-35"
           >
+            <Minus className="h-3.5 w-3.5" />
+          </button>
+          <span className="min-w-8 text-center font-data text-sm text-foreground">{qty}</span>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))}
+            disabled={soldOut || qty >= Math.max(stock, 1)}
+            data-cursor="link"
+            className="grid h-9 w-9 place-items-center text-foreground disabled:opacity-35"
+          >
             <Plus className="h-3.5 w-3.5" />
           </button>
         </div>
