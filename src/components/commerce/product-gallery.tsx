@@ -14,11 +14,14 @@ export function ProductGallery({
   title,
   index,
   onIndex,
+  footer,
 }: {
   images: string[];
   title: string;
   index: number;
   onIndex: (i: number) => void;
+  /** Rendered directly under the main image frame, matching its width (md+). */
+  footer?: React.ReactNode;
 }) {
   const scroller = useRef<HTMLDivElement | null>(null);
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
