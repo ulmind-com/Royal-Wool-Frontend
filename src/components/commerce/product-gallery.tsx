@@ -159,6 +159,8 @@ export function ProductGallery({
             </div>
           ) : null}
         </div>
+
+        {footer ? <div className="hidden md:block">{footer}</div> : null}
       </div>
     </div>
   );
