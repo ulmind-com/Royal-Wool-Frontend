@@ -1,9 +1,14 @@
-Tighten the `/collections` page vertical spacing so the left filter rail sits closer to the top of the viewport.
+Two quick layout refinements on `/collections` based on the latest screenshot and feedback.
 
-Changes in `src/routes/collections.index.tsx`:
-- Reduce page top padding from `pt-10 sm:pt-14` to `pt-6 sm:pt-8`.
-- Reduce the gap between the centered header and the two-column grid from `mt-8 lg:mt-12` to `mt-5 lg:mt-6`.
-- Reduce the sticky sidebar top offset from `lg:top-24` to `lg:top-16` so it sticks higher while scrolling.
-- Trim the header block bottom margin if you keep the heading visible but move the filters up.
+1. **Heading smaller + single-line**
+   - In `src/routes/collections.index.tsx`, reduce the active-brand heading from `text-2xl sm:text-4xl` to `text-xl sm:text-3xl`.
+   - Add `whitespace-nowrap` and `truncate` so long brand names like "Ganga Acrowools Knitting Yarn" stay on one line and ellipsize if needed.
+   - Keep the header block centered.
 
-No other layout or component changes are needed.
+2. **Raise the left filter rail even higher**
+   - Reduce page top padding from `pt-6 sm:pt-8` to `pt-4 sm:pt-5`.
+   - Reduce the gap between header and grid from `mt-5 lg:mt-6` to `mt-4 lg:mt-5`.
+   - Reduce sticky sidebar top offset from `lg:top-16` to `lg:top-14`.
+   - Trim header bottom margin if needed so the sidebar starts closer to the viewport top.
+
+No component or logic changes beyond these spacing/typography tweaks.
