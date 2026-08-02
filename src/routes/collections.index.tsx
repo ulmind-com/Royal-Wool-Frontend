@@ -17,6 +17,7 @@ import {
 } from "@/lib/api/brands";
 import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
 import { flattenCategories } from "@/lib/api/types";
+import { cn } from "@/lib/utils";
 
 type ShopSearch = { brand: string; category: string; weight: string; sort: string };
 
