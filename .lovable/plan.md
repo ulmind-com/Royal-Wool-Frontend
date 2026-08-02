@@ -1,42 +1,33 @@
 ## Goal
-Resize the product detail page so the main image is smaller (but not tiny) and the quantity/subtotal/Add to cart/Buy Now block is visible immediately below the gallery without scrolling.
+Make the product page look like the reference storefront layout, and make the qty / Subtotal / Add to cart / Buy Now block exactly as wide as the product image — not wider.
 
 ## Current state
-- `src/routes/product.$id.tsx` renders the gallery + `ProductActions` in a sticky left column.
-- `ProductGallery` uses a full-width `aspect-square` desktop frame, so the image consumes most of the viewport height and pushes the action block below the fold.
-- The action block itself has generous padding and large buttons, adding to the vertical footprint.
+- `src/routes/product.$id.tsx` places `ProductActions` as a sibling *below* the whole gallery grid, so it spans the thumbnail rail + image and looks wider than the image.
+- `ProductGallery` uses a `md:grid-cols-[76px_1fr]` layout with a bordered, gradient-filled image frame capped at 380px.
 
 ## Changes
 
-### 1. Cap the desktop gallery height
-In `src/components/commerce/product-gallery.tsx`:
-- Add a `max-h-[420px]` (or equivalent) cap to the desktop main image frame so the image stops growing on tall viewports.
-- Keep the frame centered and maintain `aspect-square` fallback for smaller widths.
-- Sync the vertical thumbnail rail `max-h` to the same cap so the rail does not extend past the image.
-- Leave mobile swipe carousel unchanged.
-
-### 2. Compact the action block
+### 1. Constrain the action block to the image column
 In `src/routes/product.$id.tsx`:
-- Reduce `ProductActions` internal spacing: smaller quantity stepper (h-9/w-9), tighter gaps, shorter buttons (`min-h-10`), and `p-3 sm:p-4` on the Glass card.
-- Keep all behavior: quantity clamping to stock, sold-out disabled state, subtotal math, WhatsApp link.
+- Wrap the gallery + actions in one grid that shares the gallery's `[76px_minmax(0,1fr)]` columns, and place `ProductActions` in the second column only (on `md+`), so its left edge aligns with the image and its width matches the image exactly.
+- Simplest implementation: add an optional `footer` slot to `ProductGallery` rendered inside the image column `<div>`, and pass `ProductActions` into it. Keeps mobile behaviour untouched (mobile still uses the sticky bottom bar).
+- Cap it further with `max-w-[380px]` so it can never exceed the image frame width.
 
-### 3. Bring the whole left column higher
-In `src/routes/product.$id.tsx`:
-- Lower the sticky offset from `lg:top-20` to `lg:top-14`.
-- Tighten the gap between the gallery and the action block to `mt-4`.
-- This keeps gallery + actions within a typical laptop/tablet viewport.
+### 2. Reference-style polish (visual only)
+- Gallery main frame: drop the dye gradient fill and heavy `rounded-3xl` border for a clean light surface with a subtle hairline and `object-contain` so the skein sits on a plain backdrop like the reference.
+- Thumbnail rail: square-ish thumbs with thin border, active thumb gets a marigold ring — closer to the reference rail.
+- Right column: keep title → price row with the "Incl. of all taxes" pill → hairline divider → `Shade CODE - Name` label → shade grid → weight/pack, matching the reference reading order (already close; add the divider and tighten spacing).
 
-### 4. Verify visually
-- Check the preview at the current viewport (~944 × 722) to confirm:
-  - The product image is clearly visible but no longer dominates the screen.
-  - The full action block (qty, Subtotal, Add to cart, Buy Now, Ships Pan India, Ask on WhatsApp) sits directly under the image without scrolling.
-  - No horizontal overflow or broken sticky behavior.
+### 3. Keep the action block compact
+- Quantity stepper stays `h-9`, buttons `min-h-10`, `Add to cart` / `Buy Now` remain a 2-up grid inside the constrained width so nothing looks oversized.
+- All behaviour unchanged: stock clamping, sold-out disabling, subtotal math, WhatsApp link.
+
+### 4. Verify
+- Screenshot at the current 811×722 viewport and a wider desktop width to confirm the action block width equals the image width and stays visible without scrolling.
 
 ## Files touched
-- `src/components/commerce/product-gallery.tsx` — cap desktop frame/rail height.
-- `src/routes/product.$id.tsx` — compact action block and sticky offset.
+- `src/components/commerce/product-gallery.tsx`
+- `src/routes/product.$id.tsx`
 
 ## Out of scope
-- No backend/API changes.
-- No mobile sticky bottom bar changes.
-- No shade grid, spec tiles, reviews, or related-products changes.
+- Cart/checkout wiring, backend/API changes, mobile sticky bar, reviews and related products.
