@@ -5,19 +5,19 @@ import { useRef } from "react";
 
 import { Glass } from "@/components/ui/glass";
 import { type StackCardData, YARN_STACK_CARDS } from "@/data/yarn-stack";
-import { useIsTouch, useReducedMotion } from "@/hooks/use-motion";
+import { useReducedMotion } from "@/hooks/use-motion";
 
 /**
  * Scroll-stacking range cards. Each card sticks to the top of the viewport while
  * the next one climbs over it; the outgoing card fades and scales back so the
  * stack reads like a deck of pages. Image sits left, copy + CTA right.
  *
- * Reduced-motion and touch devices get a plain vertical stack instead — sticky
- * stacking is unreadable on short screens.
+ * Mobile gets the same swap motion with phone-tuned geometry (shorter sticky
+ * height, image strip on top). Only reduced-motion falls back to a flat list.
  */
 export function YarnStackCards() {
   const reduced = useReducedMotion();
-  const touch = useIsTouch();
+
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const { scrollYProgress } = useScroll({
