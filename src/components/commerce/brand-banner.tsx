@@ -18,7 +18,7 @@ export function BrandBanner() {
         {...(reduced ? {} : { whileInView: { opacity: 1, y: 0 } })}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full overflow-hidden"
+        className="w-full overflow-hidden bg-[#F6F1E7]"
       >
         <img
           src={banner.url}
@@ -27,8 +27,9 @@ export function BrandBanner() {
           height={931}
           loading="lazy"
           decoding="async"
-          className="block h-40 w-full object-cover object-center sm:h-56 lg:h-72"
+          className="mx-auto block h-auto w-full max-w-[1400px] object-contain object-center"
         />
+
       </motion.div>
 
     </section>
