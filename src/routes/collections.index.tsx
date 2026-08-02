@@ -131,7 +131,7 @@ function ShopPage() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-14 lg:px-10">
+    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-8 lg:px-10">
       <header className="mx-auto max-w-2xl text-center">
         <p className="font-data text-2xs uppercase tracking-[0.18em] text-marigold">Shop</p>
         <h1 className="mt-2 font-display text-2xl font-light tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -144,7 +144,7 @@ function ShopPage() {
         </p>
       </header>
 
-      <div className="mt-8 grid gap-8 lg:mt-12 lg:grid-cols-[260px_1fr] lg:gap-10">
+      <div className="mt-5 grid gap-8 lg:mt-6 lg:grid-cols-[260px_1fr] lg:gap-10">
         <aside aria-label="Product filters" className="min-w-0">
           {/* Mobile: collapsible panel so the grid stays near the top. */}
           <div className="lg:hidden">
