@@ -233,7 +233,8 @@ function ProductPage() {
           </div>
 
           {colors.length ? (
-            <div className="mt-8">
+            <div className="mt-6 border-t border-border pt-6">
+
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
                   Shade
