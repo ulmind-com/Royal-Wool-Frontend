@@ -32,7 +32,7 @@ function UpcomingPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
       <p className="font-data text-2xs text-marigold">Coming soon</p>
-      <h1 className="mt-4 max-w-3xl font-display text-5xl font-light">
+      <h1 className="mt-4 max-w-3xl font-display text-4xl font-light sm:text-5xl">
         Six ranges on the <span className="italic text-marigold">dyeing rack</span>
       </h1>
       <p className="mt-6 max-w-xl text-lg text-muted-foreground">

@@ -14,21 +14,23 @@ function Wordmark() {
     <Link
       to="/"
       data-cursor="link"
-      className="group flex items-baseline gap-2"
+      className="group flex min-w-0 items-baseline gap-1.5 sm:gap-2"
       aria-label={`${BRAND.name} home`}
     >
-      <span className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground">
+      <span className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground sm:text-2xl">
         Royal
       </span>
-      <span className="font-display text-2xl font-light italic tracking-[-0.04em] text-marigold">
+      <span className="font-display text-xl font-light italic tracking-[-0.04em] text-marigold sm:text-2xl">
         Wool
       </span>
+
     </Link>
   );
 }
 
 const ICON_BTN =
-  "relative grid h-10 w-10 shrink-0 place-items-center rounded-full text-foreground/80 transition-colors duration-[var(--dur-micro)] hover:bg-foreground/10 hover:text-foreground";
+  "relative grid h-11 w-11 shrink-0 place-items-center rounded-full text-foreground/80 transition-colors duration-[var(--dur-micro)] hover:bg-foreground/10 hover:text-foreground active:bg-foreground/10 sm:h-10 sm:w-10";
+
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -66,8 +68,9 @@ export function Header() {
           : undefined
       }
     >
-      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:px-10">
-        <div className="flex min-w-0 items-center gap-2">
+      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-6 sm:py-3 lg:px-10">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+
           <button
             type="button"
             className={cn(ICON_BTN, "lg:hidden")}
@@ -131,7 +134,7 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
           <Link
             to="/search"
             data-cursor="link"
@@ -145,12 +148,18 @@ export function Header() {
           <Link to="/search" className={cn(ICON_BTN, "md:hidden")} aria-label="Search yarns">
             <Search className="h-5 w-5" />
           </Link>
-          <Link to="/account/wishlist" className={ICON_BTN} aria-label="Wishlist" data-cursor="link">
+          {/* Wishlist + notifications live in the drawer on phones to keep the bar breathable */}
+          <Link
+            to="/account/wishlist"
+            className={cn(ICON_BTN, "hidden sm:grid")}
+            aria-label="Wishlist"
+            data-cursor="link"
+          >
             <Heart className="h-5 w-5" />
           </Link>
           <Link
             to="/account/notifications"
-            className={ICON_BTN}
+            className={cn(ICON_BTN, "hidden sm:grid")}
             aria-label="Notifications"
             data-cursor="link"
           >
@@ -161,11 +170,12 @@ export function Header() {
           </Link>
           <Link to="/cart" className={ICON_BTN} aria-label="Cart" data-cursor="link">
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-madder px-1 font-data text-[10px] leading-none text-foreground">
+            <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-madder px-1 font-data text-[10px] leading-none text-primary-foreground sm:-right-0.5 sm:-top-0.5">
               0
             </span>
           </Link>
         </div>
+
       </div>
 
       {/* desktop mega-menu panel */}
@@ -209,13 +219,19 @@ export function Header() {
         </div>
       ) : null}
 
-      {/* mobile drawer */}
+      {/* mobile drawer — app-style sheet: scrollable, safe-area aware */}
       {menuOpen ? (
-        <div className="border-t border-border px-4 pb-6 pt-4 lg:hidden">
+        <div
+          className="max-h-[calc(100dvh-3.75rem)] overflow-y-auto overscroll-contain border-t border-border px-4 pb-safe pt-4 backdrop-blur-[22px] lg:hidden"
+          style={{
+            backgroundImage:
+              "linear-gradient(180deg, color-mix(in oklab, var(--background) 96%, transparent), color-mix(in oklab, var(--background) 92%, transparent))",
+          }}
+        >
           <nav aria-label="Mobile">
-            <ul className="space-y-5">
+            <ul className="divide-y divide-border/60">
               {groups.map((group) => (
-                <li key={group.id}>
+                <li key={group.id} className="py-4">
                   <Link
                     to="/collections/$slug"
                     params={{ slug: group.slug }}
@@ -224,14 +240,14 @@ export function Header() {
                   >
                     {group.name}
                   </Link>
-                  <ul className="mt-2 space-y-2">
+                  <ul className="mt-2">
                     {(group.children ?? []).map((item) => (
                       <li key={item.id}>
                         <Link
                           to="/collections/$slug"
                           params={{ slug: item.slug }}
                           onClick={() => setMenuOpen(false)}
-                          className="block text-lg text-muted-foreground"
+                          className="flex min-h-11 items-center text-base text-muted-foreground active:text-foreground"
                         >
                           {item.name}
                         </Link>
@@ -240,26 +256,31 @@ export function Header() {
                   </ul>
                 </li>
               ))}
-              <li className="flex gap-4 pt-2">
-                <Link
-                  to="/upcoming"
-                  onClick={() => setMenuOpen(false)}
-                  className="font-data text-2xs text-marigold"
-                >
-                  Upcoming
-                </Link>
-                <Link
-                  to="/offers"
-                  onClick={() => setMenuOpen(false)}
-                  className="font-data text-2xs text-muted-foreground"
-                >
-                  Offers
-                </Link>
+              <li className="grid grid-cols-2 gap-3 py-5">
+                {[
+                  { to: "/upcoming" as const, label: "Upcoming", accent: true },
+                  { to: "/offers" as const, label: "Offers", accent: false },
+                  { to: "/account/wishlist" as const, label: "Wishlist", accent: false },
+                  { to: "/account/notifications" as const, label: "Alerts", accent: false },
+                ].map((l) => (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={cn(
+                      "flex min-h-11 items-center justify-center rounded-2xl border border-border font-data text-2xs",
+                      l.accent ? "text-marigold" : "text-muted-foreground",
+                    )}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
               </li>
             </ul>
           </nav>
         </div>
       ) : null}
+
     </header>
   );
 }

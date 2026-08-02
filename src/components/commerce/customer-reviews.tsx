@@ -62,7 +62,7 @@ export function CustomerReviews() {
     <section
       data-thread-anchor="reviews"
       aria-label="Customer reviews"
-      className="relative mt-24 overflow-hidden"
+      className="relative mt-16 overflow-hidden sm:mt-24"
     >
       {/* soft dye bloom behind the glass cards */}
       <span
@@ -72,12 +72,13 @@ export function CustomerReviews() {
       />
 
       <div className="relative mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-end">
-          <div>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-end lg:gap-10">
+          <div className="min-w-0">
             <p className="font-data text-2xs text-marigold">Straight from the basket</p>
-            <h2 className="mt-3 max-w-2xl font-display text-4xl font-light leading-[1.1] text-foreground sm:text-5xl">
+            <h2 className="mt-2.5 max-w-2xl font-display text-3xl font-light leading-[1.1] text-foreground sm:mt-3 sm:text-5xl">
               What crafters say after<br className="hidden sm:block" /> the first skein
             </h2>
+
 
             {isPending ? (
               <div className="mt-6 h-10 w-56 animate-pulse rounded-full bg-foreground/5" />
@@ -145,13 +146,14 @@ export function CustomerReviews() {
 
         {/* filters */}
         {data?.count ? (
-          <ul className="mt-10 flex flex-wrap gap-2">
+          <ul className="no-scrollbar -mx-4 mt-8 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:mt-10 sm:flex-wrap sm:overflow-visible sm:px-0">
             {FILTERS.map(({ id, label }) => {
+
               const count = (data.reviews ?? []).filter((r) => matches(r, id)).length;
               if (!count) return null;
               const active = filter === id;
               return (
-                <li key={id}>
+                <li key={id} className="shrink-0">
                   <button
                     type="button"
                     data-cursor="link"
@@ -161,7 +163,8 @@ export function CustomerReviews() {
                     }}
                     aria-pressed={active}
                     className={cn(
-                      "rounded-full border px-4 py-2 font-data text-2xs transition-colors",
+                      "min-h-10 whitespace-nowrap rounded-full border px-4 py-2 font-data text-2xs transition-colors",
+
                       active
                         ? "border-transparent bg-madder text-primary-foreground"
                         : "border-border text-muted-foreground hover:text-foreground",

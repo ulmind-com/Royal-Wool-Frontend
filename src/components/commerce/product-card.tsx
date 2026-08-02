@@ -77,13 +77,14 @@ export function ProductCard({ product, className }: { product: Product; classNam
           ) : null}
         </div>
 
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {product.brand ? (
-            <p className="font-data text-2xs text-muted-foreground/80">{product.brand}</p>
+            <p className="truncate font-data text-2xs text-muted-foreground/80">{product.brand}</p>
           ) : null}
-          <h3 className="mt-1 truncate font-display text-lg font-light text-foreground">
+          <h3 className="mt-1 truncate font-display text-[0.95rem] font-light text-foreground sm:text-lg">
             {product.title}
           </h3>
+
 
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-data text-sm text-foreground">
@@ -122,7 +123,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
         aria-label={`Save ${product.title} to wishlist`}
         title="Wishlist opens up once you sign in"
         data-cursor="link"
-        className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground backdrop-blur-md transition-colors hover:text-marigold"
+        className="absolute right-2.5 top-2.5 grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground backdrop-blur-md transition-colors hover:text-marigold sm:right-3 sm:top-3"
       >
         <Heart className="h-4 w-4" />
       </button>
@@ -132,7 +133,8 @@ export function ProductCard({ product, className }: { product: Product; classNam
 
 export function ProductGrid({ products }: { products: Product[] }) {
   return (
-    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+
       {products.map((p) => (
         <li key={p.id}>
           <ProductCard product={p} className="h-full" />
