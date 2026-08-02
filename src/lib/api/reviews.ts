@@ -199,3 +199,21 @@ export function relativeDate(iso: string | null): string | null {
   const y = Math.floor(days / 365);
   return `${y} year${y > 1 ? "s" : ""} ago`;
 }
+
+/** Reviews published against one product. Empty feed when nothing is live yet. */
+export const productReviewsQuery = (productId: string) =>
+  queryOptions({
+    queryKey: ["reviews", "product", productId],
+    queryFn: async ({ signal }): Promise<ReviewFeed> => {
+      const rows = await soft(
+        apiFetch<RawReview[]>("/reviews", { query: { product_id: productId }, signal }),
+      );
+      if (!Array.isArray(rows)) return summarise([]);
+      return summarise(rows.map((r) => normalise(r)).filter((r): r is Review => !!r));
+    },
+    staleTime: 5 * MINUTE,
+    retry: (failureCount: number, error: unknown) => {
+      if (error instanceof ApiError && !error.isOffline) return false;
+      return failureCount < 1;
+    },
+  });
