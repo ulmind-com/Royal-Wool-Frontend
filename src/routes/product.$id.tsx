@@ -22,6 +22,7 @@ import { productQuery, productsQuery } from "@/lib/api/queries";
 import { productReviewsQuery } from "@/lib/api/reviews";
 import { productSpecs, washCare } from "@/lib/api/specs";
 import {
+  type Product,
   type ProductColor,
   type ProductSize,
   primaryImage,
@@ -176,6 +177,18 @@ function ProductPage() {
             index={activeImage}
             onIndex={setActiveImage}
           />
+          <div className="hidden lg:block">
+            <ProductActions
+              product={product}
+              qty={qty}
+              setQty={setQty}
+              price={price}
+              stock={stock}
+              soldOut={soldOut}
+              formatMoney={formatMoney}
+              shareUrl={shareUrl}
+            />
+          </div>
         </div>
 
         <div>
@@ -184,7 +197,7 @@ function ProductPage() {
               {product.brand}
             </p>
           ) : null}
-          <h1 className="mt-2 max-w-[22ch] text-balance font-display text-2xl font-light leading-[1.1] tracking-[-0.02em] text-foreground sm:text-3xl lg:text-4xl">
+          <h1 className="mt-2 max-w-[24ch] text-balance font-display text-xl font-light leading-[1.15] tracking-[-0.02em] text-foreground sm:text-2xl lg:text-3xl">
             {product.title}
           </h1>
 
@@ -281,75 +294,6 @@ function ProductPage() {
                 ? `Only ${stock} left`
                 : "In stock"}
           </p>
-
-          {/* Quantity + actions */}
-          <Glass variant="card" className="mt-5">
-            <div className="flex items-center gap-4">
-              <div className="inline-flex items-center rounded-full border border-border">
-                <button
-                  type="button"
-                  aria-label="Decrease quantity"
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  disabled={qty <= 1}
-                  data-cursor="link"
-                  className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
-                >
-                  <Minus className="h-3.5 w-3.5" />
-                </button>
-                <span className="min-w-8 text-center font-data text-sm text-foreground">{qty}</span>
-                <button
-                  type="button"
-                  aria-label="Increase quantity"
-                  onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))}
-                  disabled={soldOut || qty >= Math.max(stock, 1)}
-                  data-cursor="link"
-                  className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <p className="font-data text-2xs text-muted-foreground">
-                Subtotal {formatMoney(price * qty)}
-              </p>
-            </div>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <button
-                type="button"
-                disabled={soldOut}
-                data-cursor="link"
-                title="Cart wiring lands with the commerce phase"
-                className="sheen inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground disabled:opacity-40"
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Add to cart
-              </button>
-              <button
-                type="button"
-                disabled={soldOut}
-                data-cursor="link"
-                title="Instant checkout lands with the commerce phase"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-madder px-6 py-3 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
-              >
-                Buy Now
-              </button>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-data text-2xs text-muted-foreground/80">
-              <span className="inline-flex items-center gap-1.5">
-                <Truck className="h-3.5 w-3.5" aria-hidden /> Ships Pan India
-              </span>
-              <a
-                href={waAskAboutProduct(product.title, shareUrl)}
-                target="_blank"
-                rel="noopener"
-                data-cursor="link"
-                className="underline decoration-border underline-offset-4 hover:text-foreground"
-              >
-                Ask on WhatsApp
-              </a>
-            </div>
-          </Glass>
 
           <SpecTiles specs={specs} />
 
@@ -485,6 +429,99 @@ function ProductPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProductActions({
+  product,
+  qty,
+  setQty,
+  price,
+  stock,
+  soldOut,
+  formatMoney,
+  shareUrl,
+  variant = "default",
+}: {
+  product: Product;
+  qty: number;
+  setQty: (fn: (q: number) => number) => void;
+  price: number;
+  stock: number;
+  soldOut: boolean;
+  formatMoney: (n: number) => string;
+  shareUrl: string;
+  variant?: "default" | "compact";
+}) {
+  const compact = variant === "compact";
+  return (
+    <Glass variant="card" className={compact ? "mt-4" : "mt-5"}>
+      <div className="flex items-center gap-4">
+        <div className="inline-flex items-center rounded-full border border-border">
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            disabled={qty <= 1}
+            data-cursor="link"
+            className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
+          >
+            <Minus className="h-3.5 w-3.5" />
+          </button>
+          <span className="min-w-8 text-center font-data text-sm text-foreground">{qty}</span>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))}
+            disabled={soldOut || qty >= Math.max(stock, 1)}
+            data-cursor="link"
+            className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
+          >
+            <Plus className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <p className="font-data text-2xs text-muted-foreground">
+          Subtotal {formatMoney(price * qty)}
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          disabled={soldOut}
+          data-cursor="link"
+          title="Cart wiring lands with the commerce phase"
+          className="sheen inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground disabled:opacity-40"
+        >
+          <ShoppingBag className="h-4 w-4" />
+          Add to cart
+        </button>
+        <button
+          type="button"
+          disabled={soldOut}
+          data-cursor="link"
+          title="Instant checkout lands with the commerce phase"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-madder px-6 py-3 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
+        >
+          Buy Now
+        </button>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-data text-2xs text-muted-foreground/80">
+        <span className="inline-flex items-center gap-1.5">
+          <Truck className="h-3.5 w-3.5" aria-hidden /> Ships Pan India
+        </span>
+        <a
+          href={waAskAboutProduct(product.title, shareUrl)}
+          target="_blank"
+          rel="noopener"
+          data-cursor="link"
+          className="underline decoration-border underline-offset-4 hover:text-foreground"
+        >
+          Ask on WhatsApp
+        </a>
+      </div>
+    </Glass>
   );
 }
 
