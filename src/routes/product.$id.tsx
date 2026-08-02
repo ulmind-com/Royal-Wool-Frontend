@@ -455,7 +455,7 @@ function ProductActions({
 }) {
   const compact = variant === "compact";
   return (
-    <Glass variant="card" className={cn(compact ? "mt-4" : "mt-5", "p-3 sm:p-4")}>
+    <Glass variant="card" className={cn(compact ? "mt-3" : "mt-4", "p-3 sm:p-4")}>
       <div className="flex items-center gap-4">
         <div className="inline-flex items-center rounded-full border border-border">
           <button
@@ -485,7 +485,7 @@ function ProductActions({
         </p>
       </div>
 
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+      <div className="mt-2 grid gap-2 sm:grid-cols-2">
         <button
           type="button"
           disabled={soldOut}
@@ -507,7 +507,7 @@ function ProductActions({
         </button>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-data text-2xs text-muted-foreground/80">
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-data text-2xs text-muted-foreground/80">
         <span className="inline-flex items-center gap-1.5">
           <Truck className="h-3.5 w-3.5" aria-hidden /> Ships Pan India
         </span>
