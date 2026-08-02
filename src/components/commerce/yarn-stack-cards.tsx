@@ -69,7 +69,7 @@ export function YarnStackCards() {
         {YARN_STACK_CARDS.map((card, i) => (
           <motion.div
             key={card.key}
-            style={flat ? undefined : stackStyles[i]}
+            style={flat ? {} : stackStyles[i]}
             className={
               flat
                 ? "mx-auto w-full max-w-[1200px] px-5 pb-8 sm:px-8 lg:px-14"
