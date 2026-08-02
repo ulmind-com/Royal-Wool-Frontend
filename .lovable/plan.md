@@ -1,17 +1,11 @@
 ## Goal
 
-`Featured yarn`-er porei, footer-er upore — ekta full-bleed banner section. Kono heading, eyebrow ba copy na; sudhu upload kora image-ta.
+Banner-ta ekhon onek lomba, ar duipashe gutter/faka jayga ache. Duitoi thik kora hobe — edge-to-edge full-bleed, ar height onek kom.
 
-## Ja hobe
+## Change (`src/components/commerce/brand-banner.tsx`)
 
-1. **Asset**: upload kora banner-ta Lovable CDN asset hisebe rakhbo — `src/assets/royal-wool-banner.png.asset.json` (binary repo-te dhukbe na).
-2. **Notun component** `src/components/commerce/brand-banner.tsx`:
-   - `<section data-thread-anchor="banner">`, `aria-label` sudhu screen-reader-er jonno (visible text nei).
-   - Image `max-w-[1600px]` container-e, `rounded-3xl overflow-hidden`, page-er soft border/shadow token diye — homepage-er baki section-er moto same gutter (`px-4 sm:px-6 lg:px-10`).
-   - `w-full h-auto`, native `aspect-[1656/931]` reserve kore CLS avoid, `loading="lazy"`, descriptive `alt`.
-   - Halka premium touch: view-e ele ekbar soft fade+rise (Framer Motion, `useReducedMotion` respect) — kono text/overlay na.
-3. **Wire-up** `src/routes/index.tsx`: `<FeaturedYarn />`-er niche `<BrandBanner />`, tarpor footer.
+1. **Side faka na thakuk** — `max-w-[1600px]` container ar `px-4 sm:px-6 lg:px-10` padding bad. Section-ta full-bleed hobe (`w-full`), tai image screen-er bam theke dan porjonto pouchabe. Rounded corner + border + shadow-o bad (edge-to-edge-e oi frame bemanan lagbe).
+2. **Lombay choto** — `aspect-[1656/931]` bad; tar jaygay fixed responsive height: mobile ~`h-[38vw]` cap kore `h-40`, tablet `sm:h-56`, desktop `lg:h-72` (approx 200–290px). Image `object-cover object-center` — tai banner-er majhkhaner "Feel the softness / Royaall Wool" lekha-ta center-e thakbe, sudhu upor-niche crop hobe.
+3. Upor-nicher spacing-o komano hobe (`mt-24` → `mt-16 sm:mt-20`) jate section-ta aro compact lage. Fade-in animation ar alt text jemon ache tolo thakbe.
 
-## Note
-
-Image-er lekha-te "Roya**all** Wool" ache (double 'a'/'l') — ami image edit korchi na, sudhu boste dilam. Chaile thik kora version generate kore dite pari.
+Kono heading/text add hobe na — sudhu image.
