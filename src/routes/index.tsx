@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
+import { BrandBanner } from "@/components/commerce/brand-banner";
 import { CategoryShowcase } from "@/components/commerce/category-showcase";
+
 import { FeaturedYarn } from "@/components/commerce/featured-yarn";
 import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
 import { SpotlightSection } from "@/components/commerce/spotlight-section";
@@ -89,6 +91,9 @@ function Home() {
       <YarnFanCarousel />
 
       <FeaturedYarn />
+
+      <BrandBanner />
+
     </>
   );
 }
