@@ -3,24 +3,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { AssuranceBand } from "@/components/commerce/assurance-band";
 import { ProductCard } from "@/components/commerce/product-card";
 import { ProductGallery } from "@/components/commerce/product-gallery";
 import { RatingStars } from "@/components/commerce/rating-stars";
 import { ReviewCard } from "@/components/commerce/review-card";
 import { ShadeGrid, shadeLabel } from "@/components/commerce/shade-grid";
-import {
-  AwardIcon,
-  BabyIcon,
-  ShieldIcon,
-  TruckIcon,
-} from "@/components/commerce/spec-icons";
 import { SpecTiles } from "@/components/commerce/spec-tiles";
 import { DataError } from "@/components/data-state";
 import { Glass } from "@/components/ui/glass";
 import { useSettings } from "@/hooks/use-settings";
+import { storeAssurances } from "@/lib/api/assurance";
 import { productQuery, productsQuery } from "@/lib/api/queries";
 import { productReviewsQuery } from "@/lib/api/reviews";
 import { productSpecs, washCare } from "@/lib/api/specs";
+
 import {
   type Product,
   type ProductColor,
