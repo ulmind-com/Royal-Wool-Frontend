@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { type MotionValue, motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { type MotionStyle, motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 import { Glass } from "@/components/ui/glass";
@@ -35,7 +35,7 @@ export function YarnStackCards() {
   const opacity2 = useTransform(smooth, [0.33, 0.66], [1, 0]);
   const scale2 = useTransform(smooth, [0.33, 0.66], [1, 0.9]);
 
-  const stackStyles: { opacity?: MotionValue<number>; scale?: MotionValue<number> }[] = [
+  const stackStyles: MotionStyle[] = [
     { opacity: opacity1, scale: scale1 },
     { opacity: opacity2, scale: scale2 },
     {},
@@ -69,7 +69,7 @@ export function YarnStackCards() {
         {YARN_STACK_CARDS.map((card, i) => (
           <motion.div
             key={card.key}
-            style={flat ? {} : stackStyles[i]}
+            style={flat ? {} : (stackStyles[i] ?? {})}
             className={
               flat
                 ? "mx-auto w-full max-w-[1200px] px-5 pb-8 sm:px-8 lg:px-14"
