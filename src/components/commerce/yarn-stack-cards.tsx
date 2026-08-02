@@ -5,19 +5,19 @@ import { useRef } from "react";
 
 import { Glass } from "@/components/ui/glass";
 import { type StackCardData, YARN_STACK_CARDS } from "@/data/yarn-stack";
-import { useIsTouch, useReducedMotion } from "@/hooks/use-motion";
+import { useReducedMotion } from "@/hooks/use-motion";
 
 /**
  * Scroll-stacking range cards. Each card sticks to the top of the viewport while
  * the next one climbs over it; the outgoing card fades and scales back so the
  * stack reads like a deck of pages. Image sits left, copy + CTA right.
  *
- * Reduced-motion and touch devices get a plain vertical stack instead — sticky
- * stacking is unreadable on short screens.
+ * Mobile gets the same swap motion with phone-tuned geometry (shorter sticky
+ * height, image strip on top). Only reduced-motion falls back to a flat list.
  */
 export function YarnStackCards() {
   const reduced = useReducedMotion();
-  const touch = useIsTouch();
+
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const { scrollYProgress } = useScroll({
@@ -41,7 +41,7 @@ export function YarnStackCards() {
     {},
   ];
 
-  const flat = reduced || touch;
+  const flat = reduced;
 
   return (
     <section
@@ -69,9 +69,10 @@ export function YarnStackCards() {
             style={flat ? {} : (stackStyles[i] ?? {})}
             className={
               flat
-                ? "mx-auto w-full max-w-[1200px] px-5 pb-8 sm:px-8 lg:px-14"
-                : "sticky top-0 mx-auto flex h-svh w-full max-w-[1200px] items-center px-5 sm:px-8 lg:px-14"
+                ? "mx-auto w-full max-w-[1200px] px-4 pb-8 sm:px-8 lg:px-14"
+                : "sticky top-14 mx-auto flex h-[88svh] w-full max-w-[1200px] items-center px-4 sm:top-0 sm:h-svh sm:px-8 lg:px-14"
             }
+
           >
             <RangeCard card={card} index={i} />
           </motion.div>
@@ -84,8 +85,9 @@ export function YarnStackCards() {
 function RangeCard({ card, index }: { card: StackCardData; index: number }) {
   return (
     <article
-      className="group relative w-full overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_50px_110px_-60px_color-mix(in_oklab,var(--ink)_60%,transparent)]"
-      style={{ minHeight: "clamp(420px, 74vh, 580px)" }}
+      className="group relative w-full overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-[0_50px_110px_-60px_color-mix(in_oklab,var(--ink)_60%,transparent)] sm:rounded-[2rem]"
+      style={{ minHeight: "clamp(380px, 68svh, 580px)" }}
+
     >
       {/* dye glow */}
       <span
@@ -100,8 +102,8 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
       />
 
       <div className="relative grid h-full gap-0 lg:grid-cols-2">
-        {/* Left: image */}
-        <div className="relative min-h-[240px] overflow-hidden lg:min-h-full">
+        {/* Left (top on mobile): image */}
+        <div className="relative h-[150px] shrink-0 overflow-hidden xs:h-[170px] sm:h-[240px] lg:h-auto lg:min-h-full">
           <img
             src={card.image}
             alt={card.imageAlt}
@@ -110,16 +112,13 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
           />
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, transparent 55%, color-mix(in oklab, var(--card) 85%, transparent) 100%)",
-            }}
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_45%,color-mix(in_oklab,var(--card)_85%,transparent)_100%)] lg:bg-[linear-gradient(to_right,transparent_55%,color-mix(in_oklab,var(--card)_85%,transparent)_100%)]"
           />
         </div>
 
-        {/* Right: copy */}
-        <div className="flex flex-col justify-center gap-6 px-7 py-10 sm:px-10 sm:py-12 lg:px-14">
+        {/* Right (below on mobile): copy */}
+        <div className="flex min-w-0 flex-col justify-center gap-4 px-5 py-6 sm:gap-6 sm:px-10 sm:py-12 lg:px-14">
+
           <Glass
             variant="pill"
             className="w-fit whitespace-nowrap font-data text-2xs uppercase tracking-[0.18em] text-ink"
@@ -127,24 +126,27 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
             {card.eyebrow}
           </Glass>
 
-          <h3 className="font-display text-3xl font-light leading-[1.05] tracking-[-0.02em] text-foreground sm:text-4xl lg:text-5xl">
+          <h3 className="font-display text-2xl font-light leading-[1.05] tracking-[-0.02em] text-foreground xs:text-3xl sm:text-4xl lg:text-5xl">
             {card.title}
           </h3>
 
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="max-w-md text-[0.8rem] leading-relaxed text-muted-foreground sm:text-base">
             {card.copy}
           </p>
 
-          <dl className="grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
+          <dl className="grid grid-cols-3 gap-2 border-t border-border pt-4 sm:gap-3 sm:pt-5">
             {card.specs.map((spec) => (
-              <div key={spec.label}>
+              <div key={spec.label} className="min-w-0">
                 <dt className="font-data text-2xs text-marigold">{spec.label}</dt>
-                <dd className="mt-1 text-xs leading-snug text-foreground">{spec.value}</dd>
+                <dd className="mt-1 text-[0.7rem] leading-snug text-foreground sm:text-xs">
+                  {spec.value}
+                </dd>
               </div>
             ))}
           </dl>
 
-          <div className="flex flex-wrap items-center gap-5 pt-1">
+          <div className="flex flex-wrap items-center gap-4 pt-1 sm:gap-5">
+
             <Link
               to="/search"
               search={{ q: card.query }}
