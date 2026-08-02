@@ -27,7 +27,7 @@ export function BrandBanner() {
           height={931}
           loading="lazy"
           decoding="async"
-          className="mx-auto block h-auto w-full max-w-[1400px] object-contain object-center"
+          className="mx-auto block h-auto w-full max-h-[320px] max-w-[1400px] object-contain object-center sm:max-h-[420px] lg:max-h-[520px]"
         />
 
       </motion.div>
