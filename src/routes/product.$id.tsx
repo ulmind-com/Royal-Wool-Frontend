@@ -176,19 +176,19 @@ function ProductPage() {
             title={product.title}
             index={activeImage}
             onIndex={setActiveImage}
+            footer={
+              <ProductActions
+                product={product}
+                qty={qty}
+                setQty={setQty}
+                price={price}
+                stock={stock}
+                soldOut={soldOut}
+                formatMoney={formatMoney}
+                shareUrl={shareUrl}
+              />
+            }
           />
-          <div className="hidden md:block">
-            <ProductActions
-              product={product}
-              qty={qty}
-              setQty={setQty}
-              price={price}
-              stock={stock}
-              soldOut={soldOut}
-              formatMoney={formatMoney}
-              shareUrl={shareUrl}
-            />
-          </div>
         </div>
 
         <div>
