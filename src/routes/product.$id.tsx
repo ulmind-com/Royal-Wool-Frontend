@@ -426,7 +426,7 @@ function ProductPage() {
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {feed.reviews.slice(0, 4).map((review, i) => (
               <li key={review.id}>
-                <ReviewCard review={review} index={i} />
+                <ReviewCard review={review} index={i} onOpenPhoto={() => {}} />
               </li>
             ))}
           </ul>
