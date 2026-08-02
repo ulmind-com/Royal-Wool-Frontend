@@ -1,8 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { DEMO_REVIEWS } from "@/data/demo-reviews";
 import { ApiError, apiFetch } from "@/lib/api/client";
 import type { Product } from "@/lib/api/types";
 import { primaryImage } from "@/lib/api/types";
+
 
 /**
  * Site-wide customer review feed.
