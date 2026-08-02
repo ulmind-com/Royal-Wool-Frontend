@@ -169,7 +169,7 @@ function ShopPage() {
             {filtersOpen ? <div className="mt-5">{filterPanel}</div> : null}
           </div>
 
-          <div className="hidden lg:sticky lg:top-24 lg:block lg:max-h-[calc(100svh-8rem)] lg:overflow-y-auto lg:pr-1">
+          <div className="hidden lg:sticky lg:top-16 lg:block lg:max-h-[calc(100svh-8rem)] lg:overflow-y-auto lg:pr-1">
             {filterPanel}
           </div>
         </aside>
