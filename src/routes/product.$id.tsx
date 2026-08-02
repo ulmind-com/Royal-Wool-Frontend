@@ -169,15 +169,15 @@ function ProductPage() {
         </nav>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-5 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:px-10">
-        <div className="lg:sticky lg:top-20 lg:self-start">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-5 sm:px-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 md:px-10">
+        <div className="md:sticky md:top-14 md:self-start">
           <ProductGallery
             images={gallery}
             title={product.title}
             index={activeImage}
             onIndex={setActiveImage}
           />
-          <div className="hidden lg:block">
+          <div className="hidden md:block">
             <ProductActions
               product={product}
               qty={qty}
@@ -400,7 +400,7 @@ function ProductPage() {
 
       {/* Mobile sticky action bar */}
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border px-4 py-3 backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border px-4 py-3 backdrop-blur-xl md:hidden"
         style={{ backgroundColor: "color-mix(in oklab, var(--fleece) 88%, transparent)" }}
       >
         <div className="flex items-center gap-3">
@@ -455,7 +455,7 @@ function ProductActions({
 }) {
   const compact = variant === "compact";
   return (
-    <Glass variant="card" className={compact ? "mt-4" : "mt-5"}>
+    <Glass variant="card" className={cn(compact ? "mt-3" : "mt-4", "p-3 sm:p-4")}>
       <div className="flex items-center gap-4">
         <div className="inline-flex items-center rounded-full border border-border">
           <button
@@ -464,7 +464,7 @@ function ProductActions({
             onClick={() => setQty((q) => Math.max(1, q - 1))}
             disabled={qty <= 1}
             data-cursor="link"
-            className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
+            className="grid h-9 w-9 place-items-center text-foreground disabled:opacity-35"
           >
             <Minus className="h-3.5 w-3.5" />
           </button>
@@ -475,7 +475,7 @@ function ProductActions({
             onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))}
             disabled={soldOut || qty >= Math.max(stock, 1)}
             data-cursor="link"
-            className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
+            className="grid h-9 w-9 place-items-center text-foreground disabled:opacity-35"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -485,13 +485,13 @@ function ProductActions({
         </p>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-2 grid gap-2 sm:grid-cols-2">
         <button
           type="button"
           disabled={soldOut}
           data-cursor="link"
           title="Cart wiring lands with the commerce phase"
-          className="sheen inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground disabled:opacity-40"
+          className="sheen inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-madder px-5 py-2 font-data text-2xs text-primary-foreground disabled:opacity-40"
         >
           <ShoppingBag className="h-4 w-4" />
           Add to cart
@@ -501,13 +501,13 @@ function ProductActions({
           disabled={soldOut}
           data-cursor="link"
           title="Instant checkout lands with the commerce phase"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-madder px-6 py-3 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-madder px-5 py-2 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
         >
           Buy Now
         </button>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-data text-2xs text-muted-foreground/80">
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-data text-2xs text-muted-foreground/80">
         <span className="inline-flex items-center gap-1.5">
           <Truck className="h-3.5 w-3.5" aria-hidden /> Ships Pan India
         </span>
