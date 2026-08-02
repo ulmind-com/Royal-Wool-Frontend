@@ -77,13 +77,14 @@ export function ProductCard({ product, className }: { product: Product; classNam
           ) : null}
         </div>
 
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {product.brand ? (
-            <p className="font-data text-2xs text-muted-foreground/80">{product.brand}</p>
+            <p className="truncate font-data text-2xs text-muted-foreground/80">{product.brand}</p>
           ) : null}
-          <h3 className="mt-1 truncate font-display text-lg font-light text-foreground">
+          <h3 className="mt-1 truncate font-display text-[0.95rem] font-light text-foreground sm:text-lg">
             {product.title}
           </h3>
+
 
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-data text-sm text-foreground">
