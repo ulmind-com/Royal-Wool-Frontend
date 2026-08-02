@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { BrandRail } from "@/components/commerce/brand-rail";
 import { ProductGrid } from "@/components/commerce/product-card";
