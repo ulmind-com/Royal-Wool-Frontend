@@ -69,9 +69,10 @@ export function YarnStackCards() {
             style={flat ? {} : (stackStyles[i] ?? {})}
             className={
               flat
-                ? "mx-auto w-full max-w-[1200px] px-5 pb-8 sm:px-8 lg:px-14"
-                : "sticky top-0 mx-auto flex h-svh w-full max-w-[1200px] items-center px-5 sm:px-8 lg:px-14"
+                ? "mx-auto w-full max-w-[1200px] px-4 pb-8 sm:px-8 lg:px-14"
+                : "sticky top-14 mx-auto flex h-[88svh] w-full max-w-[1200px] items-center px-4 sm:top-0 sm:h-svh sm:px-8 lg:px-14"
             }
+
           >
             <RangeCard card={card} index={i} />
           </motion.div>
