@@ -41,7 +41,7 @@ export function ProductGallery({
     <div className="lg:grid lg:grid-cols-[76px_minmax(0,1fr)] lg:gap-4">
       {/* Desktop thumbnail rail */}
       {images.length > 1 ? (
-        <ul className="hidden max-h-[560px] flex-col gap-3 overflow-y-auto pr-1 lg:flex">
+        <ul className="hidden max-h-[420px] flex-col gap-3 overflow-y-auto pr-1 lg:flex">
           {images.map((src, i) => (
             <li key={`${src}-${i}`}>
               <button
@@ -70,7 +70,7 @@ export function ProductGallery({
       <div>
         {/* Desktop frame with cursor zoom */}
         <div
-          className="group relative hidden overflow-hidden rounded-3xl border border-border lg:block"
+          className="group relative mx-auto hidden aspect-square max-h-[420px] overflow-hidden rounded-3xl border border-border lg:block"
           onPointerMove={(e) => {
             const r = e.currentTarget.getBoundingClientRect();
             setZoom({
