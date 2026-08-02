@@ -3,24 +3,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { AssuranceBand } from "@/components/commerce/assurance-band";
 import { ProductCard } from "@/components/commerce/product-card";
 import { ProductGallery } from "@/components/commerce/product-gallery";
 import { RatingStars } from "@/components/commerce/rating-stars";
 import { ReviewCard } from "@/components/commerce/review-card";
 import { ShadeGrid, shadeLabel } from "@/components/commerce/shade-grid";
-import {
-  AwardIcon,
-  BabyIcon,
-  ShieldIcon,
-  TruckIcon,
-} from "@/components/commerce/spec-icons";
 import { SpecTiles } from "@/components/commerce/spec-tiles";
 import { DataError } from "@/components/data-state";
 import { Glass } from "@/components/ui/glass";
 import { useSettings } from "@/hooks/use-settings";
+import { storeAssurances } from "@/lib/api/assurance";
 import { productQuery, productsQuery } from "@/lib/api/queries";
 import { productReviewsQuery } from "@/lib/api/reviews";
 import { productSpecs, washCare } from "@/lib/api/specs";
+
 import {
   type Product,
   type ProductColor,
@@ -52,16 +49,10 @@ export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
 });
 
-const TRUST = [
-  { Icon: ShieldIcon, title: "Secure Checkout", note: "Safe, fast & encrypted" },
-  { Icon: TruckIcon, title: "Pan India Delivery", note: "Fast, reliable shipping" },
-  { Icon: BabyIcon, title: "Gentle & Skin-safe", note: "Soft enough for baby knits" },
-  { Icon: AwardIcon, title: "Quality Guarantee", note: "Mill-fresh, hand-checked yarn" },
-];
 
 function ProductPage() {
   const { id } = Route.useParams();
-  const { formatMoney, returnWindowDays, shop } = useSettings();
+  const { formatMoney, returnWindowDays, shop, settings } = useSettings();
   const { data: product, isPending, isError, error, refetch } = useQuery(productQuery(id));
 
   const [colorName, setColorName] = useState<string | null>(null);
@@ -298,15 +289,8 @@ function ProductPage() {
 
           <SpecTiles specs={specs} />
 
-          <ul className="mt-10 grid grid-cols-2 gap-y-8">
-            {TRUST.map(({ Icon, title, note }) => (
-              <li key={title} className="px-2 text-center">
-                <Icon className="mx-auto h-8 w-8 text-marigold" />
-                <p className="mt-2 font-data text-2xs text-foreground">{title}</p>
-                <p className="mt-1 text-xs text-muted-foreground/80">{note}</p>
-              </li>
-            ))}
-          </ul>
+          <AssuranceBand rows={storeAssurances(product, settings)} />
+
 
           {product.description ? (
             <div className="mt-10">
