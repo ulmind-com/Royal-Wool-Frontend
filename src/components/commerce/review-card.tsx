@@ -11,8 +11,11 @@ import { cn } from "@/lib/utils";
 export function resolveMedia(url: string | null): string | null {
   if (!url) return null;
   if (/^(https?:|data:|blob:)/.test(url)) return url;
+  // Locally bundled/served files (placeholder photography) stay on this origin.
+  if (/^\/(?:__l5e|assets)\//.test(url)) return url;
   return new URL(url.startsWith("/") ? url : `/${url}`, API_BASE_URL).toString();
 }
+
 
 /**
  * One customer review. Height is content-driven (no clamping, no fixed ratio)

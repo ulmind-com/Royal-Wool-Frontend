@@ -1,8 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { DEMO_REVIEWS } from "@/data/demo-reviews";
 import { ApiError, apiFetch } from "@/lib/api/client";
 import type { Product } from "@/lib/api/types";
 import { primaryImage } from "@/lib/api/types";
+
 
 /**
  * Site-wide customer review feed.
@@ -67,7 +69,10 @@ export interface ReviewFeed {
   average: number;
   /** Star -> number of reviews, 1..5. */
   breakdown: Record<number, number>;
+  /** True when the backend had no reviews and placeholder copy is shown. */
+  isDemo: boolean;
 }
+
 
 function normalise(raw: RawReview, product?: Product): Review | null {
   const rating = Number(raw.rating ?? 0);
@@ -102,7 +107,7 @@ function normalise(raw: RawReview, product?: Product): Review | null {
   };
 }
 
-function summarise(reviews: Review[]): ReviewFeed {
+function summarise(reviews: Review[], isDemo = false): ReviewFeed {
   const breakdown: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   for (const r of reviews) breakdown[r.rating] = (breakdown[r.rating] ?? 0) + 1;
   const count = reviews.length;
@@ -116,8 +121,9 @@ function summarise(reviews: Review[]): ReviewFeed {
     return b.photos.length - a.photos.length;
   });
 
-  return { reviews: sorted, count, average, breakdown };
+  return { reviews: sorted, count, average, breakdown, isDemo };
 }
+
 
 /** Swallow "endpoint/auth not available" so one dead read can't kill the feed. */
 async function soft<T>(promise: Promise<T>): Promise<T | null> {
@@ -154,8 +160,14 @@ async function fetchFeed(signal: AbortSignal): Promise<ReviewFeed> {
     }),
   );
 
-  return summarise(batches.flat());
+  const merged = batches.flat();
+
+  // 3. Nothing published yet — show curated placeholders so the shelf isn't bare.
+  if (!merged.length) return summarise(DEMO_REVIEWS, true);
+
+  return summarise(merged);
 }
+
 
 export const reviewFeedQuery = queryOptions({
   queryKey: ["reviews", "feed"],
