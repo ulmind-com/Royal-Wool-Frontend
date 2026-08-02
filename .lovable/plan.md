@@ -1,39 +1,42 @@
 ## Goal
-Align the product detail page with the reference screenshot: make the product title smaller and move the quantity/subtotal/add-to-cart/buy-now action block **below the main product image** instead of inside the right info column.
+Resize the product detail page so the main image is smaller (but not tiny) and the quantity/subtotal/Add to cart/Buy Now block is visible immediately below the gallery without scrolling.
 
 ## Current state
-- `src/routes/product.$id.tsx` renders a two-column layout: left = sticky `ProductGallery`, right = title → price → shade grid → size chips → **qty/subtotal/buttons/shipping/WhatsApp** → specs → trust → accordions.
-- Title is currently `text-2xl sm:text-3xl lg:text-4xl`.
-- Mobile uses a separate sticky bottom action bar.
+- `src/routes/product.$id.tsx` renders the gallery + `ProductActions` in a sticky left column.
+- `ProductGallery` uses a full-width `aspect-square` desktop frame, so the image consumes most of the viewport height and pushes the action block below the fold.
+- The action block itself has generous padding and large buttons, adding to the vertical footprint.
 
 ## Changes
 
-### 1. Smaller product title
+### 1. Cap the desktop gallery height
+In `src/components/commerce/product-gallery.tsx`:
+- Add a `max-h-[420px]` (or equivalent) cap to the desktop main image frame so the image stops growing on tall viewports.
+- Keep the frame centered and maintain `aspect-square` fallback for smaller widths.
+- Sync the vertical thumbnail rail `max-h` to the same cap so the rail does not extend past the image.
+- Leave mobile swipe carousel unchanged.
+
+### 2. Compact the action block
 In `src/routes/product.$id.tsx`:
-- Reduce title from `text-2xl sm:text-3xl lg:text-4xl` to `text-xl sm:text-2xl lg:text-3xl`.
-- Keep `font-display`, `font-light`, `tracking-[-0.02em]`, and `max-w-[22ch]` so it stays elegant but not oversized.
+- Reduce `ProductActions` internal spacing: smaller quantity stepper (h-9/w-9), tighter gaps, shorter buttons (`min-h-10`), and `p-3 sm:p-4` on the Glass card.
+- Keep all behavior: quantity clamping to stock, sold-out disabled state, subtotal math, WhatsApp link.
 
-### 2. Move action block below the gallery
-- Extract the existing Glass-wrapped quantity/subtotal/buttons/shipping/WhatsApp block into a local `ProductActions` component so it can be rendered in two places without duplication.
-- Render the full action block **immediately after `<ProductGallery />`** inside the left/sticky column on `lg:` breakpoints.
-- Keep the existing mobile sticky bottom bar unchanged for narrow screens so checkout remains one-tap accessible.
-- Remove the duplicate action block from the right column (the one currently sitting between size chips and spec tiles).
+### 3. Bring the whole left column higher
+In `src/routes/product.$id.tsx`:
+- Lower the sticky offset from `lg:top-20` to `lg:top-14`.
+- Tighten the gap between the gallery and the action block to `mt-4`.
+- This keeps gallery + actions within a typical laptop/tablet viewport.
 
-### 3. Preserve behavior
-- Quantity clamped to variant stock.
-- Subtotal = `price * qty`.
-- Sold-out disabled state.
-- WhatsApp link uses `waAskAboutProduct(product.title, shareUrl)`.
-- All data still comes from the API; no backend changes.
-
-### 4. Responsive/layout checks
-- Left column remains sticky and self-starting; action block sits under the gallery within that sticky container.
-- Right column now flows: title → price → shade grid → size chips → stock note → specs → trust → description → accordions.
-- Mobile layout collapses to single column with the sticky bottom bar; no horizontal overflow.
+### 4. Verify visually
+- Check the preview at the current viewport (~944 × 722) to confirm:
+  - The product image is clearly visible but no longer dominates the screen.
+  - The full action block (qty, Subtotal, Add to cart, Buy Now, Ships Pan India, Ask on WhatsApp) sits directly under the image without scrolling.
+  - No horizontal overflow or broken sticky behavior.
 
 ## Files touched
-- `src/routes/product.$id.tsx` — title sizing, action block extraction/repositioning.
+- `src/components/commerce/product-gallery.tsx` — cap desktop frame/rail height.
+- `src/routes/product.$id.tsx` — compact action block and sticky offset.
 
 ## Out of scope
-- No changes to `ProductGallery`, `ShadeGrid`, `SpecTiles`, review/related sections, or backend.
-- No new routes or dependencies.
+- No backend/API changes.
+- No mobile sticky bottom bar changes.
+- No shade grid, spec tiles, reviews, or related-products changes.
