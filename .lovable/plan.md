@@ -1,33 +1,38 @@
 ## Goal
-Make the product page look like the reference storefront layout, and make the qty / Subtotal / Add to cart / Buy Now block exactly as wide as the product image — not wider.
 
-## Current state
-- `src/routes/product.$id.tsx` places `ProductActions` as a sibling *below* the whole gallery grid, so it spans the thumbnail rail + image and looks wider than the image.
-- `ProductGallery` uses a `md:grid-cols-[76px_1fr]` layout with a bordered, gradient-filled image frame capped at 380px.
+Under the shade swatches in the right column of the product page, show a premium "yarn spec sheet" (Fibre/Blend, Yarn Weight, Yarn Length, Needle Size, Crochet Hook Size, Needle Stitch, Crochet Stitch, Ball Weight) — inspired by the reference, but not a copy: a distinctly more refined, branded layout.
 
-## Changes
+## Design direction (different from the reference)
 
-### 1. Constrain the action block to the image column
-In `src/routes/product.$id.tsx`:
-- Wrap the gallery + actions in one grid that shares the gallery's `[76px_minmax(0,1fr)]` columns, and place `ProductActions` in the second column only (on `md+`), so its left edge aligns with the image and its width matches the image exactly.
-- Simplest implementation: add an optional `footer` slot to `ProductGallery` rendered inside the image column `<div>`, and pass `ProductActions` into it. Keeps mobile behaviour untouched (mobile still uses the sticky bottom bar).
-- Cap it further with `max-w-[380px]` so it can never exceed the image frame width.
+Reference is 8 identical wide pink pills. Instead:
 
-### 2. Reference-style polish (visual only)
-- Gallery main frame: drop the dye gradient fill and heavy `rounded-3xl` border for a clean light surface with a subtle hairline and `object-contain` so the skein sits on a plain backdrop like the reference.
-- Thumbnail rail: square-ish thumbs with thin border, active thumb gets a marigold ring — closer to the reference rail.
-- Right column: keep title → price row with the "Incl. of all taxes" pill → hairline divider → `Shade CODE - Name` label → shade grid → weight/pack, matching the reference reading order (already close; add the divider and tighten spacing).
+```text
+┌── SPECIFICATIONS ───────────────────────────┐
+│  ╭──────────────╮  ╭──────────────╮         │
+│  │ ◆  FIBRE     │  │ ◆  WEIGHT    │         │
+│  │  100% Acrylic│  │  4 Medium    │         │
+│  ╰──────────────╯  ╰──────────────╯         │
+│  ╭──────────────╮  ╭──────────────╮         │
+│  │ ◆  LENGTH    │  │ ◆  BALL WT   │         │
+└─────────────────────────────────────────────┘
+```
+- Two-column card grid on desktop, single column on mobile (grid + `min-w-0` + `shrink-0` per responsive rules).
+- Each tile: soft cream/blush surface with a hairline border, a marigold hairline that animates on hover, a subtle lift on hover, and a small tinted circular medallion holding the icon.
+- Label in `font-data` uppercase micro-tracking (muted), value in larger foreground text — inverted emphasis vs. the reference's bold label.
+- Section gets a proper eyebrow heading ("Specifications") with a thin rule, sitting after the shade grid / weight selector.
+- All colors via existing semantic tokens (marigold, madder, card, border, muted-foreground) — no hardcoded hex.
 
-### 3. Keep the action block compact
-- Quantity stepper stays `h-9`, buttons `min-h-10`, `Add to cart` / `Buy Now` remain a 2-up grid inside the constrained width so nothing looks oversized.
-- All behaviour unchanged: stock clamping, sold-out disabling, subtotal math, WhatsApp link.
+## Icon art
 
-### 4. Verify
-- Screenshot at the current 811×722 viewport and a wider desktop width to confirm the action block width equals the image width and stays visible without scrolling.
+Generate 8 transparent-background PNG icon illustrations (yarn ball, weight gauge, tape measure, knitting needles, crochet hook, knit swatch, crochet swatch, kitchen scale) in a consistent hand-drawn ink line style matching the brand, register them via the asset CLI, and map them by spec id — replacing the current inline SVGs in the spec sheet. Existing inline SVGs stay in place for the trust band.
 
-## Files touched
-- `src/components/commerce/product-gallery.tsx`
-- `src/routes/product.$id.tsx`
+## Data
 
-## Out of scope
-- Cart/checkout wiring, backend/API changes, mobile sticky bar, reviews and related products.
+Fully dynamic — rows come from `productSpecs(product)`, which already reads `specs` / `attributes` / `meta` / flat fields from the API. No hardcoding per product. Rows the backend doesn't send are simply not rendered, so once you add these attributes in the admin panel they appear automatically.
+
+## Files
+
+- `src/components/commerce/spec-tiles.tsx` — rewritten layout + heading + hover states.
+- `src/components/commerce/spec-icons.tsx` — add the generated-image icon map (keep the SVG set for trust band).
+- `src/assets/spec/*.png.asset.json` — 8 new icon assets.
+- `src/routes/product.$id.tsx` — reposition/spacing only, so the spec sheet sits directly under the shade grid.
