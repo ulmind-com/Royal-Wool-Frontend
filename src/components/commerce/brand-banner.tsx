@@ -11,7 +11,7 @@ export function BrandBanner() {
     <section
       data-thread-anchor="banner"
       aria-label="Royal Wool — feel the softness, create with love"
-      className="mt-10 w-full sm:mt-12"
+      className="mt-16 w-full sm:mt-20"
     >
       <motion.div
         initial={reduced ? false : { opacity: 0, y: 20 }}
@@ -27,7 +27,7 @@ export function BrandBanner() {
           height={931}
           loading="lazy"
           decoding="async"
-          className="mx-auto block h-auto w-full max-h-[220px] max-w-[1400px] object-contain object-center sm:max-h-[280px] lg:max-h-[340px]"
+          className="mx-auto block h-auto w-full max-w-[1400px] object-contain object-center"
         />
 
       </motion.div>
