@@ -177,6 +177,18 @@ function ProductPage() {
             index={activeImage}
             onIndex={setActiveImage}
           />
+          <div className="hidden lg:block">
+            <ProductActions
+              product={product}
+              qty={qty}
+              setQty={setQty}
+              price={price}
+              stock={stock}
+              soldOut={soldOut}
+              formatMoney={formatMoney}
+              shareUrl={shareUrl}
+            />
+          </div>
         </div>
 
         <div>
