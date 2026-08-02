@@ -52,7 +52,7 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductPage() {
   const { id } = Route.useParams();
-  const { formatMoney, returnWindowDays, shop } = useSettings();
+  const { formatMoney, returnWindowDays, shop, settings } = useSettings();
   const { data: product, isPending, isError, error, refetch } = useQuery(productQuery(id));
 
   const [colorName, setColorName] = useState<string | null>(null);
