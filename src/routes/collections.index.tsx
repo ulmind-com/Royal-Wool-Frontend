@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { BrandRail } from "@/components/commerce/brand-rail";
 import { ProductGrid } from "@/components/commerce/product-card";
@@ -16,6 +17,7 @@ import {
 } from "@/lib/api/brands";
 import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
 import { flattenCategories } from "@/lib/api/types";
+import { cn } from "@/lib/utils";
 
 type ShopSearch = { brand: string; category: string; weight: string; sort: string };
 
@@ -58,6 +60,7 @@ export const Route = createFileRoute("/collections/")({
 function ShopPage() {
   const { brand, category, weight, sort } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const products = useQuery(productsQuery({ limit: 96 }));
   const tree = useQuery(categoryTreeQuery);
@@ -95,19 +98,26 @@ function ShopPage() {
   const set = (patch: Partial<ShopSearch>) =>
     void navigate({ search: (prev: ShopSearch) => ({ ...prev, ...patch }) });
 
-  return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16 lg:px-10">
-      <p className="font-data text-2xs text-marigold">Shop</p>
-      <h1 className="mt-3 max-w-3xl font-display text-4xl font-light tracking-[-0.03em] text-foreground sm:text-6xl">
-        {activeGroup ? activeGroup.meta.name : "Every yarn we wind"}
-      </h1>
-      <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-        {activeGroup
-          ? activeGroup.meta.blurb
-          : "Pick a brand, then narrow by category and yarn weight."}
-      </p>
+  const activeCount = (brand ? 1 : 0) + (category ? 1 : 0) + (weight ? 1 : 0);
 
-      <BrandRail groups={groups} active={brand} onSelect={(key) => set({ brand: key, category: "", weight: "" })} />
+  const filterPanel = (
+    <div className="space-y-6">
+      {activeCount ? (
+        <button
+          type="button"
+          data-cursor="link"
+          onClick={() => set({ brand: "", category: "", weight: "" })}
+          className="font-data text-2xs text-marigold transition-colors hover:text-foreground"
+        >
+          Clear all filters ({activeCount})
+        </button>
+      ) : null}
+
+      <BrandRail
+        groups={groups}
+        active={brand}
+        onSelect={(key) => set({ brand: key, category: "", weight: "" })}
+      />
 
       <ShopFilters
         categories={catList}
@@ -117,40 +127,89 @@ function ShopPage() {
         onCategory={(slug) => set({ category: slug })}
         onWeight={(id) => set({ weight: id })}
       />
+    </div>
+  );
 
-      <div className="mt-8 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-        <p className="min-w-0 truncate font-data text-2xs text-muted-foreground/80">
-          {products.isPending ? "Loading yarns…" : `${visible.length} products`}
+  return (
+    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-14 lg:px-10">
+      <header className="mx-auto max-w-2xl text-center">
+        <p className="font-data text-2xs uppercase tracking-[0.18em] text-marigold">Shop</p>
+        <h1 className="mt-2 font-display text-2xl font-light tracking-[-0.02em] text-foreground sm:text-4xl">
+          {activeGroup ? activeGroup.meta.name : "Every yarn we wind"}
+        </h1>
+        <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
+          {activeGroup
+            ? activeGroup.meta.blurb
+            : "Pick a brand, then narrow by category and yarn weight."}
         </p>
-        <label className="flex shrink-0 items-center gap-2">
-          <span className="sr-only">Sort products</span>
-          <select
-            value={sort}
-            onChange={(e) => set({ sort: e.target.value })}
-            className="rounded-full border border-border bg-transparent px-3 py-2 font-data text-2xs text-muted-foreground"
-          >
-            {SORTS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      </header>
 
-      <div className="mt-6">
-        {products.isPending ? (
-          <GridSkeleton count={8} />
-        ) : products.isError ? (
-          <DataError error={products.error} retry={() => void products.refetch()} />
-        ) : visible.length ? (
-          <ProductGrid products={visible} />
-        ) : (
-          <EmptyState
-            title="Nothing matches these filters yet"
-            note="Clear a filter, or message us on WhatsApp and we'll tell you what's close in the dye house."
-          />
-        )}
+      <div className="mt-8 grid gap-8 lg:mt-12 lg:grid-cols-[260px_1fr] lg:gap-10">
+        <aside aria-label="Product filters" className="min-w-0">
+          {/* Mobile: collapsible panel so the grid stays near the top. */}
+          <div className="lg:hidden">
+            <button
+              type="button"
+              data-cursor="link"
+              aria-expanded={filtersOpen}
+              onClick={() => setFiltersOpen((v) => !v)}
+              className="flex min-h-12 w-full items-center justify-between rounded-2xl border border-border px-4 font-data text-2xs text-foreground"
+            >
+              <span className="inline-flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4 text-marigold" />
+                Filters{activeCount ? ` · ${activeCount}` : ""}
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-muted-foreground transition-transform",
+                  filtersOpen && "rotate-180",
+                )}
+              />
+            </button>
+            {filtersOpen ? <div className="mt-5">{filterPanel}</div> : null}
+          </div>
+
+          <div className="hidden lg:sticky lg:top-24 lg:block lg:max-h-[calc(100svh-8rem)] lg:overflow-y-auto lg:pr-1">
+            {filterPanel}
+          </div>
+        </aside>
+
+        <div className="min-w-0">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+            <p className="min-w-0 truncate font-data text-2xs text-muted-foreground/80">
+              {products.isPending ? "Loading yarns…" : `${visible.length} products`}
+            </p>
+            <label className="flex shrink-0 items-center gap-2">
+              <span className="sr-only">Sort products</span>
+              <select
+                value={sort}
+                onChange={(e) => set({ sort: e.target.value })}
+                className="rounded-full border border-border bg-transparent px-3 py-2 font-data text-2xs text-muted-foreground"
+              >
+                {SORTS.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-5">
+            {products.isPending ? (
+              <GridSkeleton count={6} />
+            ) : products.isError ? (
+              <DataError error={products.error} retry={() => void products.refetch()} />
+            ) : visible.length ? (
+              <ProductGrid products={visible} />
+            ) : (
+              <EmptyState
+                title="Nothing matches these filters yet"
+                note="Clear a filter, or message us on WhatsApp and we'll tell you what's close in the dye house."
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

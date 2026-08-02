@@ -1,30 +1,38 @@
 ## Goal
 
-Rebuild the Shop page (`/collections`) as a premium, liquid-glass storefront with two brand sections — Heartbeats Premium Yarns and Ganga Acrowools Knitting Yarn — that stay fully dynamic, so any brand added later from the admin panel appears automatically. Clicking a brand filters the catalogue to that brand's categories and yarn weights and shows its products.
+Make the Shop page (`/collections`) easier to scan: a smaller, centered page heading, and all filters moved into a left sidebar so products can be narrowed without scrolling past big blocks.
 
-## What the user sees
+## 1. Heading — smaller and centered
 
-1. **Shop hero** — slim heading + short line, no long banner.
-2. **Brand rail** — one glass card per brand (compact, not tall): brand name, product count, a yarn image, and a subtle dye-flow sheen on hover. Selecting a card enters brand mode; a "All brands" chip clears it.
-3. **Filter bar** — category chips and yarn-weight chips (1 Super Fine … 7 Jumbo). In brand mode only the categories and weights that actually exist for that brand are shown; the rest are hidden, not greyed.
-4. **Product grid** — existing `ProductGrid` cards, 2-up on mobile, 4-up desktop, with count + sort and an empty state per filter combination.
-5. Uploaded yarn photos already in the project (`src/assets/yarn/*`) are used as brand-card and fallback product imagery, never as fixed product data.
+In `src/routes/collections.index.tsx`:
+- Center the header block (eyebrow "Shop", title, subtitle) on desktop and mobile.
+- Drop the title from `text-4xl / sm:text-6xl` down to roughly `text-3xl / sm:text-4xl` with tighter tracking, so it reads as a page title, not a hero.
+- Keep the dynamic title behaviour (brand name when a brand is selected, otherwise "Every yarn we wind") and the one-line subtitle underneath.
 
-The reference screenshots are treated as reference only; layout stays our own (horizontal chip filters instead of a left sidebar, glass cards, marigold accents).
+## 2. Two-column shop layout with a left filter rail
 
-## Dynamic behaviour
+Restructure the page body into a grid: `lg:grid-cols-[260px_minmax(0,1fr)]`.
 
-- Brands are derived from the live product feed's `brand` field, so admin-added brands show up with no code change.
-- The two named brands are seeded only as display metadata (label + blurb + fallback image) so they render nicely before the backend is renamed; if the API returns other brands they render with the same treatment.
-- Categories come from `/categories/tree`; yarn weights come from the existing weight list, matched against product titles/descriptions until the backend exposes a weight field.
-- URL search params keep `brand`, `category`, `weight`, and `sort` so filtered views are shareable and back/forward works.
+Left column (sticky, `lg:sticky lg:top-20`, own scroll if tall):
+- Brand selector — the existing `BrandRail` cards restacked into a compact vertical list that fits a 260px rail (image + name + count, one per row).
+- Category filter — vertical list of chips/rows instead of a horizontal scroll strip.
+- Yarn weight filter — vertical list with the number badge kept.
+- "Clear all filters" link at the top of the rail when any filter is active.
+
+Right column:
+- Result count + sort select on one row.
+- The product grid (`3` columns at `lg`, `4` at `xl`) since the sidebar now takes width.
+
+Mobile (`< lg`):
+- Sidebar becomes a collapsible "Filters" panel opened by a full-width button showing the active filter count, so the product grid stays near the top. Filter content is the same component, just rendered inside the panel.
+
+## 3. Behaviour kept as-is
+
+- Filters stay URL-driven (`?brand=&category=&weight=&sort=`), still fully dynamic from the API: brands from the product feed, categories from `/categories/tree`, weights derived from product text — no hardcoding, so admin-panel additions appear automatically.
 
 ## Technical notes
 
-- Rewrite `src/routes/collections.index.tsx`: `validateSearch` with `zodValidator` + `fallback` for `brand`/`category`/`weight`/`sort`; read with `Route.useSearch()`, write with `useNavigate`.
-- New `src/components/commerce/brand-rail.tsx` (glass brand cards) and `src/components/commerce/shop-filters.tsx` (category + weight chip rows).
-- New `src/data/brands.ts` holding display metadata keyed by normalized brand name, plus a `brandDisplay()` fallback for unknown brands.
-- New helpers in `src/lib/api/brands.ts`: group products by brand, derive available categories/weights for a brand, and match yarn weight from text.
-- Data flow stays `useQuery(productsQuery({ limit: 96 }))` + `categoryTreeQuery`; brand/weight filtering is client-side over that result (the API has no brand param yet), category filtering uses `category_id` when a category is picked.
-- Reuse `GridSkeleton`, `DataError`, `EmptyState`; no new dependencies.
-- Update the route `head()` so titles/descriptions reflect the selected brand.
+- `src/routes/collections.index.tsx` — layout restructure, heading styles, mobile filter toggle state.
+- `src/components/commerce/brand-rail.tsx` — add a compact vertical variant for the sidebar.
+- `src/components/commerce/shop-filters.tsx` — switch rows to a vertical stacked layout suitable for a narrow rail.
+- No data/API or filtering-logic changes; `src/lib/api/brands.ts` untouched.

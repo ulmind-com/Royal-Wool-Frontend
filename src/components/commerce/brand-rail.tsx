@@ -5,10 +5,10 @@ import type { BrandGroup } from "@/lib/api/brands";
 import { cn } from "@/lib/utils";
 
 /**
- * Brand selector for the Shop page.
+ * Brand selector for the Shop sidebar.
  *
- * Compact liquid-glass cards — deliberately short, so the grid stays above the
- * fold. Fully data-driven: whatever brandGroups() returns is what renders.
+ * Compact vertical list so it fits a 260px rail. Fully data-driven: whatever
+ * brandGroups() returns is what renders.
  */
 export function BrandRail({
   groups,
@@ -22,24 +22,15 @@ export function BrandRail({
   if (!groups.length) return null;
 
   return (
-    <section aria-labelledby="shop-brands" className="mt-10">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 id="shop-brands" className="font-data text-2xs uppercase tracking-[0.18em] text-marigold">
-          Shop by brand
-        </h2>
-        {active ? (
-          <button
-            type="button"
-            data-cursor="link"
-            onClick={() => onSelect("")}
-            className="font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Clear brand
-          </button>
-        ) : null}
-      </div>
+    <section aria-labelledby="shop-brands">
+      <h2
+        id="shop-brands"
+        className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground/70"
+      >
+        Brand
+      </h2>
 
-      <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+      <ul className="mt-3 space-y-2">
         {groups.map((g, i) => {
           const selected = active === g.key;
           return (
@@ -49,22 +40,21 @@ export function BrandRail({
                 data-cursor="link"
                 aria-pressed={selected}
                 onClick={() => onSelect(selected ? "" : g.key)}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 className="group block w-full text-left"
               >
                 <Glass
                   variant="card"
                   className={cn(
-                    "relative flex items-center gap-4 overflow-hidden !p-3 transition-transform duration-[var(--dur-standard)] group-hover:-translate-y-0.5 sm:!p-4",
+                    "relative flex items-center gap-3 overflow-hidden !p-2.5 transition-transform duration-[var(--dur-standard)] group-hover:-translate-y-0.5",
                     selected && "ring-1 ring-marigold",
                   )}
                 >
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -right-10 -top-14 h-40 w-40 rounded-full opacity-40 blur-3xl transition-opacity duration-500 group-hover:opacity-70"
+                    className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full opacity-40 blur-3xl transition-opacity duration-500 group-hover:opacity-70"
                     style={{ backgroundColor: g.meta.accent }}
                   />
                   <img
@@ -72,20 +62,20 @@ export function BrandRail({
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
+                    className="h-11 w-11 shrink-0 rounded-lg object-cover"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-display text-base font-light text-foreground sm:text-lg">
+                    <span className="block truncate font-display text-sm font-light text-foreground">
                       {g.meta.name}
                     </span>
-                    <span className="mt-0.5 block truncate font-data text-2xs text-muted-foreground/80">
-                      {g.meta.blurb}
-                    </span>
-                    <span className="mt-2 inline-flex items-center gap-2 font-data text-[10px] uppercase tracking-[0.14em] text-marigold">
+                    <span className="mt-0.5 block font-data text-[10px] uppercase tracking-[0.12em] text-marigold">
                       {g.products.length} {g.products.length === 1 ? "yarn" : "yarns"}
-                      <span aria-hidden className="text-muted-foreground/60">
-                        {selected ? "· filtering" : "· view range"}
-                      </span>
+                      {selected ? (
+                        <span aria-hidden className="text-muted-foreground/60">
+                          {" "}
+                          · active
+                        </span>
+                      ) : null}
                     </span>
                   </span>
                 </Glass>
