@@ -240,7 +240,7 @@ function ProductPage() {
               target="_blank"
               rel="noopener"
               data-cursor="link"
-              className="inline-flex items-center rounded-full border border-border px-6 py-3 font-data text-2xs text-foreground"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-border px-6 py-3 font-data text-2xs text-foreground sm:w-auto"
             >
               Ask on WhatsApp
             </a>
