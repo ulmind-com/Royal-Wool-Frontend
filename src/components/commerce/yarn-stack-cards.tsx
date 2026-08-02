@@ -85,8 +85,9 @@ export function YarnStackCards() {
 function RangeCard({ card, index }: { card: StackCardData; index: number }) {
   return (
     <article
-      className="group relative w-full overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_50px_110px_-60px_color-mix(in_oklab,var(--ink)_60%,transparent)]"
-      style={{ minHeight: "clamp(420px, 74vh, 580px)" }}
+      className="group relative w-full overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-[0_50px_110px_-60px_color-mix(in_oklab,var(--ink)_60%,transparent)] sm:rounded-[2rem]"
+      style={{ minHeight: "clamp(380px, 68svh, 580px)" }}
+
     >
       {/* dye glow */}
       <span
