@@ -170,7 +170,7 @@ function ProductPage() {
       </div>
 
       <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-5 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:px-10">
-        <div className="lg:sticky lg:top-20 lg:self-start">
+        <div className="lg:sticky lg:top-14 lg:self-start">
           <ProductGallery
             images={gallery}
             title={product.title}
@@ -455,7 +455,7 @@ function ProductActions({
 }) {
   const compact = variant === "compact";
   return (
-    <Glass variant="card" className={compact ? "mt-4" : "mt-5"}>
+    <Glass variant="card" className={cn(compact ? "mt-4" : "mt-5", "p-3 sm:p-4")}>
       <div className="flex items-center gap-4">
         <div className="inline-flex items-center rounded-full border border-border">
           <button
@@ -464,18 +464,7 @@ function ProductActions({
             onClick={() => setQty((q) => Math.max(1, q - 1))}
             disabled={qty <= 1}
             data-cursor="link"
-            className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
-          >
-            <Minus className="h-3.5 w-3.5" />
-          </button>
-          <span className="min-w-8 text-center font-data text-sm text-foreground">{qty}</span>
-          <button
-            type="button"
-            aria-label="Increase quantity"
-            onClick={() => setQty((q) => Math.min(Math.max(stock, 1), q + 1))}
-            disabled={soldOut || qty >= Math.max(stock, 1)}
-            data-cursor="link"
-            className="grid h-10 w-10 place-items-center text-foreground disabled:opacity-35"
+            className="grid h-9 w-9 place-items-center text-foreground disabled:opacity-35"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -485,13 +474,13 @@ function ProductActions({
         </p>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
         <button
           type="button"
           disabled={soldOut}
           data-cursor="link"
           title="Cart wiring lands with the commerce phase"
-          className="sheen inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground disabled:opacity-40"
+          className="sheen inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-madder px-5 py-2 font-data text-2xs text-primary-foreground disabled:opacity-40"
         >
           <ShoppingBag className="h-4 w-4" />
           Add to cart
@@ -501,13 +490,13 @@ function ProductActions({
           disabled={soldOut}
           data-cursor="link"
           title="Instant checkout lands with the commerce phase"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-madder px-6 py-3 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-madder px-5 py-2 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
         >
           Buy Now
         </button>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-data text-2xs text-muted-foreground/80">
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-data text-2xs text-muted-foreground/80">
         <span className="inline-flex items-center gap-1.5">
           <Truck className="h-3.5 w-3.5" aria-hidden /> Ships Pan India
         </span>
