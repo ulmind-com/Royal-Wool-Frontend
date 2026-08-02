@@ -67,7 +67,10 @@ export interface ReviewFeed {
   average: number;
   /** Star -> number of reviews, 1..5. */
   breakdown: Record<number, number>;
+  /** True when the backend had no reviews and placeholder copy is shown. */
+  isDemo: boolean;
 }
+
 
 function normalise(raw: RawReview, product?: Product): Review | null {
   const rating = Number(raw.rating ?? 0);
