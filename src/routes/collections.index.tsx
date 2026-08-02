@@ -144,7 +144,7 @@ function ShopPage() {
         </p>
       </header>
 
-      <div className="mt-5 grid gap-8 lg:mt-6 lg:grid-cols-[260px_1fr] lg:gap-10">
+      <div className="mt-4 grid gap-8 lg:mt-5 lg:grid-cols-[260px_1fr] lg:gap-10">
         <aside aria-label="Product filters" className="min-w-0">
           {/* Mobile: collapsible panel so the grid stays near the top. */}
           <div className="lg:hidden">
