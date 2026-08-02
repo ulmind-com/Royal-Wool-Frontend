@@ -41,7 +41,7 @@ export function YarnStackCards() {
     {},
   ];
 
-  const flat = reduced || touch;
+  const flat = reduced;
 
   return (
     <section
