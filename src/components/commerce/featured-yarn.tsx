@@ -108,11 +108,14 @@ export function FeaturedYarn() {
 
   // Seamless loop: translate the first copy fully out, then wrap.
   useAnimationFrame((_, delta) => {
-    if (reduced || paused || dragging.current) return;
+    if (reduced) return;
     const half = (trackRef.current?.scrollWidth ?? 0) / 2;
     if (!half) return;
-    let next = x.get() - (SPEED * delta) / 1000;
-    if (next <= -half) next += half;
+    const drift = paused || dragging.current ? 0 : (SPEED * delta) / 1000;
+    let next = x.get() - drift;
+    // wrap both ways so dragging can never run the track off either end
+    while (next <= -half) next += half;
+    while (next > 0) next -= half;
     x.set(next);
   });
 

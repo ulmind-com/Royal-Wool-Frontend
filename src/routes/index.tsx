@@ -90,77 +90,7 @@ function Home() {
 
       <YarnFanCarousel />
 
-      <ProductRail
-        anchor="bestsellers"
-        eyebrow="03b · Loved most"
-        title="Best sellers"
-        note="What crafters reorder skein after skein."
-        filters={{ sort: "popular" }}
-      />
-
-      <UpcomingRail />
-
-
-      <SectionStub
-        anchor="lookbook"
-        eyebrow="06 · Lookbook"
-        title="Masonry gallery"
-        note="Light section, cursor-reactive tiles, lightbox."
-        light
-      />
-      <SectionStub
-        anchor="offers"
-        eyebrow="07 · Offers"
-        title="Tear-off coupon cards"
-        note="From /coupons/active, tap to copy."
-      />
-      <SectionStub
-        anchor="recs"
-        eyebrow="08 · Picked for you"
-        title="Recommendations"
-        note="From /recommendations/home."
-      />
+      <FeaturedYarn />
     </>
-  );
-}
-
-function SectionStub({
-  anchor,
-  eyebrow,
-  title,
-  note,
-  light = false,
-}: {
-  anchor: string;
-  eyebrow: string;
-  title: string;
-  note: string;
-  light?: boolean;
-}) {
-  return (
-    <section
-      data-thread-anchor={anchor}
-      className={light ? "light-section mt-20" : "mt-20"}
-      aria-label={title}
-    >
-      <div className="mx-auto w-full max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10">
-        <p className="font-data text-2xs text-marigold">{eyebrow}</p>
-        <h2 className="mt-4 font-display text-4xl font-light">{title}</h2>
-        <p className="mt-4 max-w-xl text-muted-foreground">{note}</p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="aspect-[3/4] rounded-2xl border border-border"
-              style={{
-                backgroundImage:
-                  "linear-gradient(135deg, color-mix(in oklab, var(--foreground) 7%, transparent), color-mix(in oklab, var(--foreground) 2%, transparent))",
-              }}
-              aria-hidden
-            />
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
