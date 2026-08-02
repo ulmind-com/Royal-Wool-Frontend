@@ -177,8 +177,8 @@ export function CustomerReviews() {
             />
           ) : isPending ? (
             <div className="columns-1 gap-5 sm:columns-2 lg:columns-3" aria-hidden>
-              {[220, 320, 180, 280, 200, 340].map((h, i) => (
-                <CardSkeleton key={i} className="mb-5 w-full" style={{ height: h }} />
+              {["h-56", "h-80", "h-44", "h-72", "h-52", "h-[21rem]"].map((h, i) => (
+                <CardSkeleton key={i} className={cn("mb-5 w-full", h)} />
               ))}
             </div>
           ) : (
