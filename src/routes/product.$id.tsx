@@ -22,6 +22,7 @@ import { productQuery, productsQuery } from "@/lib/api/queries";
 import { productReviewsQuery } from "@/lib/api/reviews";
 import { productSpecs, washCare } from "@/lib/api/specs";
 import {
+  type Product,
   type ProductColor,
   type ProductSize,
   primaryImage,
