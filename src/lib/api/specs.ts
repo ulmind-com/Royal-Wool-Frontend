@@ -113,30 +113,46 @@ function read(bag: Bag, keys: string[]): string | null {
   return null;
 }
 
-/** Every admin-provided spec for this product, in display order. */
+/** Every spec for this product — admin data first, demo filler for the rest. */
 export function productSpecs(product: Product): SpecRow[] {
   const sources = bags(product);
   const rows: SpecRow[] = [];
-  for (const def of SPEC_DEFS) {
+  const key = product.id || product.title || "royal-wool";
+  SPEC_DEFS.forEach((def, index) => {
+    let found: string | null = null;
     for (const bag of sources) {
       const value = read(bag, def.keys);
       if (value) {
-        rows.push({ id: def.id, label: def.label, value });
+        found = value;
         break;
       }
     }
-  }
+    if (found) {
+      rows.push({ id: def.id, label: def.label, value: found });
+    } else if (SPEC_PLACEHOLDERS) {
+      rows.push({
+        id: def.id,
+        label: def.label,
+        value: pick(SPEC_FALLBACKS[def.id], key, index),
+        placeholder: true,
+      });
+    }
+  });
   return rows;
 }
 
-/** Free-text wash-care copy when the admin supplies it. */
+/** Free-text wash-care copy — admin's when present, otherwise demo copy. */
 export function washCare(product: Product): string | null {
   for (const bag of bags(product)) {
     const value = read(bag, ["wash_care", "care", "care_instructions", "washing"]);
     if (value) return value;
   }
+  if (SPEC_PLACEHOLDERS) {
+    return pick(CARE_FALLBACKS, product.id || product.title || "royal-wool", 3);
+  }
   return null;
 }
+
 
 /** Shade code such as "DSR001" when the admin stores one on the colour. */
 export function shadeCode(color: { name: string } & Record<string, unknown>): string | null {
