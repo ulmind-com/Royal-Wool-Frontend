@@ -292,12 +292,6 @@ function ProductPage() {
           <AssuranceBand rows={storeAssurances(product, settings)} />
 
 
-          {product.description ? (
-            <div className="mt-10">
-              <p className="font-data text-2xs uppercase tracking-[0.16em] text-marigold">Details</p>
-              <p className="mt-3 whitespace-pre-line text-muted-foreground">{product.description}</p>
-            </div>
-          ) : null}
 
           <div className="mt-8 divide-y divide-border border-y border-border">
             <Accordion title="Name & Address of Manufacturer">
