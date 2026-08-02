@@ -40,7 +40,13 @@ export function brandGroups(products: Product[]): BrandGroup[] {
   for (const p of products) {
     if (!p.brand?.trim()) continue;
     const key = normalizeBrand(p.brand);
-    if (!names.has(key)) names.set(key, p.brand.trim());
+    if (names.has(key)) continue;
+    // Fold admin variants ("Ganga Yarn") into the seeded brand they belong to.
+    const seeded = SEEDED_BRANDS.find((b) =>
+      [normalizeBrand(b.name), ...b.aliases].some((t) => t.length > 2 && key.includes(t)),
+    );
+    if (seeded) continue;
+    names.set(key, p.brand.trim());
   }
 
   return [...names.entries()].map(([key, name]) => {
