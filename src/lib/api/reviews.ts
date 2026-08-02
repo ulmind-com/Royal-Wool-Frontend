@@ -158,8 +158,14 @@ async function fetchFeed(signal: AbortSignal): Promise<ReviewFeed> {
     }),
   );
 
-  return summarise(batches.flat());
+  const merged = batches.flat();
+
+  // 3. Nothing published yet — show curated placeholders so the shelf isn't bare.
+  if (!merged.length) return summarise(DEMO_REVIEWS, true);
+
+  return summarise(merged);
 }
+
 
 export const reviewFeedQuery = queryOptions({
   queryKey: ["reviews", "feed"],
