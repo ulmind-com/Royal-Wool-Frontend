@@ -103,7 +103,14 @@ export function CustomerReviews() {
                 ) : null}
               </div>
             ) : null}
+
+            {data?.isDemo ? (
+              <p className="mt-4 font-data text-2xs text-muted-foreground/70">
+                Sample reviews — real customer reviews appear here automatically.
+              </p>
+            ) : null}
           </div>
+
 
           {/* rating breakdown */}
           {data?.count ? (
