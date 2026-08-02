@@ -93,7 +93,7 @@ function ShopPage() {
   }, [pool, catList, category, weight, sort]);
 
   const set = (patch: Partial<ShopSearch>) =>
-    void navigate({ search: (prev) => ({ ...prev, ...patch }) });
+    void navigate({ search: (prev: ShopSearch) => ({ ...prev, ...patch }) });
 
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16 lg:px-10">
