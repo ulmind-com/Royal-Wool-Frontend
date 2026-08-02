@@ -38,10 +38,10 @@ export function ProductGallery({
   };
 
   return (
-    <div className="lg:grid lg:grid-cols-[76px_minmax(0,1fr)] lg:gap-4">
+    <div className="md:grid md:grid-cols-[76px_minmax(0,1fr)] md:gap-4">
       {/* Desktop thumbnail rail */}
       {images.length > 1 ? (
-        <ul className="hidden max-h-[420px] flex-col gap-3 overflow-y-auto pr-1 lg:flex">
+        <ul className="hidden max-h-[420px] flex-col gap-3 overflow-y-auto pr-1 md:flex">
           {images.map((src, i) => (
             <li key={`${src}-${i}`}>
               <button
@@ -70,7 +70,7 @@ export function ProductGallery({
       <div>
         {/* Desktop frame with cursor zoom */}
         <div
-          className="group relative mx-auto hidden aspect-square max-h-[420px] overflow-hidden rounded-3xl border border-border lg:block"
+          className="group relative mx-auto hidden aspect-square max-h-[420px] overflow-hidden rounded-3xl border border-border md:block"
           onPointerMove={(e) => {
             const r = e.currentTarget.getBoundingClientRect();
             setZoom({
@@ -113,7 +113,7 @@ export function ProductGallery({
         </div>
 
         {/* Mobile swipe carousel */}
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <div
             ref={scroller}
             className="flex snap-x snap-mandatory overflow-x-auto rounded-3xl border border-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
