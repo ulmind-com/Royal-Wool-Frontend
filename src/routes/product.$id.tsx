@@ -52,12 +52,6 @@ export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
 });
 
-const TRUST = [
-  { Icon: ShieldIcon, title: "Secure Checkout", note: "Safe, fast & encrypted" },
-  { Icon: TruckIcon, title: "Pan India Delivery", note: "Fast, reliable shipping" },
-  { Icon: BabyIcon, title: "Gentle & Skin-safe", note: "Soft enough for baby knits" },
-  { Icon: AwardIcon, title: "Quality Guarantee", note: "Mill-fresh, hand-checked yarn" },
-];
 
 function ProductPage() {
   const { id } = Route.useParams();
@@ -298,15 +292,8 @@ function ProductPage() {
 
           <SpecTiles specs={specs} />
 
-          <ul className="mt-10 grid grid-cols-2 gap-y-8">
-            {TRUST.map(({ Icon, title, note }) => (
-              <li key={title} className="px-2 text-center">
-                <Icon className="mx-auto h-8 w-8 text-marigold" />
-                <p className="mt-2 font-data text-2xs text-foreground">{title}</p>
-                <p className="mt-1 text-xs text-muted-foreground/80">{note}</p>
-              </li>
-            ))}
-          </ul>
+          <AssuranceBand rows={storeAssurances(product, settings)} />
+
 
           {product.description ? (
             <div className="mt-10">
