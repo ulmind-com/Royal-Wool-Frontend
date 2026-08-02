@@ -16,9 +16,10 @@ export function BrandBanner() {
       <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
         <motion.div
           initial={reduced ? false : { opacity: 0, y: 24 }}
-          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+          {...(reduced ? {} : { whileInView: { opacity: 1, y: 0 } })}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+
           className="overflow-hidden rounded-3xl border border-border/60 shadow-[0_24px_60px_-30px_color-mix(in_oklab,var(--ink)_35%,transparent)]"
         >
           <img
