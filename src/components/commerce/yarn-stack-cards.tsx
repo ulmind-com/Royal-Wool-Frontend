@@ -102,8 +102,8 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
       />
 
       <div className="relative grid h-full gap-0 lg:grid-cols-2">
-        {/* Left: image */}
-        <div className="relative min-h-[240px] overflow-hidden lg:min-h-full">
+        {/* Left (top on mobile): image */}
+        <div className="relative h-[150px] shrink-0 overflow-hidden xs:h-[170px] sm:h-[240px] lg:h-auto lg:min-h-full">
           <img
             src={card.image}
             alt={card.imageAlt}
@@ -112,16 +112,13 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
           />
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, transparent 55%, color-mix(in oklab, var(--card) 85%, transparent) 100%)",
-            }}
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_45%,color-mix(in_oklab,var(--card)_85%,transparent)_100%)] lg:bg-[linear-gradient(to_right,transparent_55%,color-mix(in_oklab,var(--card)_85%,transparent)_100%)]"
           />
         </div>
 
-        {/* Right: copy */}
-        <div className="flex flex-col justify-center gap-6 px-7 py-10 sm:px-10 sm:py-12 lg:px-14">
+        {/* Right (below on mobile): copy */}
+        <div className="flex min-w-0 flex-col justify-center gap-4 px-5 py-6 sm:gap-6 sm:px-10 sm:py-12 lg:px-14">
+
           <Glass
             variant="pill"
             className="w-fit whitespace-nowrap font-data text-2xs uppercase tracking-[0.18em] text-ink"
