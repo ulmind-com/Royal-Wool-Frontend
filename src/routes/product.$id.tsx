@@ -231,7 +231,7 @@ function ProductPage() {
               disabled={stock === 0}
               data-cursor="link"
               title="Cart wiring lands with the commerce phase"
-              className="sheen inline-flex items-center rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground disabled:opacity-40"
+              className="sheen inline-flex min-h-12 w-full items-center justify-center rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground disabled:opacity-40 sm:w-auto"
             >
               Add to bag
             </button>
