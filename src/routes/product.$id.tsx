@@ -184,7 +184,7 @@ function ProductPage() {
               {product.brand}
             </p>
           ) : null}
-          <h1 className="mt-2 font-display text-3xl font-light tracking-[-0.03em] text-foreground sm:text-5xl">
+          <h1 className="mt-2 max-w-[22ch] text-balance font-display text-2xl font-light leading-[1.1] tracking-[-0.02em] text-foreground sm:text-3xl lg:text-4xl">
             {product.title}
           </h1>
 
