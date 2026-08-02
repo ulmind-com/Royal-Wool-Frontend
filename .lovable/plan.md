@@ -1,23 +1,41 @@
 ## Goal
 
-Shade deck-এর ঠিক উপরে একটা নতুন section — reference-এর মতো stacked card animation, cards ডান থেকে বাঁয়ে এসে stack-এ বসে। উঁচু হবে না, দু'পাশে হালকা ফাঁকা থাকবে।
+`YarnStackScroll` (auto-sliding stack) সরিয়ে ulmind.com-এর মতো **scroll-driven stacking cards** বসবে — scroll করলে একটা card উপরে stick হয়ে থাকে, opacity + scale কমতে থাকে, আর পরের card তার উপরে উঠে আসে। প্রতিটা card-এ **left-এ image, right-এ লেখা + button**। কোনো partnership form / reCAPTCHA / formsubmit থাকবে না।
 
-## Section: "Straight off the winder" (stacked shade strip)
+## যা সরবে
 
-New component `src/components/commerce/yarn-stack-scroll.tsx`:
+- `src/components/commerce/yarn-stack-scroll.tsx` — delete।
+- `src/routes/index.tsx` থেকে `YarnStackScroll` import + usage বাদ। বাকি সব section অপরিবর্তিত।
 
-- Layout: centered container, `max-w-[1100px]` with side padding so left/right breathing room থাকে; total height compact (~`clamp(300px, 44vh, 420px)`).
-- Stack: 4–5 cards absolutely positioned, তিনটে পেছনের card উপরে সামান্য offset + scale-down + dim (reference-এর paper-stack look), সামনের card sharp with rounded-[1.75rem] + soft shadow.
-- Motion (Framer Motion): প্রতি ~3.2s এ front card বাঁয়ে slide out + fade, বাকিরা এক ধাপ এগিয়ে আসে; নতুন card ডান দিক থেকে ঢোকে। Spring transition, `useReducedMotion` respect করবে, tab hidden হলে pause, mouse hover-এ pause; drag/swipe দিয়ে manual advance।
-- Content: `YARN_FAN_FALLBACKS`-এর ছবি (আগেই আপলোড করা yarn images) reuse; front card-এ ছোট glass pill label + shade name, বাকিতে শুধু image। Card click করলে product page (live catalogue থাকলে `/product/$id`, না হলে `/collections`), shade deck-এর মতোই একই logic।
-- Left column-এ ছোট eyebrow + heading + one-line copy, right-এ stack — বা reference-এর মতো heading উপরে, stack নিচে; compact রাখার জন্য heading উপরে থাকবে।
+## নতুন: `src/components/commerce/yarn-stack-cards.tsx`
+
+Framer Motion `useScroll` + `useSpring` + `useTransform`, ঠিক তোমার দেওয়া pattern-এ:
+
+```text
+<section ref={containerRef} class="relative h-[300vh]">
+  card 1  →  sticky top-0, h-screen-ish, opacity [0 → .33] 1→0, scale 1→0.9
+  card 2  →  sticky, opacity [.33 → .66] 1→0, scale 1→0.9
+  card 3  →  sticky, কোনো fade নেই (শেষ card)
+</section>
+```
+
+- `offset: ["start start", "end start"]`, spring `{stiffness:30, damping:40, restDelta:0.001}` — তোমার কোডের value-ই।
+- Sticky wrapper `min-h-svh` না নিয়ে compact রাখব: `h-[clamp(460px,78vh,620px)]` card + `items-center`, যাতে section অতিরিক্ত লম্বা না লাগে; দু'পাশে `max-w-[1200px]` + padding দিয়ে breathing room।
+- Reduced motion / touch: `useReducedMotion` true হলে stacking transform বন্ধ, cards সাধারণ vertical stack হয়ে যাবে (`h-auto`, sticky off) — mobile-এও একই fallback, কারণ ছোট screen-এ sticky stack ভাঙে।
+
+### Card layout (per card)
+
+- Grid `lg:grid-cols-2`, rounded-[2rem], border + soft shadow, background `card` token; একটা হালকা marigold/madder dye-glow radial ভিতরে।
+- **Left:** yarn image (`YARN_FAN_FALLBACKS` থেকে, `object-cover`, rounded, subtle hover zoom + specular sheen)।
+- **Right:** `font-data` eyebrow pill (Glass primitive, liquid-glass look), `font-display` heading, 2-line copy, ছোট feature list (3 bullet: fibre / weight / care), আর একটা primary CTA button (`Shop the range` → `/collections`, বা live product থাকলে `/product/$id`) + secondary text link।
+- Content 3টা card-এ: Cotton Delight (cotton range), Cotton Candy (pastel range), Hobby India (everyday acrylic) — image + copy `src/data/yarn-stack.ts`-এ নতুন const array হিসেবে থাকবে, তাই পরে backend/admin দিয়ে বদলানো সহজ।
 
 ## Wiring
 
-`src/routes/index.tsx`: `<YarnStackScroll />` `<YarnFanCarousel />`-এর ঠিক আগে বসবে; কোনো existing section সরানো হবে না।
+`src/routes/index.tsx`-এ ঠিক আগের জায়গায় (`<YarnFanCarousel />`-এর উপরে) `<YarnStackCards />` বসবে।
 
 ## Technical notes
 
-- Design tokens only (marigold, ink, fleece, border) — কোনো hardcoded color না।
-- Images already Lovable Assets pointers, নতুন upload দরকার নেই।
-- Verify with Playwright screenshot + console check.
+- Colour শুধু design token (marigold, madder, ink, fleece, border) — কোনো hardcoded hex/`text-white` না।
+- `sticky` parent-এ `overflow-hidden` দেওয়া হবে না (নাহলে sticky ভাঙে); Lenis smooth scroll-এর সাথে `useScroll` কাজ করে, verify করব।
+- Verification: Playwright দিয়ে তিনটে scroll position-এ screenshot + console check।
