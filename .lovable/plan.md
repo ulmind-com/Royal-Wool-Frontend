@@ -1,11 +1,11 @@
-## Goal
+Current `brand-banner.tsx` uses `object-contain` with `max-h` values. That keeps the whole artwork visible but creates empty left/right space (letterboxing) when the container is wider than the scaled image.
 
-Banner-ta ekhon onek lomba, ar duipashe gutter/faka jayga ache. Duitoi thik kora hobe — edge-to-edge full-bleed, ar height onek kom.
+Goal: make the banner fill the full width with no side gaps, while staying compact in height and keeping the central text readable.
 
-## Change (`src/components/commerce/brand-banner.tsx`)
-
-1. **Side faka na thakuk** — `max-w-[1600px]` container ar `px-4 sm:px-6 lg:px-10` padding bad. Section-ta full-bleed hobe (`w-full`), tai image screen-er bam theke dan porjonto pouchabe. Rounded corner + border + shadow-o bad (edge-to-edge-e oi frame bemanan lagbe).
-2. **Lombay choto** — `aspect-[1656/931]` bad; tar jaygay fixed responsive height: mobile ~`h-[38vw]` cap kore `h-40`, tablet `sm:h-56`, desktop `lg:h-72` (approx 200–290px). Image `object-cover object-center` — tai banner-er majhkhaner "Feel the softness / Royaall Wool" lekha-ta center-e thakbe, sudhu upor-niche crop hobe.
-3. Upor-nicher spacing-o komano hobe (`mt-24` → `mt-16 sm:mt-20`) jate section-ta aro compact lage. Fade-in animation ar alt text jemon ache tolo thakbe.
-
-Kono heading/text add hobe na — sudhu image.
+Plan:
+1. In `src/components/commerce/brand-banner.tsx`:
+   - Change `object-contain` to `object-cover` so the image always fills the width.
+   - Remove `max-w-[1400px]` so the image can span the full section width.
+   - Keep `object-center` to anchor the crop on the middle text/graphics.
+   - Slightly lower the max-height values so the banner does not feel too tall.
+2. Verify the preview shows the banner edge-to-edge with no letterbox bars and with the "Feel the softness..." text still visible.
