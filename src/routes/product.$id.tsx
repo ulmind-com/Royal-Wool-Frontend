@@ -486,15 +486,15 @@ function ProductActions({
         </p>
       </div>
 
-      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      <div className="mt-2 grid grid-cols-2 gap-2">
         <button
           type="button"
           disabled={soldOut}
           data-cursor="link"
           title="Cart wiring lands with the commerce phase"
-          className="sheen inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-madder px-5 py-2 font-data text-2xs text-primary-foreground disabled:opacity-40"
+          className="sheen inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-madder px-3 py-2 font-data text-2xs text-primary-foreground disabled:opacity-40"
         >
-          <ShoppingBag className="h-4 w-4" />
+          <ShoppingBag className="h-3.5 w-3.5 shrink-0" />
           Add to cart
         </button>
         <button
@@ -502,11 +502,12 @@ function ProductActions({
           disabled={soldOut}
           data-cursor="link"
           title="Instant checkout lands with the commerce phase"
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-madder px-5 py-2 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
+          className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-madder px-3 py-2 font-data text-2xs text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40"
         >
           Buy Now
         </button>
       </div>
+
 
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-data text-2xs text-muted-foreground/80">
         <span className="inline-flex items-center gap-1.5">
