@@ -10,10 +10,10 @@ export function Footer() {
 
   return (
     <footer className="ink-section relative mt-24 border-t border-border">
-      <div className="mx-auto w-full max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)]">
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+        <div className="grid gap-10 sm:gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)]">
           <div className="min-w-0">
-            <p className="font-display text-4xl font-light tracking-[-0.03em] text-foreground">
+            <p className="font-display text-3xl font-light tracking-[-0.03em] text-foreground sm:text-4xl">
               Royal <span className="italic text-marigold">Wool</span>
             </p>
             <p className="mt-4 max-w-sm text-muted-foreground">{BRAND.tagline}</p>
@@ -23,14 +23,15 @@ export function Footer() {
               target="_blank"
               rel="noopener"
               aria-label="Chat with Royal Wool on WhatsApp"
-              className="sheen mt-8 inline-flex items-center gap-3 rounded-full bg-madder px-6 py-3 font-data text-2xs text-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
+              className="sheen mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:mt-8 sm:w-auto"
               data-cursor="link"
             >
               Chat on WhatsApp
             </a>
           </div>
 
-          <div className="grid gap-10 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-10">
+
             <nav aria-label="Shop">
               <p className="font-data text-2xs text-marigold">Shop</p>
               <ul className="mt-4 space-y-2">
@@ -70,7 +71,7 @@ export function Footer() {
               </ul>
             </nav>
 
-            <div>
+            <div className="col-span-2 sm:col-span-1">
               <p className="font-data text-2xs text-marigold">Reach us</p>
               <ul className="mt-4 space-y-3 text-muted-foreground">
                 {shop?.address ? (
@@ -111,7 +112,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col gap-2 border-t border-border pt-6 font-data text-2xs text-muted-foreground/70 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-2 border-t border-border pb-safe pt-6 font-data text-2xs text-muted-foreground/70 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Royal Wool. All rights reserved.</p>
           <p>Made in India</p>
         </div>

@@ -19,7 +19,7 @@ export function WhatsAppFab() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed bottom-6 right-4 z-40 flex flex-col items-end gap-4 sm:right-6">
+    <div className="bottom-safe pointer-events-none fixed right-4 z-40 flex flex-col items-end gap-4 sm:right-6">
       <a
         href={waGeneral()}
         target="_blank"

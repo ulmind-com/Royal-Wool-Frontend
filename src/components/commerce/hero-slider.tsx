@@ -54,13 +54,14 @@ export function HeroSlider() {
 
   return (
     <section className="relative" data-thread-anchor="hero" aria-label="Featured">
-      <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-[1600px] px-3 pt-4 sm:px-6 sm:pt-6 lg:px-10">
         <div
-          className="group relative isolate overflow-hidden rounded-[32px] border border-border"
+          className="group relative isolate overflow-hidden rounded-[22px] border border-border sm:rounded-[32px]"
           style={{
-            height: "clamp(380px, 52vh, 520px)",
+            height: "clamp(320px, 58vh, 520px)",
             boxShadow: "0 40px 90px -50px color-mix(in oklab, var(--ink) 45%, transparent)",
           }}
+
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}
@@ -122,7 +123,7 @@ export function HeroSlider() {
           />
 
           {/* Copy layer */}
-          <div className="relative flex h-full items-center px-6 pb-8 sm:px-10 lg:px-16">
+          <div className="relative flex h-full items-center px-5 pb-16 sm:px-10 sm:pb-8 lg:px-16">
             <AnimatePresence mode="wait">
               <div key={slide.id} className="max-w-[34rem] min-w-0">
                 <motion.p {...rise(0)} className="font-data text-2xs text-marigold">
@@ -130,24 +131,25 @@ export function HeroSlider() {
                 </motion.p>
                 <motion.h1
                   {...rise(0.08)}
-                  className="mt-3 font-display text-3xl font-light leading-[1.06] sm:text-4xl lg:text-5xl"
+                  className="mt-2.5 font-display text-[1.75rem] font-light leading-[1.08] xs:text-3xl sm:mt-3 sm:text-4xl lg:text-5xl"
                 >
                   {slide.title || "Premium knitting & crochet yarn"}
                 </motion.h1>
                 {slide.subtitle ? (
                   <motion.p
                     {...rise(0.16)}
-                    className="mt-4 max-w-lg text-sm text-muted-foreground sm:text-base"
+                    className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base"
                   >
                     {slide.subtitle}
                   </motion.p>
                 ) : null}
-                <motion.div {...rise(0.24)} className="mt-6 flex flex-wrap items-center gap-4">
+                <motion.div {...rise(0.24)} className="mt-5 flex flex-wrap items-center gap-4 sm:mt-6">
+
                   {isInternal ? (
                     <Link
                       to={href}
                       data-cursor="link"
-                      className="sheen inline-flex items-center gap-2 rounded-full bg-madder px-7 py-3.5 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
+                      className="sheen inline-flex min-h-[46px] items-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:px-7 sm:py-3.5"
                     >
                       {slide.cta_label ?? "Shop all yarns"}
                       <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -158,7 +160,7 @@ export function HeroSlider() {
                       target="_blank"
                       rel="noopener"
                       data-cursor="link"
-                      className="sheen inline-flex items-center gap-2 rounded-full bg-madder px-7 py-3.5 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
+                      className="sheen inline-flex min-h-[46px] items-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:px-7 sm:py-3.5"
                     >
                       {slide.cta_label ?? "Shop all yarns"}
                       <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -169,9 +171,10 @@ export function HeroSlider() {
             </AnimatePresence>
           </div>
 
-          {/* Controls — dots + arrows as one bottom-right cluster */}
+          {/* Controls — dots left, arrows right on phones; one cluster from sm up */}
           {count > 1 ? (
-            <div className="absolute bottom-5 right-5 flex items-center gap-4 sm:bottom-6 sm:right-6 sm:gap-5">
+            <div className="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:justify-end sm:gap-5">
+
               <div className="flex items-center gap-2 sm:gap-3">
                 {slides.map((s, i) => (
                   <button

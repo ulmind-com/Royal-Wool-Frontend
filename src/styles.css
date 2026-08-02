@@ -21,7 +21,11 @@
  */
 
 @theme inline {
+  /* extra-small phone breakpoint (360–430px devices) */
+  --breakpoint-xs: 25rem;
+
   /* radius */
+
   --radius-sm: calc(var(--radius) - 8px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
@@ -193,7 +197,23 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
   }
+
+  body {
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+
+  /* Never let a picture or embed push the phone layout sideways. */
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
 
   body {
     background-color: var(--color-background);
@@ -351,4 +371,53 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---------- mobile / app-feel utilities ---------- */
+
+/* Hide the scrollbar on touch rails without losing the scroll itself. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Momentum snap rail that bleeds to both screen edges on phones. */
+@utility touch-rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* Home-bar / notch aware spacing for fixed mobile chrome. */
+@utility pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.25rem);
+}
+
+@utility bottom-safe {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+@utility mt-safe-top {
+  margin-top: env(safe-area-inset-top, 0px);
+}
+
+/* Comfortable minimum touch target for icon-only controls. */
+@utility tap-target {
+  min-height: 44px;
+  min-width: 44px;
 }

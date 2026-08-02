@@ -4,7 +4,9 @@ import { lazy, Suspense, useMemo } from "react";
 
 import { ProductRail } from "@/components/commerce/product-rail";
 import { DataError } from "@/components/data-state";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useReducedMotion } from "@/hooks/use-motion";
+
 import { productsQuery } from "@/lib/api/queries";
 import { primaryImage } from "@/lib/api/types";
 import { NEW_ARRIVAL_FALLBACKS } from "@/data/new-arrival-gallery";
@@ -24,6 +26,8 @@ const PREFER_LOCAL_IMAGES = true;
 export function NewArrivalsGallery() {
   const navigate = useNavigate();
   const reduced = useReducedMotion();
+  const isMobile = useIsMobile();
+
   const { data, isPending, isError, error, refetch } = useQuery(
     productsQuery({ sort: "newest", limit: 12 }),
   );
@@ -71,27 +75,29 @@ export function NewArrivalsGallery() {
   }
 
   return (
-    <section data-thread-anchor="sections" className="mt-20" aria-label="New arrivals">
+    <section data-thread-anchor="sections" className="mt-16 sm:mt-20" aria-label="New arrivals">
       <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="font-data text-2xs text-marigold">03 · Fresh off the winder</p>
-            <h2 className="mt-3 font-display text-4xl font-light text-foreground">New arrivals</h2>
-            <p className="mt-3 max-w-xl text-muted-foreground">
+            <h2 className="mt-2.5 font-display text-3xl font-light text-foreground sm:mt-3 sm:text-4xl">
+              New arrivals
+            </h2>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
               Drag, scroll or use the arrow keys — tap a skein to open it.
             </p>
           </div>
           <Link
             to="/collections"
             data-cursor="link"
-            className="rounded-full border border-border px-5 py-2.5 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex min-h-11 items-center rounded-full border border-border px-5 py-2.5 font-data text-2xs text-muted-foreground transition-colors hover:text-foreground"
           >
             View all
           </Link>
         </div>
       </div>
 
-      <div className="relative mt-6 h-[420px] w-full sm:h-[480px] lg:h-[560px]">
+      <div className="relative mt-6 h-[340px] w-full xs:h-[400px] sm:h-[480px] lg:h-[560px]">
         {isPending ? (
           <div
             className="mx-auto h-full w-full max-w-[1600px] animate-pulse rounded-3xl border border-border/60"
@@ -100,14 +106,20 @@ export function NewArrivalsGallery() {
         ) : (
           <Suspense fallback={<div className="h-full w-full" aria-hidden />}>
             <CircularGallery
+              key={isMobile ? "m" : "d"}
               items={items}
-              bend={3}
+              bend={isMobile ? 1.4 : 3}
               borderRadius={0.05}
               scrollEase={0.02}
               autoplay
               autoplayDelay={3500}
               textColor="#0D0A12"
-              font="600 26px Inter, system-ui, sans-serif"
+              font={
+                isMobile
+                  ? "600 17px Inter, system-ui, sans-serif"
+                  : "600 26px Inter, system-ui, sans-serif"
+              }
+
               ariaLabel="New arrivals gallery — drag to browse, tap to open a product"
               onItemClick={(index) => {
                 const href = items[index]?.href;

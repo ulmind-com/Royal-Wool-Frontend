@@ -51,30 +51,31 @@ function Home() {
 
       {/* ── Trust band: icon over text, no cards ── */}
       <section
-        className="mx-auto w-full max-w-[1600px] px-4 pt-12 sm:px-6 lg:px-10"
+        className="mx-auto w-full max-w-[1600px] px-4 pt-8 sm:px-6 sm:pt-12 lg:px-10"
         data-thread-anchor="trust"
         aria-label="Why Royal Wool"
       >
-        <ul className="grid grid-cols-2 gap-y-10 border-y border-border/60 py-14 sm:py-16 lg:grid-cols-4 lg:divide-x lg:divide-border/60">
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 border-y border-border/60 py-9 sm:gap-y-10 sm:py-16 lg:grid-cols-4 lg:divide-x lg:divide-border/60">
           {TRUST.map(({ icon: Icon, title, copy }) => (
             <li
               key={title}
-              className="group flex flex-col items-center px-4 text-center transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:px-6"
+              className="group flex flex-col items-center px-2 text-center transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:px-6"
             >
               <Icon
-                className="h-7 w-7 shrink-0 text-marigold"
+                className="h-6 w-6 shrink-0 text-marigold sm:h-7 sm:w-7"
                 strokeWidth={1.5}
                 aria-hidden
               />
-              <p className="mt-5 font-display text-base font-normal text-foreground sm:text-lg">
+              <p className="mt-3.5 font-display text-[0.95rem] font-normal leading-snug text-foreground sm:mt-5 sm:text-lg">
                 {title}
               </p>
-              <p className="mt-2 max-w-[16rem] text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-1.5 max-w-[16rem] text-xs leading-relaxed text-muted-foreground sm:mt-2 sm:text-sm">
                 {copy}
               </p>
             </li>
           ))}
         </ul>
+
       </section>
 
 
