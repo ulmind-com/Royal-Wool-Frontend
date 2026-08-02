@@ -2,17 +2,15 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
 import { CategoryShowcase } from "@/components/commerce/category-showcase";
+import { FeaturedYarn } from "@/components/commerce/featured-yarn";
 import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
-import { ProductRail } from "@/components/commerce/product-rail";
 import { SpotlightSection } from "@/components/commerce/spotlight-section";
 import { YarnFanCarousel } from "@/components/commerce/yarn-fan-carousel";
 import { YarnStackCards } from "@/components/commerce/yarn-stack-cards";
 import { YarnWeightRail } from "@/components/commerce/yarn-weight-rail";
 
-import { UpcomingRail } from "@/components/commerce/upcoming-rail";
 import { HeroSlider } from "@/components/commerce/hero-slider";
 
-import { Glass } from "@/components/ui/glass";
 
 export const Route = createFileRoute("/")({
   head: () => ({
