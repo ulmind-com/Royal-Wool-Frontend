@@ -1,38 +1,16 @@
 ## Goal
+Right now only "Yarn Weight" shows on the PDP because the backend supplies just that one field. Fill the rest with sensible demo values while keeping everything fully dynamic — real admin data always wins.
 
-Under the shade swatches in the right column of the product page, show a premium "yarn spec sheet" (Fibre/Blend, Yarn Weight, Yarn Length, Needle Size, Crochet Hook Size, Needle Stitch, Crochet Stitch, Ball Weight) — inspired by the reference, but not a copy: a distinctly more refined, branded layout.
+## Approach
+1. In `src/lib/api/specs.ts`:
+   - Add a `SPEC_FALLBACKS` map with per-spec placeholder values (Fibre / Blend: "100% Acrylic", Yarn Length: "~200 m per ball", Needle Size: "4.0 mm", Crochet Hook Size: "4.0 mm", Needle Stitch: "22 sts / 10 cm", Crochet Stitch: "18 sts / 10 cm", Ball Weight: "100 g").
+   - Values are picked per product deterministically (hash of product id) from a small pool per spec, so different products show different-looking specs instead of all identical.
+   - `productSpecs(product)` keeps reading real admin data first; only missing rows get a fallback, flagged `placeholder: true` on `SpecRow`.
+   - Same treatment for `washCare()` — a default care line if the admin hasn't written one.
 
-## Design direction (different from the reference)
+2. In `src/components/commerce/spec-tiles.tsx`: render placeholder rows identically (no visual change requested), so the grid looks complete.
 
-Reference is 8 identical wide pink pills. Instead:
+3. Keep it switchable: a single exported `SPEC_PLACEHOLDERS = true` flag in `specs.ts` — flip to `false` once the backend is filled in, and every fallback disappears with no other edits.
 
-```text
-┌── SPECIFICATIONS ───────────────────────────┐
-│  ╭──────────────╮  ╭──────────────╮         │
-│  │ ◆  FIBRE     │  │ ◆  WEIGHT    │         │
-│  │  100% Acrylic│  │  4 Medium    │         │
-│  ╰──────────────╯  ╰──────────────╯         │
-│  ╭──────────────╮  ╭──────────────╮         │
-│  │ ◆  LENGTH    │  │ ◆  BALL WT   │         │
-└─────────────────────────────────────────────┘
-```
-- Two-column card grid on desktop, single column on mobile (grid + `min-w-0` + `shrink-0` per responsive rules).
-- Each tile: soft cream/blush surface with a hairline border, a marigold hairline that animates on hover, a subtle lift on hover, and a small tinted circular medallion holding the icon.
-- Label in `font-data` uppercase micro-tracking (muted), value in larger foreground text — inverted emphasis vs. the reference's bold label.
-- Section gets a proper eyebrow heading ("Specifications") with a thin rule, sitting after the shade grid / weight selector.
-- All colors via existing semantic tokens (marigold, madder, card, border, muted-foreground) — no hardcoded hex.
-
-## Icon art
-
-Generate 8 transparent-background PNG icon illustrations (yarn ball, weight gauge, tape measure, knitting needles, crochet hook, knit swatch, crochet swatch, kitchen scale) in a consistent hand-drawn ink line style matching the brand, register them via the asset CLI, and map them by spec id — replacing the current inline SVGs in the spec sheet. Existing inline SVGs stay in place for the trust band.
-
-## Data
-
-Fully dynamic — rows come from `productSpecs(product)`, which already reads `specs` / `attributes` / `meta` / flat fields from the API. No hardcoding per product. Rows the backend doesn't send are simply not rendered, so once you add these attributes in the admin panel they appear automatically.
-
-## Files
-
-- `src/components/commerce/spec-tiles.tsx` — rewritten layout + heading + hover states.
-- `src/components/commerce/spec-icons.tsx` — add the generated-image icon map (keep the SVG set for trust band).
-- `src/assets/spec/*.png.asset.json` — 8 new icon assets.
-- `src/routes/product.$id.tsx` — reposition/spacing only, so the spec sheet sits directly under the shade grid.
+## Technical notes
+No API/schema changes, no backend work. All edits are in `src/lib/api/specs.ts` (plus a type field consumed by `spec-tiles.tsx`).
