@@ -43,7 +43,7 @@ function CategoryPage() {
   const title = category?.name ?? slug.replace(/[-_]/g, " ");
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
+    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:pb-24 sm:pt-16 sm:px-6 lg:px-10">
       <nav aria-label="Breadcrumb" className="font-data text-2xs text-muted-foreground/70">
         <Link to="/collections" data-cursor="link" className="hover:text-foreground">
           Collections
@@ -52,7 +52,7 @@ function CategoryPage() {
         <span className="text-muted-foreground">{title}</span>
       </nav>
 
-      <h1 className="mt-4 font-display text-5xl sm:text-6xl font-light capitalize tracking-[-0.03em] text-foreground">
+      <h1 className="mt-4 font-display text-4xl sm:text-6xl font-light capitalize tracking-[-0.03em] text-foreground">
         {title}
       </h1>
 

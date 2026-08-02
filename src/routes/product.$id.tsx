@@ -63,7 +63,7 @@ function ProductPage() {
 
   if (isPending) {
     return (
-      <div className="mx-auto grid w-full max-w-[1600px] gap-10 px-4 pb-24 pt-16 sm:px-6 lg:grid-cols-2 lg:px-10">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-10 px-4 pb-16 pt-10 sm:pb-24 sm:pt-16 sm:px-6 lg:grid-cols-2 lg:px-10">
         <div className="aspect-square animate-pulse rounded-3xl border border-border" aria-hidden />
         <div className="space-y-4" aria-hidden>
           <div className="h-10 w-2/3 animate-pulse rounded-full border border-border" />
@@ -76,7 +76,7 @@ function ProductPage() {
 
   if (isError || !product) {
     return (
-      <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:pb-24 sm:pt-16 sm:px-6 lg:px-10">
         <DataError
           error={error}
           retry={() => void refetch()}
@@ -90,7 +90,7 @@ function ProductPage() {
     typeof window === "undefined" ? `/product/${id}` : window.location.href;
 
   return (
-    <div className="mx-auto grid w-full max-w-[1600px] gap-12 px-4 pb-24 pt-16 sm:px-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:px-10">
+    <div className="mx-auto grid w-full max-w-[1600px] gap-12 px-4 pb-16 pt-10 sm:pb-24 sm:pt-16 sm:px-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:px-10">
       <div>
         <div className="overflow-hidden rounded-3xl border border-border">
           {hero ? (
@@ -139,7 +139,7 @@ function ProductPage() {
         {product.brand ? (
           <p className="font-data text-2xs text-marigold">{product.brand}</p>
         ) : null}
-        <h1 className="mt-3 font-display text-4xl sm:text-5xl font-light tracking-[-0.03em] text-foreground">
+        <h1 className="mt-3 font-display text-3xl sm:text-5xl font-light tracking-[-0.03em] text-foreground">
           {product.title}
         </h1>
 

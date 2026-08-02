@@ -28,9 +28,9 @@ function CollectionsPage() {
   const topLevel = (tree.data ?? []).filter((c) => !c.parent_id);
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
+    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:pb-24 sm:pt-16 sm:px-6 lg:px-10">
       <p className="font-data text-2xs text-marigold">Collections</p>
-      <h1 className="mt-4 max-w-3xl font-display text-5xl sm:text-6xl font-light tracking-[-0.03em] text-foreground">
+      <h1 className="mt-4 max-w-3xl font-display text-4xl sm:text-6xl font-light tracking-[-0.03em] text-foreground">
         Every yarn we wind
       </h1>
 
