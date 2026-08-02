@@ -60,6 +60,7 @@ export const Route = createFileRoute("/collections/")({
 function ShopPage() {
   const { brand, category, weight, sort } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const products = useQuery(productsQuery({ limit: 96 }));
   const tree = useQuery(categoryTreeQuery);
