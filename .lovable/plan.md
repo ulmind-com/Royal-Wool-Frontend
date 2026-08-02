@@ -1,19 +1,79 @@
-# Enable the card-swap stacking on mobile — "Three ranges, one dye house"
+## Goal
+Replace the current header navigation with the exact list the client asked for:
+**Home | Shop | Categories | About Us | Blog | Contact | My Account | Cart**
 
-## Why it doesn't show now
+## Current state (verified)
+- `src/components/layout/header.tsx` renders:
+  - Left: hamburger + Royal Wool wordmark (links to `/`)
+  - Center desktop nav: backend category mega-menu + `Upcoming` + `Offers`
+  - Right: Search, Wishlist, Notifications, Account, Cart icons
+- Existing routes: `/`, `/about`, `/contact`, `/cart`, `/account/*`, `/collections/*`, `/upcoming`, `/offers`, etc.
+- **Missing route:** `/blog` does not exist yet.
+- **Missing route/label:** There is no explicit "Shop" link (closest is `/collections`).
 
-`src/components/commerce/yarn-stack-cards.tsx` computes `flat = reduced || touch`. On any touch device the sticky/scroll-driven stack is replaced with a plain vertical list, so phones never see the swap effect.
+## Plan
 
-## Changes (presentation only, one file)
+### 1. Add a Blog route
+Create `src/routes/blog.tsx` so the nav link has a real destination.
+- Keep it lightweight: page shell, hero heading "From the Dye House", and a short "Coming soon" / placeholder grid.
+- Add `head()` with title, description, og tags.
+- TanStack Router will auto-register the route on next dev run.
 
-1. **Stop disabling the effect on touch.** Keep the flat fallback only for `prefers-reduced-motion`. Touch phones get the same sticky stacking as desktop.
-2. **Mobile-tuned sticky geometry** so cards fit a phone screen:
-   - sticky container height `h-[88svh]` on mobile → `h-svh` at `sm:`, with a small top offset (`top-14`) so the sticky card clears the fixed header instead of hiding under it.
-   - card `minHeight` lowered on mobile (`clamp(400px, 66svh, 520px)` range) so the whole card, including CTA, is visible while it sticks.
-   - tighter mobile padding (`px-4`) and reduced inner copy padding so the image + copy + specs + buttons all fit without the card scrolling internally.
-3. **Mobile card composition:** image band becomes a shorter fixed-height top strip (about 150–170px) with the copy column below it, so the stacked card reads as one screen on a phone rather than being cut off.
-4. **Keep the same swap motion** (opacity + scale fade-back per card driven by `useScroll`), just verified against a phone-height viewport so each card fully hands over to the next.
+### 2. Update desktop center nav (`src/components/layout/header.tsx`)
+Replace the current category-driven mega-menu + Upcoming/Offers with a clean, explicit list:
+1. **Home** → `/`
+2. **Shop** → `/collections`
+3. **Categories** → keep the backend-driven mega-menu (hover panel with category tree), but the trigger label becomes "Categories"
+4. **About Us** → `/about`
+5. **Blog** → `/blog`
+6. **Contact** → `/contact`
 
-## Verification
+Styling:
+- Use the existing pill link style (`rounded-full px-4 py-2 font-data text-2xs`).
+- Active link gets `text-foreground` / `font-medium`; inactive gets `text-muted-foreground`.
+- Keep the existing Liquid Glass mega-menu panel for Categories.
+- Remove `Upcoming` and `Offers` from the desktop center nav.
 
-Playwright at 360, 390 and 430px: scroll through the section capturing screenshots at each hand-over point, confirm each card sticks, fades and scales as the next climbs over it, no clipped CTA, and no horizontal overflow. Also confirm reduced-motion still gets the flat list.
+### 3. Update right-side icon cluster
+Keep only:
+- Search icon (existing)
+- **My Account** → `/account` (User icon)
+- **Cart** → `/cart` (ShoppingBag icon + badge)
+
+Remove or hide from the icon cluster:
+- Wishlist and Notifications icons (they are still reachable via `/account/*` and can be added back later if the client asks).
+
+This keeps the requested nav items while decluttering the top bar.
+
+### 4. Update mobile drawer
+Rewrite the mobile drawer contents to mirror the requested nav:
+- Home
+- Shop
+- Categories (expandable accordion showing backend category tree)
+- About Us
+- Blog
+- Contact
+- My Account
+- Cart
+
+Remove the current category-only list + Upcoming/Offers/Wishlist/Alerts grid, or move them lower as secondary links if desired. Per the client’s list, the primary drawer items should be the 8 requested links.
+
+### 5. Active states
+Use `activeProps` / `data-status="active"` on TanStack `<Link>` for Home, Shop, About Us, Blog, Contact, My Account, Cart so users can see where they are.
+
+### 6. Verification
+- Run `bun run build` or `tsgo` to confirm no type errors after route changes.
+- Check desktop and mobile previews to ensure:
+  - All 8 labels are visible
+  - Categories mega-menu still opens on hover
+  - Mobile drawer is scrollable and links close the drawer on tap
+  - No horizontal overflow on small screens
+
+## Files to change
+- `src/components/layout/header.tsx` (desktop nav, right icons, mobile drawer)
+- `src/routes/blog.tsx` (new)
+
+## Out of scope
+- Backend integration for blog posts (will be a placeholder page; client can wire CMS later).
+- Footer changes unless requested.
+- Renaming existing `/about` route to `/about-us` (we will label it "About Us" in the nav while keeping the URL `/about`).
