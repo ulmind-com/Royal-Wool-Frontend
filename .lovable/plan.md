@@ -1,41 +1,29 @@
 ## Goal
 
-`YarnStackScroll` (auto-sliding stack) সরিয়ে ulmind.com-এর মতো **scroll-driven stacking cards** বসবে — scroll করলে একটা card উপরে stick হয়ে থাকে, opacity + scale কমতে থাকে, আর পরের card তার উপরে উঠে আসে। প্রতিটা card-এ **left-এ image, right-এ লেখা + button**। কোনো partnership form / reCAPTCHA / formsubmit থাকবে না।
+Homepage-e `The shade deck`-er por footer porjonto joto section ache — sob bad. Tar jaygay ekta **Featured Yarn** section: background-removed yarn cutouts, prottek tar niche name + price, dane theke bame nijei chole (auto marquee) ebong drag-o kora jay. Puro data admin/backend theke dynamic.
 
-## যা সরবে
+## 1. Ja remove hobe (`src/routes/index.tsx`)
 
-- `src/components/commerce/yarn-stack-scroll.tsx` — delete।
-- `src/routes/index.tsx` থেকে `YarnStackScroll` import + usage বাদ। বাকি সব section অপরিবর্তিত।
+Shade deck (`<YarnFanCarousel />`)-er niche theke:
+- `<ProductRail anchor="bestsellers" ... />` — Best sellers
+- `<UpcomingRail />`
+- `<SectionStub>` × 3 (lookbook, offers, recs) + `SectionStub` function + oi unused imports
 
-## নতুন: `src/components/commerce/yarn-stack-cards.tsx`
+Shade deck-er porei `<FeaturedYarn />`, tar por footer.
 
-Framer Motion `useScroll` + `useSpring` + `useTransform`, ঠিক তোমার দেওয়া pattern-এ:
+## 2. Cutout images (background removed)
 
-```text
-<section ref={containerRef} class="relative h-[300vh]">
-  card 1  →  sticky top-0, h-screen-ish, opacity [0 → .33] 1→0, scale 1→0.9
-  card 2  →  sticky, opacity [.33 → .66] 1→0, scale 1→0.9
-  card 3  →  sticky, কোনো fade নেই (শেষ card)
-</section>
-```
+Client-er 9ta yarn photo (`src/assets/yarn/*.jpg`) theke transparent PNG cutout banabo — prottekta pic-er background sorie sudhu skein-ta thakbe, tarpor CDN asset hisebe upload kore `src/assets/yarn-cutout/*.png.asset.json` pointer-e rakhbo. Fallback data-tei ei transparent version-gulo use hobe, tai product-gulo page background-er upor bhasche mone hobe (no box, no card edge).
 
-- `offset: ["start start", "end start"]`, spring `{stiffness:30, damping:40, restDelta:0.001}` — তোমার কোডের value-ই।
-- Sticky wrapper `min-h-svh` না নিয়ে compact রাখব: `h-[clamp(460px,78vh,620px)]` card + `items-center`, যাতে section অতিরিক্ত লম্বা না লাগে; দু'পাশে `max-w-[1200px]` + padding দিয়ে breathing room।
-- Reduced motion / touch: `useReducedMotion` true হলে stacking transform বন্ধ, cards সাধারণ vertical stack হয়ে যাবে (`h-auto`, sticky off) — mobile-এও একই fallback, কারণ ছোট screen-এ sticky stack ভাঙে।
+## 3. Notun `src/components/commerce/featured-yarn.tsx`
 
-### Card layout (per card)
+- **Data (dynamic):** `productsQuery({ sort: "popular", limit: 12 })` (existing API client) theke live products — image `primaryImage(p)`, name `p.title`, price `displayPrice(p)` + struck price, link `/product/$id`. Backend-e ekhon jehetu wool product nei, ekta `PREFER_LOCAL_IMAGES` flag (jemon `CategoryShowcase`/`YarnFanCarousel`-e ache) local cutout + `src/data/featured-yarn.ts`-er name/price dekhabe; admin panel theke product add holei flag off korlei automatic live data. Price INR format-e (`₹ 1,240` style, `Intl.NumberFormat`).
+- **Motion:** duplicated track diye seamless right→left marquee (Framer Motion loop, ~40s), hover-e slow, drag-e user nijei ghurate parbe (drag chharle abar auto chalu). Touch tap-e freeze hobe na (mouse hover-only pause — shade deck-e ei bug already fix kora ache). `useReducedMotion` true hole marquee off, simple horizontally scrollable row.
+- **Premium look:** prottek item — cutout image ekta soft radial dye-glow + niche elliptical contact shadow-er upor bhaseche; hover-e image slightly upore uthe + scale, glow tibro hoy, specular sheen sweep kore. Niche `font-display` name ar `font-data` price. Dupashe fleece-colour edge fade mask jate track edge-e mishe jay.
+- Header: `font-data` eyebrow (`05 · Featured`), `font-display` heading "Featured yarn", short copy + "View all" link → `/collections`. Section-e `data-thread-anchor="featured"`.
 
-- Grid `lg:grid-cols-2`, rounded-[2rem], border + soft shadow, background `card` token; একটা হালকা marigold/madder dye-glow radial ভিতরে।
-- **Left:** yarn image (`YARN_FAN_FALLBACKS` থেকে, `object-cover`, rounded, subtle hover zoom + specular sheen)।
-- **Right:** `font-data` eyebrow pill (Glass primitive, liquid-glass look), `font-display` heading, 2-line copy, ছোট feature list (3 bullet: fibre / weight / care), আর একটা primary CTA button (`Shop the range` → `/collections`, বা live product থাকলে `/product/$id`) + secondary text link।
-- Content 3টা card-এ: Cotton Delight (cotton range), Cotton Candy (pastel range), Hobby India (everyday acrylic) — image + copy `src/data/yarn-stack.ts`-এ নতুন const array হিসেবে থাকবে, তাই পরে backend/admin দিয়ে বদলানো সহজ।
+## 4. Technical notes
 
-## Wiring
-
-`src/routes/index.tsx`-এ ঠিক আগের জায়গায় (`<YarnFanCarousel />`-এর উপরে) `<YarnStackCards />` বসবে।
-
-## Technical notes
-
-- Colour শুধু design token (marigold, madder, ink, fleece, border) — কোনো hardcoded hex/`text-white` না।
-- `sticky` parent-এ `overflow-hidden` দেওয়া হবে না (নাহলে sticky ভাঙে); Lenis smooth scroll-এর সাথে `useScroll` কাজ করে, verify করব।
-- Verification: Playwright দিয়ে তিনটে scroll position-এ screenshot + console check।
+- Sudhu design token (marigold, madder, ink, fleece, border) — kono hardcoded hex/`text-white` na.
+- Marquee-r duplicate track `aria-hidden`, real items keyboard-focusable link.
+- Verification: Playwright diye section screenshot (marquee-r 2ta position) + console/network check, ar production build.
