@@ -1,79 +1,30 @@
 ## Goal
-Replace the current header navigation with the exact list the client asked for:
-**Home | Shop | Categories | About Us | Blog | Contact | My Account | Cart**
 
-## Current state (verified)
-- `src/components/layout/header.tsx` renders:
-  - Left: hamburger + Royal Wool wordmark (links to `/`)
-  - Center desktop nav: backend category mega-menu + `Upcoming` + `Offers`
-  - Right: Search, Wishlist, Notifications, Account, Cart icons
-- Existing routes: `/`, `/about`, `/contact`, `/cart`, `/account/*`, `/collections/*`, `/upcoming`, `/offers`, etc.
-- **Missing route:** `/blog` does not exist yet.
-- **Missing route/label:** There is no explicit "Shop" link (closest is `/collections`).
+Rebuild the Shop page (`/collections`) as a premium, liquid-glass storefront with two brand sections — Heartbeats Premium Yarns and Ganga Acrowools Knitting Yarn — that stay fully dynamic, so any brand added later from the admin panel appears automatically. Clicking a brand filters the catalogue to that brand's categories and yarn weights and shows its products.
 
-## Plan
+## What the user sees
 
-### 1. Add a Blog route
-Create `src/routes/blog.tsx` so the nav link has a real destination.
-- Keep it lightweight: page shell, hero heading "From the Dye House", and a short "Coming soon" / placeholder grid.
-- Add `head()` with title, description, og tags.
-- TanStack Router will auto-register the route on next dev run.
+1. **Shop hero** — slim heading + short line, no long banner.
+2. **Brand rail** — one glass card per brand (compact, not tall): brand name, product count, a yarn image, and a subtle dye-flow sheen on hover. Selecting a card enters brand mode; a "All brands" chip clears it.
+3. **Filter bar** — category chips and yarn-weight chips (1 Super Fine … 7 Jumbo). In brand mode only the categories and weights that actually exist for that brand are shown; the rest are hidden, not greyed.
+4. **Product grid** — existing `ProductGrid` cards, 2-up on mobile, 4-up desktop, with count + sort and an empty state per filter combination.
+5. Uploaded yarn photos already in the project (`src/assets/yarn/*`) are used as brand-card and fallback product imagery, never as fixed product data.
 
-### 2. Update desktop center nav (`src/components/layout/header.tsx`)
-Replace the current category-driven mega-menu + Upcoming/Offers with a clean, explicit list:
-1. **Home** → `/`
-2. **Shop** → `/collections`
-3. **Categories** → keep the backend-driven mega-menu (hover panel with category tree), but the trigger label becomes "Categories"
-4. **About Us** → `/about`
-5. **Blog** → `/blog`
-6. **Contact** → `/contact`
+The reference screenshots are treated as reference only; layout stays our own (horizontal chip filters instead of a left sidebar, glass cards, marigold accents).
 
-Styling:
-- Use the existing pill link style (`rounded-full px-4 py-2 font-data text-2xs`).
-- Active link gets `text-foreground` / `font-medium`; inactive gets `text-muted-foreground`.
-- Keep the existing Liquid Glass mega-menu panel for Categories.
-- Remove `Upcoming` and `Offers` from the desktop center nav.
+## Dynamic behaviour
 
-### 3. Update right-side icon cluster
-Keep only:
-- Search icon (existing)
-- **My Account** → `/account` (User icon)
-- **Cart** → `/cart` (ShoppingBag icon + badge)
+- Brands are derived from the live product feed's `brand` field, so admin-added brands show up with no code change.
+- The two named brands are seeded only as display metadata (label + blurb + fallback image) so they render nicely before the backend is renamed; if the API returns other brands they render with the same treatment.
+- Categories come from `/categories/tree`; yarn weights come from the existing weight list, matched against product titles/descriptions until the backend exposes a weight field.
+- URL search params keep `brand`, `category`, `weight`, and `sort` so filtered views are shareable and back/forward works.
 
-Remove or hide from the icon cluster:
-- Wishlist and Notifications icons (they are still reachable via `/account/*` and can be added back later if the client asks).
+## Technical notes
 
-This keeps the requested nav items while decluttering the top bar.
-
-### 4. Update mobile drawer
-Rewrite the mobile drawer contents to mirror the requested nav:
-- Home
-- Shop
-- Categories (expandable accordion showing backend category tree)
-- About Us
-- Blog
-- Contact
-- My Account
-- Cart
-
-Remove the current category-only list + Upcoming/Offers/Wishlist/Alerts grid, or move them lower as secondary links if desired. Per the client’s list, the primary drawer items should be the 8 requested links.
-
-### 5. Active states
-Use `activeProps` / `data-status="active"` on TanStack `<Link>` for Home, Shop, About Us, Blog, Contact, My Account, Cart so users can see where they are.
-
-### 6. Verification
-- Run `bun run build` or `tsgo` to confirm no type errors after route changes.
-- Check desktop and mobile previews to ensure:
-  - All 8 labels are visible
-  - Categories mega-menu still opens on hover
-  - Mobile drawer is scrollable and links close the drawer on tap
-  - No horizontal overflow on small screens
-
-## Files to change
-- `src/components/layout/header.tsx` (desktop nav, right icons, mobile drawer)
-- `src/routes/blog.tsx` (new)
-
-## Out of scope
-- Backend integration for blog posts (will be a placeholder page; client can wire CMS later).
-- Footer changes unless requested.
-- Renaming existing `/about` route to `/about-us` (we will label it "About Us" in the nav while keeping the URL `/about`).
+- Rewrite `src/routes/collections.index.tsx`: `validateSearch` with `zodValidator` + `fallback` for `brand`/`category`/`weight`/`sort`; read with `Route.useSearch()`, write with `useNavigate`.
+- New `src/components/commerce/brand-rail.tsx` (glass brand cards) and `src/components/commerce/shop-filters.tsx` (category + weight chip rows).
+- New `src/data/brands.ts` holding display metadata keyed by normalized brand name, plus a `brandDisplay()` fallback for unknown brands.
+- New helpers in `src/lib/api/brands.ts`: group products by brand, derive available categories/weights for a brand, and match yarn weight from text.
+- Data flow stays `useQuery(productsQuery({ limit: 96 }))` + `categoryTreeQuery`; brand/weight filtering is client-side over that result (the API has no brand param yet), category filtering uses `category_id` when a category is picked.
+- Reuse `GridSkeleton`, `DataError`, `EmptyState`; no new dependencies.
+- Update the route `head()` so titles/descriptions reflect the selected brand.
