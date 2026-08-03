@@ -199,11 +199,11 @@ export function normalizeContact(
 
 const ENDPOINTS = ["/contact", "/site-content/contact", "/pages/contact"];
 
-async function fetchContact(signal?: AbortSignal): Promise<unknown> {
+async function fetchContact(signal: AbortSignal | null): Promise<unknown> {
   let lastError: unknown;
   for (const path of ENDPOINTS) {
     try {
-      return await apiFetch<unknown>(path, { signal, retries: 1 });
+      return await apiFetch<unknown>(path, { signal: signal ?? null, retries: 1 });
     } catch (error) {
       if (signal?.aborted) throw error;
       lastError = error;
@@ -220,7 +220,7 @@ async function fetchContact(signal?: AbortSignal): Promise<unknown> {
 
 export const contactContentQuery = queryOptions({
   queryKey: ["contact", "content"],
-  queryFn: ({ signal }) => fetchContact(signal),
+  queryFn: ({ signal }) => fetchContact(signal ?? null),
   staleTime: 15 * 60_000,
   retry: false,
 });
