@@ -5,7 +5,7 @@ import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFeatured } from "@/components/blog/blog-featured";
 import { blogPostsQuery, splitFeed } from "@/lib/api/blog";
 
-export const Route = createFileRoute("/blog")({
+export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
       { title: "From the Dye House — Royal Wool Blog" },
