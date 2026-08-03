@@ -1,3 +1,4 @@
+import { DEMO_BODIES } from "@/data/blog-bodies";
 import featured from "@/assets/blog/featured.jpg.asset.json";
 import p1 from "@/assets/blog/p1.jpg.asset.json";
 import p2 from "@/assets/blog/p2.jpg.asset.json";
@@ -151,3 +152,9 @@ const RAW_DEMO_POSTS: BlogPost[] = [
     placeholder: true,
   },
 ];
+
+/** Demo posts with their long-form bodies attached. */
+export const DEMO_POSTS: BlogPost[] = RAW_DEMO_POSTS.map((post) => ({
+  ...post,
+  body: DEMO_BODIES[post.slug] ?? post.body,
+}));
