@@ -9,6 +9,12 @@ import p7 from "@/assets/blog/p7.jpg.asset.json";
 import p8 from "@/assets/blog/p8.jpg.asset.json";
 import p9 from "@/assets/blog/p9.jpg.asset.json";
 
+/** One block of long-form article copy. */
+export type BlogBlock =
+  | { type: "h2"; text: string }
+  | { type: "p"; text: string }
+  | { type: "quote"; text: string };
+
 export interface BlogPost {
   id: string;
   slug: string;
@@ -19,9 +25,12 @@ export interface BlogPost {
   date: string;
   tag: string;
   featured?: boolean;
+  /** Long-form article body, when the source provides one. */
+  body?: BlogBlock[];
   /** True while the copy is demo filler, not admin-provided data. */
   placeholder?: boolean;
 }
+
 
 /**
  * Demo posts used until the admin panel exposes a blog endpoint.
