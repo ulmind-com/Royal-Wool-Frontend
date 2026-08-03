@@ -22,14 +22,19 @@ export function BlogFeatured({ post }: { post: BlogPost }) {
           })}
       className="group relative overflow-hidden rounded-[18px] border border-border bg-card sm:rounded-[24px]"
     >
-      <img
-        src={post.image}
-        alt={post.title}
-        width={1200}
-        height={800}
-        decoding="async"
-        className="block h-[300px] w-full object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.03] sm:h-[400px] lg:h-[480px]"
-      />
+      {post.image ? (
+        <img
+          src={post.image}
+          alt={post.title}
+          width={1200}
+          height={800}
+          decoding="async"
+          className="block h-[300px] w-full object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.03] sm:h-[400px] lg:h-[480px]"
+        />
+      ) : (
+        <div className="h-[300px] w-full bg-muted sm:h-[400px] lg:h-[480px]" aria-hidden />
+      )}
+
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"

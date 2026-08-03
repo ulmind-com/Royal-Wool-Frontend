@@ -7,7 +7,7 @@ import { BlogArticle, readTime } from "@/components/blog/blog-article";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Avatar } from "@/components/blog/blog-featured";
 import { useReducedMotion } from "@/hooks/use-motion";
-import { blogPostsQuery, fetchBlogPosts, findPostBySlug } from "@/lib/api/blog";
+import { blogPostsQuery, fetchBlogPost } from "@/lib/api/blog";
 import { whatsappLink } from "@/lib/whatsapp";
 
 const SITE = "https://royal-yarn-threads.lovable.app";
@@ -15,11 +15,11 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
-    const posts = await fetchBlogPosts();
-    const post = findPostBySlug(posts, params.slug);
+    const post = await fetchBlogPost(params.slug);
     if (!post) throw notFound();
     return { post };
   },
+
   head: ({ params, loaderData }) => {
     const url = `${SITE}/blog/${params.slug}`;
     if (!loaderData) {
@@ -83,25 +83,28 @@ function BlogPostPage() {
           All stories
         </Link>
 
-        <motion.figure
-          {...(reduced
-            ? {}
-            : {
-                initial: { opacity: 0, y: 24 },
-                animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.8, ease: EASE },
-              })}
-          className="mt-6 overflow-hidden rounded-[18px] border border-border bg-card sm:mt-8 sm:rounded-[24px]"
-        >
-          <img
-            src={post.image}
-            alt={post.title}
-            width={1200}
-            height={800}
-            decoding="async"
-            className="block h-[240px] w-full object-cover object-center sm:h-[400px] lg:h-[520px]"
-          />
-        </motion.figure>
+        {post.image ? (
+          <motion.figure
+            {...(reduced
+              ? {}
+              : {
+                  initial: { opacity: 0, y: 24 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 0.8, ease: EASE },
+                })}
+            className="mt-6 overflow-hidden rounded-[18px] border border-border bg-card sm:mt-8 sm:rounded-[24px]"
+          >
+            <img
+              src={post.image}
+              alt={post.title}
+              width={1200}
+              height={800}
+              decoding="async"
+              className="block h-[240px] w-full object-cover object-center sm:h-[400px] lg:h-[520px]"
+            />
+          </motion.figure>
+        ) : null}
+
 
         <motion.header
           {...(reduced

@@ -28,30 +28,37 @@ export function BlogCard({ post, index = 0 }: { post: BlogPost; index?: number }
         aria-label={post.title}
       >
         <div className="overflow-hidden rounded-[14px] border border-border bg-card">
-          <img
-            src={post.image}
-            alt={post.title}
-            width={1200}
-            height={800}
-            loading="lazy"
-            decoding="async"
-            className="block aspect-[3/2] w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]"
-          />
+          {post.image ? (
+            <img
+              src={post.image}
+              alt={post.title}
+              width={1200}
+              height={800}
+              loading="lazy"
+              decoding="async"
+              className="block aspect-[3/2] w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="aspect-[3/2] w-full bg-muted" aria-hidden />
+          )}
         </div>
 
         <h2 className="mt-4 font-display text-lg font-normal leading-snug text-foreground transition-colors group-hover:text-marigold">
           {post.title}
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
+        {post.excerpt ? (
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
+        ) : null}
       </Link>
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Avatar name={post.author} />
           <span className="text-xs text-muted-foreground">
-            {post.author} • {post.date}
+            {[post.author, post.date].filter(Boolean).join(" • ")}
           </span>
         </div>
+
         <Link
           to="/blog/$slug"
           params={{ slug: post.slug }}
