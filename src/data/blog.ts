@@ -24,7 +24,10 @@ export interface BlogPost {
   image: string;
   author: string;
   date: string;
+  /** Raw publish timestamp from the admin panel, when provided. */
+  publishedAt?: string;
   tag: string;
+
   featured?: boolean;
   /** Long-form article body, when the source provides one. */
   body?: BlogBlock[];
