@@ -154,7 +154,7 @@ const RAW_DEMO_POSTS: BlogPost[] = [
 ];
 
 /** Demo posts with their long-form bodies attached. */
-export const DEMO_POSTS: BlogPost[] = RAW_DEMO_POSTS.map((post) => ({
-  ...post,
-  body: DEMO_BODIES[post.slug] ?? post.body,
-}));
+export const DEMO_POSTS: BlogPost[] = RAW_DEMO_POSTS.map((post) => {
+  const body = DEMO_BODIES[post.slug] ?? post.body;
+  return body ? { ...post, body } : post;
+});
