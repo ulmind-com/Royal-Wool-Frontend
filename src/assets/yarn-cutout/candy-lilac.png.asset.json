@@ -2,10 +2,10 @@
   "version": 1,
   "asset_id": "7d83f046-d982-4ba5-a755-9a415de6fd92",
   "project_id": "98ac7b66-3091-4c69-b56d-fa930358de68",
-  "url": "/__l5e/assets-v1/7d83f046-d982-4ba5-a755-9a415de6fd92/candy-lilac.png",
+  "url": "/assets/yarn-cutout/candy-lilac.webp",
   "r2_key": "a/v1/98ac7b66-3091-4c69-b56d-fa930358de68/7d83f046-d982-4ba5-a755-9a415de6fd92/candy-lilac.png",
-  "original_filename": "candy-lilac.png",
-  "size": 1074283,
-  "content_type": "image/png",
+  "original_filename": "candy-lilac.webp",
+  "size": 72048,
+  "content_type": "image/webp",
   "created_at": "2026-08-02T13:23:23Z"
 }

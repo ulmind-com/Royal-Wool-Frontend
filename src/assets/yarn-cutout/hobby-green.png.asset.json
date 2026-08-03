@@ -2,10 +2,10 @@
   "version": 1,
   "asset_id": "dc57d6a6-086d-4dc8-9488-efeaa373b0e7",
   "project_id": "98ac7b66-3091-4c69-b56d-fa930358de68",
-  "url": "/__l5e/assets-v1/dc57d6a6-086d-4dc8-9488-efeaa373b0e7/hobby-green.png",
+  "url": "/assets/yarn-cutout/hobby-green.webp",
   "r2_key": "a/v1/98ac7b66-3091-4c69-b56d-fa930358de68/dc57d6a6-086d-4dc8-9488-efeaa373b0e7/hobby-green.png",
-  "original_filename": "hobby-green.png",
-  "size": 1212152,
-  "content_type": "image/png",
+  "original_filename": "hobby-green.webp",
+  "size": 100768,
+  "content_type": "image/webp",
   "created_at": "2026-08-02T13:23:37Z"
 }

@@ -2,10 +2,10 @@
   "version": 1,
   "asset_id": "6abd52bf-d52a-49a5-b983-d0f61628ca5a",
   "project_id": "98ac7b66-3091-4c69-b56d-fa930358de68",
-  "url": "/__l5e/assets-v1/6abd52bf-d52a-49a5-b983-d0f61628ca5a/royal-wool-banner.png",
+  "url": "/assets/hero/royal-wool-banner.webp",
   "r2_key": "a/v1/98ac7b66-3091-4c69-b56d-fa930358de68/6abd52bf-d52a-49a5-b983-d0f61628ca5a/royal-wool-banner.png",
-  "original_filename": "royal-wool-banner.png",
-  "size": 2144349,
-  "content_type": "image/png",
+  "original_filename": "royal-wool-banner.webp",
+  "size": 181306,
+  "content_type": "image/webp",
   "created_at": "2026-08-02T13:38:47Z"
 }

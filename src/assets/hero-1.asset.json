@@ -2,10 +2,10 @@
   "version": 1,
   "asset_id": "349a0aff-9639-4d59-9550-18a9402fd914",
   "project_id": "98ac7b66-3091-4c69-b56d-fa930358de68",
-  "url": "/__l5e/assets-v1/349a0aff-9639-4d59-9550-18a9402fd914/hero-baskets.png",
+  "url": "/assets/hero/hero-baskets.webp",
   "r2_key": "a/v1/98ac7b66-3091-4c69-b56d-fa930358de68/349a0aff-9639-4d59-9550-18a9402fd914/hero-baskets.png",
-  "original_filename": "hero-baskets.png",
-  "size": 2647112,
-  "content_type": "image/png",
+  "original_filename": "hero-baskets.webp",
+  "size": 240172,
+  "content_type": "image/webp",
   "created_at": "2026-07-31T20:13:32Z"
 }
