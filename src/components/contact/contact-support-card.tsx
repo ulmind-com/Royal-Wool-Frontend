@@ -73,8 +73,8 @@ export function ContactSupportCard({ content }: { content: ContactContent }) {
             return (
               <motion.li
                 key={channel.key}
-                initial={reduced ? undefined : { opacity: 0, y: 14 }}
-                whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+                initial={reduced ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.5, delay: 0.06 * index, ease: [0.22, 1, 0.36, 1] }}
               >
