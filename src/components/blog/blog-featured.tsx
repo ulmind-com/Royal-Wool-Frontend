@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -37,13 +38,22 @@ export function BlogFeatured({ post }: { post: BlogPost }) {
             "linear-gradient(180deg, transparent 8%, color-mix(in oklab, var(--ink) 45%, transparent) 42%, color-mix(in oklab, var(--ink) 88%, transparent))",
         }}
       />
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-5 sm:p-8 lg:p-10">
+      <Link
+        to="/blog/$slug"
+        params={{ slug: post.slug }}
+        data-cursor="link"
+        className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-5 sm:p-8 lg:p-10"
+      >
         <div>
           <p className="text-sm text-fleece/80">Featured</p>
           <h2 className="mt-3 max-w-3xl font-display text-2xl font-light leading-[1.12] text-fleece sm:text-3xl lg:text-4xl">
             {post.title}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fleece/75">{post.excerpt}</p>
+          <span className="mt-4 inline-flex items-center gap-1 text-sm text-fleece sm:hidden">
+            See more
+            <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+          </span>
         </div>
         <span
           aria-hidden
@@ -51,7 +61,8 @@ export function BlogFeatured({ post }: { post: BlogPost }) {
         >
           <ArrowRight className="h-8 w-8" strokeWidth={1.5} />
         </span>
-      </div>
+      </Link>
+
     </motion.article>
   );
 }

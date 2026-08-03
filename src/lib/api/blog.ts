@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { DEMO_POSTS, type BlogPost } from "@/data/blog";
+import { DEMO_POSTS, type BlogBlock, type BlogPost } from "@/data/blog";
 import { apiFetch } from "@/lib/api/client";
+
 
 /**
  * Blog feed.
@@ -37,6 +38,52 @@ interface RawPost {
   date?: string;
   featured?: boolean;
   is_featured?: boolean;
+  body?: unknown;
+  content?: unknown;
+  html?: unknown;
+}
+
+/** Accepts admin block arrays, markdown-ish text or HTML and returns blocks. */
+function parseBody(value: unknown): BlogBlock[] | null {
+  if (Array.isArray(value)) {
+    const blocks = value
+      .map((item): BlogBlock | null => {
+        if (typeof item === "string") {
+          const t = item.trim();
+          return t ? { type: "p", text: t } : null;
+        }
+        if (item && typeof item === "object") {
+          const raw = item as { type?: unknown; text?: unknown; content?: unknown };
+          const t = text(raw.text) ?? text(raw.content);
+          if (!t) return null;
+          const kind = text(raw.type);
+          if (kind === "h2" || kind === "heading" || kind === "h3") return { type: "h2", text: t };
+          if (kind === "quote" || kind === "blockquote") return { type: "quote", text: t };
+          return { type: "p", text: t };
+        }
+        return null;
+      })
+      .filter((b): b is BlogBlock => b !== null);
+    return blocks.length ? blocks : null;
+  }
+
+  const raw = text(value);
+  if (!raw) return null;
+
+  const blocks: BlogBlock[] = [];
+  for (const chunk of raw.split(/<\/(?:p|h2|h3|blockquote)>|\n{2,}/)) {
+    const heading = /<h[23][^>]*>/i.test(chunk);
+    const quote = /<blockquote[^>]*>/i.test(chunk);
+    const plain = chunk
+      .replace(/<[^>]+>/g, " ")
+      .replace(/^#{1,4}\s*/, (m) => m && "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!plain) continue;
+    const isMdHeading = /^#{1,4}\s/.test(chunk.trim());
+    blocks.push({ type: heading || isMdHeading ? "h2" : quote ? "quote" : "p", text: plain });
+  }
+  return blocks.length ? blocks : null;
 }
 
 function text(value: unknown): string | null {
@@ -74,6 +121,8 @@ function normalize(raw: RawPost, index: number): BlogPost | null {
     (typeof raw.author === "string" ? text(raw.author) : text(raw.author?.name)) ??
     "Royal Wool";
 
+  const body = parseBody(raw.body) ?? parseBody(raw.content) ?? parseBody(raw.html);
+
   return {
     id: text(raw.id) ?? text(raw._id) ?? `post-${index}`,
     slug: text(raw.slug) ?? slugify(title),
@@ -84,6 +133,7 @@ function normalize(raw: RawPost, index: number): BlogPost | null {
     date: formatDate(text(raw.published_at) ?? text(raw.created_at) ?? text(raw.date)),
     tag: text(raw.tag) ?? text(raw.category) ?? "Journal",
     featured: Boolean(raw.featured ?? raw.is_featured),
+    ...(body ? { body } : {}),
   };
 }
 
@@ -123,4 +173,13 @@ export function splitFeed(posts: BlogPost[]): { hero: BlogPost | null; rest: Blo
     hero: posts[heroIndex] ?? null,
     rest: posts.filter((_, i) => i !== heroIndex),
   };
+}
+
+/** Direct fetch for route loaders (falls back to the demo feed). */
+export async function fetchBlogPosts(signal?: AbortSignal): Promise<BlogPost[]> {
+  return loadPosts(signal);
+}
+
+export function findPostBySlug(posts: BlogPost[], slug: string): BlogPost | null {
+  return posts.find((p) => p.slug === slug) ?? null;
 }

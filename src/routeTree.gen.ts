@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -28,6 +27,8 @@ import { Route as AccountNotificationsRouteImport } from './routes/account.notif
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AccountReturnsRouteImport } from './routes/account.returns'
 import { Route as AccountWishlistRouteImport } from './routes/account.wishlist'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -41,11 +42,6 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -128,6 +124,16 @@ const AccountWishlistRoute = AccountWishlistRouteImport.update({
   path: '/account/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   id: '/collections/',
   path: '/collections/',
@@ -152,7 +158,6 @@ const OrderIdSuccessRoute = OrderIdSuccessRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/blog': typeof BlogRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -168,16 +173,17 @@ export interface FileRoutesByFullPath {
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account/': typeof AccountIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/order/$id/success': typeof OrderIdSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/blog': typeof BlogRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -193,9 +199,11 @@ export interface FileRoutesByTo {
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account': typeof AccountIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/order/$id/success': typeof OrderIdSuccessRoute
 }
@@ -203,7 +211,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/blog': typeof BlogRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -219,9 +226,11 @@ export interface FileRoutesById {
   '/account/orders': typeof AccountOrdersRoute
   '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/product/$id': typeof ProductIdRoute
   '/account/': typeof AccountIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/order/$id/success': typeof OrderIdSuccessRoute
 }
@@ -230,7 +239,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
-    | '/blog'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -246,16 +254,17 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/returns'
     | '/account/wishlist'
+    | '/blog/$slug'
     | '/collections/$slug'
     | '/product/$id'
     | '/account/'
+    | '/blog/'
     | '/collections/'
     | '/order/$id/success'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/blog'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -271,16 +280,17 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/returns'
     | '/account/wishlist'
+    | '/blog/$slug'
     | '/collections/$slug'
     | '/product/$id'
     | '/account'
+    | '/blog'
     | '/collections'
     | '/order/$id/success'
   id:
     | '__root__'
     | '/'
     | '/about'
-    | '/blog'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -296,9 +306,11 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/returns'
     | '/account/wishlist'
+    | '/blog/$slug'
     | '/collections/$slug'
     | '/product/$id'
     | '/account/'
+    | '/blog/'
     | '/collections/'
     | '/order/$id/success'
   fileRoutesById: FileRoutesById
@@ -306,7 +318,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  BlogRoute: typeof BlogRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
@@ -322,9 +333,11 @@ export interface RootRouteChildren {
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountReturnsRoute: typeof AccountReturnsRoute
   AccountWishlistRoute: typeof AccountWishlistRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
   ProductIdRoute: typeof ProductIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   OrderIdSuccessRoute: typeof OrderIdSuccessRoute
 }
@@ -343,13 +356,6 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -464,6 +470,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/': {
       id: '/collections/'
       path: '/collections'
@@ -498,7 +518,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  BlogRoute: BlogRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
@@ -514,22 +533,14 @@ const rootRouteChildren: RootRouteChildren = {
   AccountOrdersRoute: AccountOrdersRoute,
   AccountReturnsRoute: AccountReturnsRoute,
   AccountWishlistRoute: AccountWishlistRoute,
+  BlogSlugRoute: BlogSlugRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
   ProductIdRoute: ProductIdRoute,
   AccountIndexRoute: AccountIndexRoute,
+  BlogIndexRoute: BlogIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   OrderIdSuccessRoute: OrderIdSuccessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,3 +1,4 @@
+import { DEMO_BODIES } from "@/data/blog-bodies";
 import featured from "@/assets/blog/featured.jpg.asset.json";
 import p1 from "@/assets/blog/p1.jpg.asset.json";
 import p2 from "@/assets/blog/p2.jpg.asset.json";
@@ -9,6 +10,12 @@ import p7 from "@/assets/blog/p7.jpg.asset.json";
 import p8 from "@/assets/blog/p8.jpg.asset.json";
 import p9 from "@/assets/blog/p9.jpg.asset.json";
 
+/** One block of long-form article copy. */
+export type BlogBlock =
+  | { type: "h2"; text: string }
+  | { type: "p"; text: string }
+  | { type: "quote"; text: string };
+
 export interface BlogPost {
   id: string;
   slug: string;
@@ -19,16 +26,19 @@ export interface BlogPost {
   date: string;
   tag: string;
   featured?: boolean;
+  /** Long-form article body, when the source provides one. */
+  body?: BlogBlock[];
   /** True while the copy is demo filler, not admin-provided data. */
   placeholder?: boolean;
 }
+
 
 /**
  * Demo posts used until the admin panel exposes a blog endpoint.
  * Shape matches the normaliser in `src/lib/api/blog.ts`, so switching to
  * live data needs no component changes.
  */
-export const DEMO_POSTS: BlogPost[] = [
+const RAW_DEMO_POSTS: BlogPost[] = [
   {
     id: "featured",
     slug: "reading-a-gauge-swatch",
@@ -142,3 +152,9 @@ export const DEMO_POSTS: BlogPost[] = [
     placeholder: true,
   },
 ];
+
+/** Demo posts with their long-form bodies attached. */
+export const DEMO_POSTS: BlogPost[] = RAW_DEMO_POSTS.map((post) => {
+  const body = DEMO_BODIES[post.slug] ?? post.body;
+  return body ? { ...post, body } : post;
+});
