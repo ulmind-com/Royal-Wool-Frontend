@@ -12,6 +12,15 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 /** About hero — framed image left, story copy right. */
 export function AboutHero() {
   const reduced = useReducedMotion();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Some browsers ignore the autoplay attribute on hydration — nudge it once.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || reduced) return;
+    el.muted = true;
+    void el.play().catch(() => {});
+  }, [reduced]);
 
   const rise = (delay: number) =>
     reduced
