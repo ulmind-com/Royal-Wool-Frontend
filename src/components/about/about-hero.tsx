@@ -37,14 +37,28 @@ export function AboutHero() {
             boxShadow: "0 40px 90px -50px color-mix(in oklab, var(--ink) 45%, transparent)",
           }}
         >
-          <img
-            src={heroImage.url}
-            alt="Skeins of small-batch dyed wool and cotton yarn on a worktable in daylight"
-            width={1280}
-            height={1600}
-            decoding="async"
-            className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
-          />
+          {reduced ? (
+            <img
+              src={heroImage.url}
+              alt="Skeins of small-batch dyed wool and cotton yarn on a worktable in daylight"
+              width={1280}
+              height={1600}
+              decoding="async"
+              className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
+            />
+          ) : (
+            <video
+              src={heroVideo.url}
+              poster={heroImage.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="Small-batch dyed yarn being wound in daylight"
+              className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
+            />
+          )}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0"
