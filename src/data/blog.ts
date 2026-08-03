@@ -37,7 +37,7 @@ export interface BlogPost {
  * Shape matches the normaliser in `src/lib/api/blog.ts`, so switching to
  * live data needs no component changes.
  */
-export const DEMO_POSTS: BlogPost[] = [
+const RAW_DEMO_POSTS: BlogPost[] = [
   {
     id: "featured",
     slug: "reading-a-gauge-swatch",
