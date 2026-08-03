@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import heroImage from "@/assets/about/about-hero.jpg.asset.json";
+import heroVideo from "@/assets/about/about-hero.mp4.asset.json";
 import { ABOUT_STATS } from "@/data/about";
 import { useReducedMotion } from "@/hooks/use-motion";
 
@@ -11,6 +13,15 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 /** About hero — framed image left, story copy right. */
 export function AboutHero() {
   const reduced = useReducedMotion();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Some browsers ignore the autoplay attribute on hydration — nudge it once.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || reduced) return;
+    el.muted = true;
+    void el.play().catch(() => {});
+  }, [reduced]);
 
   const rise = (delay: number) =>
     reduced
@@ -37,14 +48,29 @@ export function AboutHero() {
             boxShadow: "0 40px 90px -50px color-mix(in oklab, var(--ink) 45%, transparent)",
           }}
         >
-          <img
-            src={heroImage.url}
-            alt="Skeins of small-batch dyed wool and cotton yarn on a worktable in daylight"
-            width={1280}
-            height={1600}
-            decoding="async"
-            className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
-          />
+          {reduced ? (
+            <img
+              src={heroImage.url}
+              alt="Skeins of small-batch dyed wool and cotton yarn on a worktable in daylight"
+              width={1280}
+              height={1600}
+              decoding="async"
+              className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              src={heroVideo.url}
+              poster={heroImage.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              aria-label="Small-batch dyed yarn being wound in daylight"
+              className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
+            />
+          )}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0"
