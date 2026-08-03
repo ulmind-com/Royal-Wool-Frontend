@@ -83,25 +83,28 @@ function BlogPostPage() {
           All stories
         </Link>
 
-        <motion.figure
-          {...(reduced
-            ? {}
-            : {
-                initial: { opacity: 0, y: 24 },
-                animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.8, ease: EASE },
-              })}
-          className="mt-6 overflow-hidden rounded-[18px] border border-border bg-card sm:mt-8 sm:rounded-[24px]"
-        >
-          <img
-            src={post.image}
-            alt={post.title}
-            width={1200}
-            height={800}
-            decoding="async"
-            className="block h-[240px] w-full object-cover object-center sm:h-[400px] lg:h-[520px]"
-          />
-        </motion.figure>
+        {post.image ? (
+          <motion.figure
+            {...(reduced
+              ? {}
+              : {
+                  initial: { opacity: 0, y: 24 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 0.8, ease: EASE },
+                })}
+            className="mt-6 overflow-hidden rounded-[18px] border border-border bg-card sm:mt-8 sm:rounded-[24px]"
+          >
+            <img
+              src={post.image}
+              alt={post.title}
+              width={1200}
+              height={800}
+              decoding="async"
+              className="block h-[240px] w-full object-cover object-center sm:h-[400px] lg:h-[520px]"
+            />
+          </motion.figure>
+        ) : null}
+
 
         <motion.header
           {...(reduced
