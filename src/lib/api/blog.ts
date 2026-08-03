@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { DEMO_POSTS, type BlogPost } from "@/data/blog";
+import { DEMO_POSTS, type BlogBlock, type BlogPost } from "@/data/blog";
 import { apiFetch } from "@/lib/api/client";
+
 
 /**
  * Blog feed.
