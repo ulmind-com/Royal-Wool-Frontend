@@ -91,8 +91,9 @@ async function loadPosts(signal?: AbortSignal): Promise<BlogPost[]> {
   for (const path of ["/blog/posts", "/posts"]) {
     try {
       const data = await apiFetch<RawPost[] | { items?: RawPost[]; results?: RawPost[] }>(path, {
-        signal,
+        signal: signal ?? null,
       });
+
       const list = Array.isArray(data) ? data : (data?.items ?? data?.results ?? []);
       const rows = list.map(normalize).filter((row): row is BlogPost => row !== null);
       if (rows.length) return rows;
