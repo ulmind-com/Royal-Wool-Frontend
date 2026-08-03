@@ -49,13 +49,14 @@ export function AboutHero() {
             />
           ) : (
             <video
+              ref={videoRef}
               src={heroVideo.url}
               poster={heroImage.url}
               autoPlay
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               aria-label="Small-batch dyed yarn being wound in daylight"
               className="block h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[520px]"
             />
