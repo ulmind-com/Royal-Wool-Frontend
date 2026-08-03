@@ -7,6 +7,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Outside Lovable (e.g. a Vercel deploy) pin Nitro to the Vercel preset so the
+  // SSR build emits .vercel/output; inside Lovable the Cloudflare target is forced.
+  ...(process.env["VERCEL"] ? { nitro: { preset: "vercel" as const } } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
