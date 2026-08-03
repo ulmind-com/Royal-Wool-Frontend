@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import heroImage from "@/assets/about/about-hero.jpg.asset.json";
+import heroVideo from "@/assets/about/about-hero.mp4.asset.json";
 import { ABOUT_STATS } from "@/data/about";
 import { useReducedMotion } from "@/hooks/use-motion";
 
