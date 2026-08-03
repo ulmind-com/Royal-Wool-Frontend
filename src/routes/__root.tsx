@@ -19,6 +19,7 @@ import { CustomCursor } from "@/components/custom-cursor";
 import { PageTransition } from "@/components/page-transition";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { WakeGate } from "@/components/wake-gate";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -159,6 +160,7 @@ function RootComponent() {
         <WhatsAppFab />
         <CustomCursor />
         <WakeGate />
+        <Toaster />
         <div className="grain" aria-hidden />
       </SmoothScrollProvider>
     </QueryClientProvider>
