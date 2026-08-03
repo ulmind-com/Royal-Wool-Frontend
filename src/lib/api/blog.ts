@@ -120,6 +120,8 @@ function slugify(value: string): string {
  */
 export function resolveImage(value: string): string {
   if (/^(?:https?:)?\/\//i.test(value) || value.startsWith("data:")) return value;
+  // Self-hosted files shipped in public/ stay on this origin.
+  if (value.startsWith("/assets/")) return value;
   try {
     return new URL(value.startsWith("/") ? value : `/${value}`, API_BASE_URL).toString();
   } catch {
