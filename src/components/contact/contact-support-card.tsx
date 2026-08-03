@@ -58,7 +58,8 @@ export function ContactSupportCard({ content }: { content: ContactContent }) {
                     decoding="async"
                     width={512}
                     height={512}
-                    className="h-6 w-6 object-contain opacity-90 invert"
+                    className="h-6 w-6 object-contain"
+                    style={{ filter: "invert(1) brightness(2.2) contrast(1.4)" }}
                   />
                 </span>
                 <span className="min-w-0">
@@ -121,7 +122,8 @@ export function ContactSupportCard({ content }: { content: ContactContent }) {
               decoding="async"
               width={512}
               height={512}
-              className="h-5 w-5 object-contain opacity-80 invert"
+              className="h-5 w-5 object-contain"
+              style={{ filter: "invert(1) brightness(2.2) contrast(1.4)" }}
             />
             <p className="font-data text-2xs text-fleece/70">{content.hours}</p>
           </div>
