@@ -1,19 +1,22 @@
 ## Goal
-Replace the still image in the About hero with the uploaded clip, looping in the exact same framed shape — same rounded corners, hairline border, shadow and gradient veil.
+Rebuild `/blog` to match the reference screenshot layout, in Royal Wool's day-house style (no dark hero, no Untitled UI colours).
 
-## Approach
-1. Upload the clip via `lovable-assets` → `src/assets/about/about-hero.mp4.asset.json`. (Both uploads are byte-identical, so only one clip is used; it loops seamlessly.)
-2. In `src/components/about/about-hero.tsx`, swap the `<img>` for a `<video>` inside the existing framed `motion.div`:
-   - `autoPlay muted loop playsInline preload="metadata"`
-   - `poster={heroImage.url}` so the existing photo shows while the video buffers (no layout jump, no blank frame)
-   - identical classes: `h-[300px] sm:h-[380px] lg:h-[520px] w-full object-cover object-center`
-   - keep the gradient overlay and entrance animation as-is
-   - clip is vertical 720x1280, so `object-cover` crops to the frame — kept centred
-3. Reduced motion: when `useReducedMotion()` is true, render the existing still image instead of the video (no autoplay).
-4. Keep `about-hero.jpg` in place — it becomes the poster/fallback.
+## Layout (top to bottom)
+1. **Featured post banner** — full-width rounded image card, ~420px tall, with a dark gradient veil, "Featured" eyebrow, large 2-line headline, 3-line excerpt, and a circular arrow button at the right. Clickable as a whole.
+2. **"Recent blog posts"** — heading, then a 3-column grid (2-col tablet, 1-col mobile) of 9 cards: 16:10 rounded image, title, 2-line summary, author avatar + name + date.
+3. **Load more** — pill button centered under the grid; loads the next batch (currently a no-op past the dummy set, disabled once all posts are shown).
+
+## Data (dynamic-ready)
+- New `src/data/blog.ts` with 10 dummy yarn/craft posts (1 featured + 9 grid): slug, title, excerpt, image, author name + avatar, date, tag.
+- New `src/lib/api/blog.ts` with a tolerant normalizer + `blogPostsQuery` hitting `/blog/posts`; when the endpoint is missing or empty it falls back to the dummy set. Same pattern as `src/lib/api/reviews.ts`, so the admin panel can take over later with no component changes.
+
+## Images
+Generate 10 editorial photos (skeins, dye pots, hands crocheting, colour swatches) and register them as CDN assets under `src/assets/blog/`.
+
+## Files
+- new: `src/components/blog/blog-featured.tsx`, `src/components/blog/blog-card.tsx`, `src/components/blog/blog-grid.tsx`
+- new: `src/data/blog.ts`, `src/lib/api/blog.ts`, `src/assets/blog/*.asset.json`
+- edit: `src/routes/blog.tsx` (drop the PageShell placeholder, compose the new sections, keep/extend head metadata)
 
 ## Not changing
-Values band, story section, copy, metadata, and every other page.
-
-## Verification
-Build, then load `/about` in the preview at desktop and mobile widths to confirm the video plays muted on loop inside the framed shape.
+Post detail pages (`/blog/$slug`) are out of scope unless you want them — cards will link to `/blog` for now. Every other route stays untouched.
