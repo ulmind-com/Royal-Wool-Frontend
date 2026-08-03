@@ -37,7 +37,8 @@ export function BlogFeatured({ post }: { post: BlogPost }) {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(180deg, transparent 30%, color-mix(in oklab, var(--ink) 78%, transparent))",
+            "linear-gradient(180deg, transparent 8%, color-mix(in oklab, var(--ink) 45%, transparent) 42%, color-mix(in oklab, var(--ink) 88%, transparent))",
+
         }}
       />
       <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 lg:p-10">
