@@ -83,15 +83,35 @@ function BlogPostPage() {
           All stories
         </Link>
 
+        <motion.figure
+          {...(reduced
+            ? {}
+            : {
+                initial: { opacity: 0, y: 24 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.8, ease: EASE },
+              })}
+          className="mt-6 overflow-hidden rounded-[18px] border border-border bg-card sm:mt-8 sm:rounded-[24px]"
+        >
+          <img
+            src={post.image}
+            alt={post.title}
+            width={1200}
+            height={800}
+            decoding="async"
+            className="block h-[240px] w-full object-cover object-center sm:h-[400px] lg:h-[520px]"
+          />
+        </motion.figure>
+
         <motion.header
           {...(reduced
             ? {}
             : {
                 initial: { opacity: 0, y: 20 },
                 animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.7, ease: EASE },
+                transition: { duration: 0.7, delay: 0.12, ease: EASE },
               })}
-          className="mt-8 max-w-3xl"
+          className="mt-10 max-w-3xl sm:mt-12"
         >
           <p className="font-data text-2xs text-marigold">
             {[post.tag, post.date, readTime(post.body, post.excerpt)].filter(Boolean).join(" · ")}
@@ -108,25 +128,6 @@ function BlogPostPage() {
           </div>
         </motion.header>
 
-        <motion.figure
-          {...(reduced
-            ? {}
-            : {
-                initial: { opacity: 0, y: 24 },
-                animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.8, delay: 0.08, ease: EASE },
-              })}
-          className="mt-10 overflow-hidden rounded-[18px] border border-border bg-card sm:mt-12 sm:rounded-[24px]"
-        >
-          <img
-            src={post.image}
-            alt={post.title}
-            width={1200}
-            height={800}
-            decoding="async"
-            className="block h-[240px] w-full object-cover object-center sm:h-[400px] lg:h-[520px]"
-          />
-        </motion.figure>
 
         {post.body?.length ? (
           <BlogArticle blocks={post.body} />
