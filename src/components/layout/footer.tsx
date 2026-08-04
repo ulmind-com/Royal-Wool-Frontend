@@ -111,7 +111,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-border pb-safe pt-6 font-data text-2xs text-muted-foreground/70 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-2 border-t border-border pb-28 md:pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] pt-6 font-data text-2xs text-muted-foreground/70 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Royal Wool. All rights reserved.</p>
           <p>Made in India</p>
         </div>

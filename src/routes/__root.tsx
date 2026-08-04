@@ -15,6 +15,7 @@ import { AnnouncementTicker } from "@/components/layout/announcement-ticker";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 
 import { PageTransition } from "@/components/page-transition";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
@@ -162,6 +163,7 @@ function RootComponent() {
         </main>
         <Footer />
         <WhatsAppFab />
+        <MobileBottomNav />
 
         <WakeGate />
         <Toaster />

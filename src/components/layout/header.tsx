@@ -39,7 +39,8 @@ const NAV_LINK_ACTIVE = "font-medium text-foreground";
 export function Header() {
   const cartItems = useCartStore((s) => s.items);
   const openCart = useCartStore((s) => s.openCart);
-  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+  const [mounted, setMounted] = useState(false);
+  const cartCount = mounted ? cartItems.reduce((acc, item) => acc + item.qty, 0) : 0;
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,6 +51,7 @@ export function Header() {
   const groups: CategoryNode[] = (tree ?? []).filter((c) => !c.parent_id);
 
   useEffect(() => {
+    setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -87,8 +89,32 @@ export function Header() {
           : undefined
       }
     >
-      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-6 sm:py-3 lg:px-10">
-        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+      {/* Mobile Header Layout (< md) - Logo in exact center, Three-line menu on far right edge */}
+      <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-3 py-2.5 sm:px-6 sm:py-3 md:hidden">
+        {/* Invisible Left Spacer to ensure exact geometric centering of Logo */}
+        <div className="w-10 sm:w-11 shrink-0" aria-hidden="true" />
+        
+        <div className="flex min-w-0 flex-1 justify-center">
+          <Wordmark />
+        </div>
+
+        <div className="flex w-10 sm:w-11 shrink-0 justify-end">
+          <button
+            type="button"
+            className={ICON_BTN}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+            data-cursor="link"
+          >
+            {menuOpen ? <X className="h-6 w-6 stroke-[2px]" /> : <Menu className="h-6 w-6 stroke-[2px]" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Tablet & Desktop Header Layout (>= md) */}
+      <div className="mx-auto hidden w-full max-w-[1600px] md:grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-6 py-3 lg:px-10">
+        <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             className={cn(ICON_BTN, "lg:hidden")}
@@ -103,104 +129,106 @@ export function Header() {
         </div>
 
         {/* desktop nav */}
-        <nav aria-label="Main" className="hidden min-w-0 justify-center lg:flex">
-          <ul className="flex items-center gap-0.5">
-            <li>
-              <Link
-                to="/"
-                activeProps={{ className: NAV_LINK_ACTIVE }}
-                inactiveProps={{ className: "" }}
-                activeOptions={{ exact: true }}
-                className={NAV_LINK}
-                data-cursor="link"
+        <div className="flex min-w-0 justify-center">
+          <nav aria-label="Main" className="hidden lg:flex">
+            <ul className="flex items-center gap-0.5">
+              <li>
+                <Link
+                  to="/"
+                  activeProps={{ className: NAV_LINK_ACTIVE }}
+                  inactiveProps={{ className: "" }}
+                  activeOptions={{ exact: true }}
+                  className={NAV_LINK}
+                  data-cursor="link"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/collections"
+                  activeProps={{ className: NAV_LINK_ACTIVE }}
+                  inactiveProps={{ className: "" }}
+                  className={NAV_LINK}
+                  data-cursor="link"
+                >
+                  Shop
+                </Link>
+              </li>
+              <li
+                onMouseEnter={openCategories}
+                onMouseLeave={closeCategoriesSoon}
+                onFocus={openCategories}
+                onBlur={closeCategoriesSoon}
               >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/collections"
-                activeProps={{ className: NAV_LINK_ACTIVE }}
-                inactiveProps={{ className: "" }}
-                className={NAV_LINK}
-                data-cursor="link"
-              >
-                Shop
-              </Link>
-            </li>
-            <li
-              onMouseEnter={openCategories}
-              onMouseLeave={closeCategoriesSoon}
-              onFocus={openCategories}
-              onBlur={closeCategoriesSoon}
-            >
-              <button
-                type="button"
-                data-cursor="link"
-                aria-expanded={categoriesOpen}
-                className={cn(
-                  NAV_LINK,
-                  "inline-flex items-center gap-1",
-                  categoriesOpen && NAV_LINK_ACTIVE,
-                )}
-              >
-                Categories
-                <ChevronDown
+                <button
+                  type="button"
+                  data-cursor="link"
+                  aria-expanded={categoriesOpen}
                   className={cn(
-                    "h-3.5 w-3.5 transition-transform duration-[var(--dur-micro)]",
-                    categoriesOpen && "rotate-180",
+                    NAV_LINK,
+                    "inline-flex items-center gap-1",
+                    categoriesOpen && NAV_LINK_ACTIVE,
                   )}
-                />
-              </button>
-            </li>
-            <li>
-              <Link
-                to="/about"
-                activeProps={{ className: NAV_LINK_ACTIVE }}
-                inactiveProps={{ className: "" }}
-                className={NAV_LINK}
-                data-cursor="link"
-              >
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/blog"
-                activeProps={{ className: NAV_LINK_ACTIVE }}
-                inactiveProps={{ className: "" }}
-                className={NAV_LINK}
-                data-cursor="link"
-              >
-                Blog
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/contact"
-                activeProps={{ className: NAV_LINK_ACTIVE }}
-                inactiveProps={{ className: "" }}
-                className={NAV_LINK}
-                data-cursor="link"
-              >
-                Contact
-              </Link>
-            </li>
-          </ul>
-        </nav>
+                >
+                  Categories
+                  <ChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 transition-transform duration-[var(--dur-micro)]",
+                      categoriesOpen && "rotate-180",
+                    )}
+                  />
+                </button>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  activeProps={{ className: NAV_LINK_ACTIVE }}
+                  inactiveProps={{ className: "" }}
+                  className={NAV_LINK}
+                  data-cursor="link"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/blog"
+                  activeProps={{ className: NAV_LINK_ACTIVE }}
+                  inactiveProps={{ className: "" }}
+                  className={NAV_LINK}
+                  data-cursor="link"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  activeProps={{ className: NAV_LINK_ACTIVE }}
+                  inactiveProps={{ className: "" }}
+                  className={NAV_LINK}
+                  data-cursor="link"
+                >
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
 
-        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <Link
             to="/search"
             data-cursor="link"
             aria-label="Search yarns"
-            className="hidden items-center gap-3 rounded-full border border-border px-4 py-2 text-muted-foreground transition-colors hover:text-foreground md:flex"
+            className="hidden items-center gap-3 rounded-full border border-border px-4 py-2 text-muted-foreground transition-colors hover:text-foreground lg:flex"
           >
             <Search className="h-4 w-4" />
             <span className="font-data text-2xs">Search</span>
             <kbd className="font-data text-2xs text-muted-foreground/70">⌘K</kbd>
           </Link>
-          <Link to="/search" className={cn(ICON_BTN, "md:hidden")} aria-label="Search yarns">
+          <Link to="/search" className={cn(ICON_BTN, "lg:hidden")} aria-label="Search yarns">
             <Search className="h-5 w-5" />
           </Link>
           <Link to="/account" className={ICON_BTN} aria-label="My Account" data-cursor="link">
