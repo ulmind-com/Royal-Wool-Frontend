@@ -16,7 +16,6 @@ export function resolveMedia(url: string | null): string | null {
   return new URL(url.startsWith("/") ? url : `/${url}`, API_BASE_URL).toString();
 }
 
-
 /**
  * One customer review. Height is content-driven (no clamping, no fixed ratio)
  * so a two-word review stays tiny and a long one grows — the masonry column
@@ -58,8 +57,7 @@ export function ReviewCard({
         aria-hidden
         className="pointer-events-none absolute inset-x-5 top-0 h-px opacity-0 transition-opacity duration-[var(--dur-standard)] group-hover:opacity-100"
         style={{
-          backgroundImage:
-            "linear-gradient(90deg, transparent, var(--marigold), transparent)",
+          backgroundImage: "linear-gradient(90deg, transparent, var(--marigold), transparent)",
         }}
       />
 
@@ -115,7 +113,9 @@ export function ReviewCard({
               <button
                 type="button"
                 data-cursor="link"
-                onClick={() => onOpenPhoto(photos, i, `${review.author} · ${review.product.title ?? ""}`.trim())}
+                onClick={() =>
+                  onOpenPhoto(photos, i, `${review.author} · ${review.product.title ?? ""}`.trim())
+                }
                 aria-label={`Open photo ${i + 1} from ${review.author}`}
                 className="block h-16 w-16 overflow-hidden rounded-xl border border-border transition-transform duration-[var(--dur-micro)] hover:scale-[1.06] sm:h-20 sm:w-20"
               >

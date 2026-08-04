@@ -105,7 +105,6 @@ function BlogPostPage() {
           </motion.figure>
         ) : null}
 
-
         <motion.header
           {...(reduced
             ? {}
@@ -131,7 +130,6 @@ function BlogPostPage() {
           </div>
         </motion.header>
 
-
         {post.body?.length ? (
           <BlogArticle blocks={post.body} />
         ) : (
@@ -156,10 +154,7 @@ function BlogPostPage() {
 
         {more.length ? (
           <section aria-labelledby="more-journal" className="mt-16 sm:mt-20">
-            <h2
-              id="more-journal"
-              className="font-display text-2xl font-normal sm:text-[1.75rem]"
-            >
+            <h2 id="more-journal" className="font-display text-2xl font-normal sm:text-[1.75rem]">
               More from the journal
             </h2>
             <div className="mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">

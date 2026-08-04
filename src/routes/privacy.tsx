@@ -27,7 +27,9 @@ export const Route = createFileRoute("/privacy")({
           delivery.
         </p>
         <h2>What we don't do</h2>
-        <p>We don't sell your data, and we don't store card details — payments run through Razorpay.</p>
+        <p>
+          We don't sell your data, and we don't store card details — payments run through Razorpay.
+        </p>
         <h2>Cookies &amp; local storage</h2>
         <p>
           Your bag, saved addresses and login token live in your browser's local storage. Clearing

@@ -14,7 +14,6 @@ import { YarnWeightRail } from "@/components/commerce/yarn-weight-rail";
 
 import { HeroSlider } from "@/components/commerce/hero-slider";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -37,7 +36,11 @@ export const Route = createFileRoute("/")({
 });
 
 const TRUST = [
-  { icon: BadgeCheck, title: "Quality guarantee", copy: "Consistent gauge, batch-matched dye lots" },
+  {
+    icon: BadgeCheck,
+    title: "Quality guarantee",
+    copy: "Consistent gauge, batch-matched dye lots",
+  },
   { icon: Baby, title: "Safe for babies", copy: "Skin-friendly, tested dyes" },
   { icon: Truck, title: "Pan-India delivery", copy: "Tracked dispatch from West Bengal" },
   { icon: Heart, title: "Loved by crafters", copy: "Reviewed by knitters and crocheters" },
@@ -75,9 +78,7 @@ function Home() {
             </li>
           ))}
         </ul>
-
       </section>
-
 
       {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
       <CategoryShowcase />
@@ -97,7 +98,6 @@ function Home() {
       <BrandBanner />
 
       <CustomerReviews />
-
     </>
   );
 }

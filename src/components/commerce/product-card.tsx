@@ -85,7 +85,6 @@ export function ProductCard({ product, className }: { product: Product; classNam
             {product.title}
           </h3>
 
-
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-data text-sm text-foreground">
               {product.price_varies ? "From " : ""}
@@ -134,7 +133,6 @@ export function ProductCard({ product, className }: { product: Product; classNam
 export function ProductGrid({ products }: { products: Product[] }) {
   return (
     <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-
       {products.map((p) => (
         <li key={p.id}>
           <ProductCard product={p} className="h-full" />

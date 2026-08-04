@@ -39,7 +39,6 @@ function YarnItem({ item, ariaHidden }: { item: FeaturedYarnItem; ariaHidden?: b
         className="group block w-[9.5rem] select-none rounded-3xl px-3 pb-4 pt-5 outline-none focus-visible:ring-2 focus-visible:ring-marigold xs:w-[11rem] sm:w-[15rem] sm:px-4 sm:pb-5 sm:pt-6"
       >
         <div className="relative grid h-[10.5rem] place-items-center xs:h-[12rem] sm:h-[16.5rem]">
-
           {/* dye glow */}
           <span
             aria-hidden
@@ -159,8 +158,7 @@ export function FeaturedYarn() {
         className="relative mt-10 overflow-hidden"
 
         style={{
-          maskImage:
-            "linear-gradient(to right, transparent, black 7%, black 93%, transparent)",
+          maskImage: "linear-gradient(to right, transparent, black 7%, black 93%, transparent)",
           WebkitMaskImage:
             "linear-gradient(to right, transparent, black 7%, black 93%, transparent)",
         }}
@@ -195,11 +193,7 @@ export function FeaturedYarn() {
             aria-label="Featured yarn"
           >
             {loop.map((item, i) => (
-              <YarnItem
-                key={`${item.key}-${i}`}
-                item={item}
-                ariaHidden={i >= items.length}
-              />
+              <YarnItem key={`${item.key}-${i}`} item={item} ariaHidden={i >= items.length} />
             ))}
           </motion.ul>
         )}

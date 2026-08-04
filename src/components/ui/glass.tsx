@@ -36,8 +36,7 @@ const GLASS_STYLE: React.CSSProperties = {
 };
 
 export interface GlassProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof glassVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof glassVariants> {
   /** Solid-ish inner scrim behind content, for contrast over media. */
   scrim?: boolean;
   /** Adds a low-opacity SVG refraction layer. Large panels only. */

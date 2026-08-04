@@ -41,7 +41,12 @@ export function ProductGallery({
   };
 
   return (
-    <div className="md:grid md:grid-cols-[76px_minmax(0,1fr)] md:gap-4">
+    <div
+      className={cn(
+        "md:grid md:gap-4",
+        images.length > 1 ? "md:grid-cols-[76px_minmax(0,1fr)]" : "md:grid-cols-1",
+      )}
+    >
       {/* Desktop thumbnail rail */}
       {images.length > 1 ? (
         <ul className="hidden max-h-[380px] flex-col gap-2.5 overflow-y-auto pr-1 md:flex">
@@ -56,8 +61,8 @@ export function ProductGallery({
                 className={cn(
                   "h-[68px] w-[68px] overflow-hidden rounded-lg border bg-card transition-all",
                   i === safe
-                    ? "border-marigold ring-1 ring-marigold/40"
-                    : "border-border/70 hover:border-marigold/60",
+                    ? "border-foreground ring-1 ring-foreground"
+                    : "border-border/70 hover:border-foreground/60",
                 )}
               >
                 <img
@@ -74,36 +79,38 @@ export function ProductGallery({
 
       <div className="md:mx-auto md:w-full md:max-w-[400px]">
         {/* Desktop frame with cursor zoom */}
-        <div
-          className="group relative mx-auto hidden aspect-square max-h-[380px] overflow-hidden rounded-2xl border border-border/60 bg-card md:block"
-          onPointerMove={(e) => {
-            const r = e.currentTarget.getBoundingClientRect();
-            setZoom({
-              x: ((e.clientX - r.left) / r.width) * 100,
-              y: ((e.clientY - r.top) / r.height) * 100,
-            });
-          }}
-          onPointerLeave={() => setZoom(null)}
-        >
-          {hero ? (
-            <img
-              src={hero}
-              alt={title}
-              decoding="async"
-              className="aspect-square w-full object-contain transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)]"
-              style={
-                zoom
-                  ? { transform: "scale(1.7)", transformOrigin: `${zoom.x}% ${zoom.y}%` }
-                  : undefined
-              }
-            />
-          ) : (
-            <div
-              className="aspect-square w-full"
-              style={{ backgroundImage: "var(--dye-flow)", opacity: 0.35 }}
-              aria-hidden
-            />
-          )}
+        <div className="group relative mx-auto hidden md:block">
+          <div
+            className="relative aspect-square max-h-[380px] overflow-hidden rounded-2xl"
+            onPointerMove={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              setZoom({
+                x: ((e.clientX - r.left) / r.width) * 100,
+                y: ((e.clientY - r.top) / r.height) * 100,
+              });
+            }}
+            onPointerLeave={() => setZoom(null)}
+          >
+            {hero ? (
+              <img
+                src={hero}
+                alt={title}
+                decoding="async"
+                className="aspect-square w-full object-contain transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)]"
+                style={
+                  zoom
+                    ? { transform: "scale(1.7)", transformOrigin: `${zoom.x}% ${zoom.y}%` }
+                    : undefined
+                }
+              />
+            ) : (
+              <div
+                className="aspect-square w-full"
+                style={{ backgroundImage: "var(--dye-flow)", opacity: 0.35 }}
+                aria-hidden
+              />
+            )}
+          </div>
 
           {images.length > 1 ? (
             <>
@@ -175,12 +182,11 @@ function GalleryArrow({ side, onClick }: { side: "left" | "right"; onClick: () =
       aria-label={side === "left" ? "Previous image" : "Next image"}
       data-cursor="link"
       className={cn(
-        "absolute top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-border text-foreground opacity-0 backdrop-blur-md transition-opacity duration-[var(--dur-standard)] group-hover:opacity-100",
-        side === "left" ? "left-3" : "right-3",
+        "absolute top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center text-foreground/50 transition-colors hover:text-foreground",
+        side === "left" ? "-left-14" : "-right-14",
       )}
-      style={{ backgroundColor: "color-mix(in oklab, var(--fleece) 72%, transparent)" }}
     >
-      <Icon className="h-4 w-4" />
+      <Icon className="h-6 w-6" />
     </button>
   );
 }

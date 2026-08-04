@@ -1,11 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { Glass } from "@/components/ui/glass";
-import {
-  UPCOMING_FALLBACK,
-  groupUpcomingByCategory,
-  type UpcomingRange,
-} from "@/data/upcoming";
+import { UPCOMING_FALLBACK, groupUpcomingByCategory, type UpcomingRange } from "@/data/upcoming";
 import { waNotifyMe } from "@/lib/whatsapp";
 
 /**
@@ -61,11 +57,7 @@ export function UpcomingCard({ range }: { range: UpcomingRange }) {
  * Home-page Upcoming section: category-wise groups, each a horizontal snap rail
  * on small screens and a grid from lg up.
  */
-export function UpcomingRail({
-  ranges = UPCOMING_FALLBACK,
-}: {
-  ranges?: UpcomingRange[];
-}) {
+export function UpcomingRail({ ranges = UPCOMING_FALLBACK }: { ranges?: UpcomingRange[] }) {
   const groups = groupUpcomingByCategory(ranges);
   if (!groups.length) return null;
 

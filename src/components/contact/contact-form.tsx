@@ -35,10 +35,11 @@ export function ContactForm({ title, note }: { title: string; note: string }) {
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
 
-  const set = (key: keyof Fields) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setValues((prev) => ({ ...prev, [key]: event.target.value }));
-    setErrors((prev) => ({ ...prev, [key]: undefined }));
-  };
+  const set =
+    (key: keyof Fields) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setValues((prev) => ({ ...prev, [key]: event.target.value }));
+      setErrors((prev) => ({ ...prev, [key]: undefined }));
+    };
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -73,7 +74,9 @@ export function ContactForm({ title, note }: { title: string; note: string }) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="min-w-0">
-      <h2 className="font-display text-2xl font-light text-foreground sm:text-[1.75rem]">{title}</h2>
+      <h2 className="font-display text-2xl font-light text-foreground sm:text-[1.75rem]">
+        {title}
+      </h2>
       <p className="mt-2 max-w-md text-sm text-muted-foreground">{note}</p>
 
       <div className="mt-7 grid gap-5 sm:grid-cols-2">

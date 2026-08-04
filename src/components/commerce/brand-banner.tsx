@@ -29,9 +29,7 @@ export function BrandBanner() {
           decoding="async"
           className="block h-auto w-full max-h-[280px] object-cover object-center sm:max-h-[380px] lg:max-h-[460px]"
         />
-
       </motion.div>
-
     </section>
   );
 }

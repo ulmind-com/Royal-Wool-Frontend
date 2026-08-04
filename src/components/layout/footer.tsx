@@ -31,7 +31,6 @@ export function Footer() {
           </div>
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-10">
-
             <nav aria-label="Shop">
               <p className="font-data text-2xs text-marigold">Shop</p>
               <ul className="mt-4 space-y-2">

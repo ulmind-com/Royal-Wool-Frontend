@@ -8,8 +8,8 @@ import { DataError, EmptyState, GridSkeleton } from "@/components/data-state";
 import { productsQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search["q"] === "string" ? search["q"] : "",
+  validateSearch: (search: Record<string, unknown>): { q?: string | undefined } => ({
+    q: typeof search["q"] === "string" ? search["q"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -32,14 +32,12 @@ function SearchPage() {
   // The query lives in the URL so results stay shareable and back/forward work.
   const { q } = Route.useSearch();
   const navigate = useNavigate();
-  const [draft, setDraft] = useState(q);
+  const [draft, setDraft] = useState(q ?? "");
 
-  useEffect(() => setDraft(q), [q]);
+  useEffect(() => setDraft(q ?? ""), [q]);
 
-  const results = useQuery({
-    ...productsQuery({ q, limit: 48 }),
-    enabled: q.trim().length > 1,
-  });
+  const results = useQuery(productsQuery({ q: q || "", limit: 100 }));
+  const hits = q ? results.data ?? [] : [];
 
   const submit = (value: string) => {
     void navigate({ to: "/search", search: { q: value.trim() } });
@@ -78,7 +76,7 @@ function SearchPage() {
       </form>
 
       <div className="mt-12">
-        {q.trim().length < 2 ? (
+        {!q || q.trim().length < 2 ? (
           <EmptyState
             title="Start typing"
             note="Search by fibre, colour or brand — two letters is enough to get going."

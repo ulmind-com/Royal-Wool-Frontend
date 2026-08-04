@@ -12,9 +12,7 @@ import p9 from "@/assets/blog/p9.jpg.asset.json";
 
 /** One block of long-form article copy. */
 export type BlogBlock =
-  | { type: "h2"; text: string }
-  | { type: "p"; text: string }
-  | { type: "quote"; text: string };
+  { type: "h2"; text: string } | { type: "p"; text: string } | { type: "quote"; text: string };
 
 export interface BlogPost {
   id: string;
@@ -34,7 +32,6 @@ export interface BlogPost {
   /** True while the copy is demo filler, not admin-provided data. */
   placeholder?: boolean;
 }
-
 
 /**
  * Demo posts used until the admin panel exposes a blog endpoint.

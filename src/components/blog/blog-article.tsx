@@ -54,6 +54,9 @@ function Block({ block }: { block: BlogBlock }) {
 
 /** Rough read-time estimate from the body copy. */
 export function readTime(blocks: BlogBlock[] | undefined, excerpt: string): string {
-  const words = [excerpt, ...(blocks ?? []).map((b) => b.text)].join(" ").trim().split(/\s+/).length;
+  const words = [excerpt, ...(blocks ?? []).map((b) => b.text)]
+    .join(" ")
+    .trim()
+    .split(/\s+/).length;
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }

@@ -72,7 +72,6 @@ export function YarnStackCards() {
                 ? "mx-auto w-full max-w-[1200px] px-4 pb-8 sm:px-8 lg:px-14"
                 : "sticky top-14 mx-auto flex h-[88svh] w-full max-w-[1200px] items-center px-4 sm:top-0 sm:h-svh sm:px-8 lg:px-14"
             }
-
           >
             <RangeCard card={card} index={i} />
           </motion.div>
@@ -87,7 +86,6 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
     <article
       className="group relative w-full overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-[0_50px_110px_-60px_color-mix(in_oklab,var(--ink)_60%,transparent)] sm:rounded-[2rem]"
       style={{ minHeight: "clamp(380px, 68svh, 580px)" }}
-
     >
       {/* dye glow */}
       <span
@@ -118,7 +116,6 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
 
         {/* Right (below on mobile): copy */}
         <div className="flex min-w-0 flex-col justify-center gap-4 px-5 py-6 sm:gap-6 sm:px-10 sm:py-12 lg:px-14">
-
           <Glass
             variant="pill"
             className="w-fit whitespace-nowrap font-data text-2xs uppercase tracking-[0.18em] text-ink"
@@ -146,7 +143,6 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
           </dl>
 
           <div className="flex flex-wrap items-center gap-4 pt-1 sm:gap-5">
-
             <Link
               to="/search"
               search={{ q: card.query }}

@@ -35,9 +35,7 @@ export const Route = createFileRoute("/terms")({
           that line.
         </p>
         <h2>Liability</h2>
-        <p>
-          Our liability for any order is limited to the amount you paid for it.
-        </p>
+        <p>Our liability for any order is limited to the amount you paid for it.</p>
       </Prose>
     </PageShell>
   ),

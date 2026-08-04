@@ -53,7 +53,10 @@ export const Route = createFileRoute("/faq")({
           the product page when a lot is running low.
         </p>
         <h2>How do I wash finished pieces?</h2>
-        <p>Cold hand wash, no wringing, dry flat. Acrylic tolerates a gentle machine cycle in a mesh bag.</p>
+        <p>
+          Cold hand wash, no wringing, dry flat. Acrylic tolerates a gentle machine cycle in a mesh
+          bag.
+        </p>
         <h2>How long does delivery take?</h2>
         <p>
           Delivery fees and free-delivery thresholds are set in our store settings and shown live at
@@ -61,8 +64,8 @@ export const Route = createFileRoute("/faq")({
         </p>
         <h2>Can I return yarn?</h2>
         <p>
-          Unused skeins with the band intact, inside the return window shown on the product page. See
-          the returns policy for detail.
+          Unused skeins with the band intact, inside the return window shown on the product page.
+          See the returns policy for detail.
         </p>
       </Prose>
     </PageShell>

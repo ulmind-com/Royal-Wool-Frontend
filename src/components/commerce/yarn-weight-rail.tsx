@@ -43,7 +43,8 @@ function specFor(name: string, index: number): { spec: string; note: string; wei
     YARN_WEIGHTS.find((w) => w.name.toLowerCase() === normalized) ??
     YARN_WEIGHTS.find((w) => normalized.includes(w.name.toLowerCase())) ??
     YARN_WEIGHTS[index % YARN_WEIGHTS.length]!;
-  const exact = match.name.toLowerCase() === normalized || normalized.includes(match.name.toLowerCase());
+  const exact =
+    match.name.toLowerCase() === normalized || normalized.includes(match.name.toLowerCase());
   return {
     spec: exact ? `Hook ${match.hookMm}` : "Shop range",
     note: exact ? match.note : "Every shade at this gauge",
@@ -74,7 +75,9 @@ function toWeightTiles(tree: CategoryNode[] | undefined): WeightTileData[] {
   const nodes = group?.children?.length
     ? [...group.children].sort(byOrder)
     : tree
-        .filter((n) => YARN_WEIGHTS.some((w) => n.name.toLowerCase().includes(w.name.toLowerCase())))
+        .filter((n) =>
+          YARN_WEIGHTS.some((w) => n.name.toLowerCase().includes(w.name.toLowerCase())),
+        )
         .sort(byOrder);
 
   return nodes.map((node, index) => {
@@ -212,7 +215,6 @@ function WeightTile({
               />
             )}
 
-
             {/* marigold bloom on hover */}
             <span
               aria-hidden
@@ -274,7 +276,6 @@ function WeightTile({
     </motion.li>
   );
 }
-
 
 export function YarnWeightRail() {
   const reduced = useReducedMotion();

@@ -67,7 +67,6 @@ export function BlogFeatured({ post }: { post: BlogPost }) {
           <ArrowRight className="h-8 w-8" strokeWidth={1.5} />
         </span>
       </Link>
-
     </motion.article>
   );
 }

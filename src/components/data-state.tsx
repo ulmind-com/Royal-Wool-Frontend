@@ -71,7 +71,13 @@ export function CardSkeleton({ className }: { className?: string }) {
   );
 }
 
-export function GridSkeleton({ count = 4, ratio = "aspect-[3/4]" }: { count?: number; ratio?: string }) {
+export function GridSkeleton({
+  count = 4,
+  ratio = "aspect-[3/4]",
+}: {
+  count?: number;
+  ratio?: string;
+}) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-hidden>
       {Array.from({ length: count }, (_, i) => (

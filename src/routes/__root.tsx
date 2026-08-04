@@ -15,11 +15,13 @@ import { AnnouncementTicker } from "@/components/layout/announcement-ticker";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
-import { CustomCursor } from "@/components/custom-cursor";
+
 import { PageTransition } from "@/components/page-transition";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { WakeGate } from "@/components/wake-gate";
 import { Toaster } from "@/components/ui/sonner";
+import { LoginModal } from "@/components/auth/login-modal";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 
 function NotFoundComponent() {
   return (
@@ -54,7 +56,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="font-display text-3xl font-light text-foreground">This page didn't load</h1>
-        <p className="mt-3 text-muted-foreground">Something snagged. Retry, or head back to the shop.</p>
+        <p className="mt-3 text-muted-foreground">
+          Something snagged. Retry, or head back to the shop.
+        </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => {
@@ -90,7 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/logo.jpeg", type: "image/jpeg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://api.fontshare.com" },
@@ -158,9 +162,11 @@ function RootComponent() {
         </main>
         <Footer />
         <WhatsAppFab />
-        <CustomCursor />
+
         <WakeGate />
         <Toaster />
+        <LoginModal />
+        <CartDrawer />
         <div className="grain" aria-hidden />
       </SmoothScrollProvider>
     </QueryClientProvider>
