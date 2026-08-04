@@ -19,7 +19,12 @@ import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
 import { flattenCategories } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
-type ShopSearch = { brand: string; category: string; weight: string; sort: string };
+type ShopSearch = {
+  brand?: string | undefined;
+  category?: string | undefined;
+  weight?: string | undefined;
+  sort?: string | undefined;
+};
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -30,10 +35,10 @@ const SORTS = [
 
 export const Route = createFileRoute("/collections/")({
   validateSearch: (search: Record<string, unknown>): ShopSearch => ({
-    brand: typeof search["brand"] === "string" ? search["brand"] : "",
-    category: typeof search["category"] === "string" ? search["category"] : "",
-    weight: typeof search["weight"] === "string" ? search["weight"] : "",
-    sort: typeof search["sort"] === "string" ? search["sort"] : "featured",
+    brand: typeof search["brand"] === "string" ? search["brand"] : undefined,
+    category: typeof search["category"] === "string" ? search["category"] : undefined,
+    weight: typeof search["weight"] === "string" ? search["weight"] : undefined,
+    sort: typeof search["sort"] === "string" ? search["sort"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -92,7 +97,7 @@ function ShopPage() {
       if (weight && weightOf(p)?.id !== weight) return false;
       return true;
     });
-    return sortProducts(filtered, sort);
+    return sortProducts(filtered, sort || "featured");
   }, [pool, catList, category, weight, sort]);
 
   const set = (patch: Partial<ShopSearch>) =>
@@ -115,15 +120,15 @@ function ShopPage() {
 
       <BrandRail
         groups={groups}
-        active={brand}
+        active={brand || ""}
         onSelect={(key) => set({ brand: key, category: "", weight: "" })}
       />
 
       <ShopFilters
         categories={catList}
         weights={weights}
-        category={category}
-        weight={weight}
+        category={category || ""}
+        weight={weight || ""}
         onCategory={(slug) => set({ category: slug })}
         onWeight={(id) => set({ weight: id })}
       />

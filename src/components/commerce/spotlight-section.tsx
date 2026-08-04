@@ -51,11 +51,7 @@ const fadeUp = {
   }),
 };
 
-export function SpotlightSection({
-  content = DEFAULT_CONTENT,
-}: {
-  content?: SpotlightContent;
-}) {
+export function SpotlightSection({ content = DEFAULT_CONTENT }: { content?: SpotlightContent }) {
   return (
     <section
       data-thread-anchor="spotlight"

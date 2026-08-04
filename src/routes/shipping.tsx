@@ -13,7 +13,10 @@ export const Route = createFileRoute("/shipping")({
           "How Royal Wool ships across India: dispatch times, distance-based delivery fees and free-delivery thresholds.",
       },
       { property: "og:title", content: "Shipping & delivery — Royal Wool" },
-      { property: "og:description", content: "Dispatch times, delivery fees and free-delivery rules." },
+      {
+        property: "og:description",
+        content: "Dispatch times, delivery fees and free-delivery rules.",
+      },
       { property: "og:url", content: "/shipping" },
     ],
     links: [{ rel: "canonical", href: "/shipping" }],

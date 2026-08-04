@@ -8,6 +8,7 @@ import { categoryTreeQuery } from "@/lib/api/queries";
 import type { CategoryNode } from "@/lib/api/types";
 import { BRAND } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { useCartStore } from "@/store/cart-store";
 
 function Wordmark() {
   return (
@@ -36,6 +37,10 @@ const NAV_LINK =
 const NAV_LINK_ACTIVE = "font-medium text-foreground";
 
 export function Header() {
+  const cartItems = useCartStore((s) => s.items);
+  const openCart = useCartStore((s) => s.openCart);
+  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
@@ -201,12 +206,15 @@ export function Header() {
           <Link to="/account" className={ICON_BTN} aria-label="My Account" data-cursor="link">
             <User className="h-5 w-5" />
           </Link>
-          <Link to="/cart" className={ICON_BTN} aria-label="Cart" data-cursor="link">
+          <button type="button" onClick={openCart} className={ICON_BTN} aria-label="Open Cart Drawer" data-cursor="link">
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-madder px-1 font-data text-[10px] leading-none text-primary-foreground sm:-right-0.5 sm:-top-0.5">
-              0
+            <span className={cn(
+              "absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full px-1 font-data text-[10px] leading-none text-primary-foreground sm:-right-0.5 sm:-top-0.5 transition-transform",
+              cartCount > 0 ? "bg-marigold text-black font-bold scale-110" : "bg-madder"
+            )}>
+              {cartCount}
             </span>
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -349,13 +357,16 @@ export function Header() {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/cart"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openCart();
+                  }}
+                  className="flex min-h-12 w-full text-left items-center text-base text-foreground active:text-marigold"
                 >
-                  Cart
-                </Link>
+                  Cart ({cartCount})
+                </button>
               </li>
             </ul>
           </nav>

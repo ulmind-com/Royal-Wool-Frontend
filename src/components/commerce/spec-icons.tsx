@@ -16,7 +16,13 @@ const S = {
   strokeLinejoin: "round" as const,
 };
 
-function Frame({ children, className }: { children: React.ReactNode; className?: string | undefined }) {
+function Frame({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string | undefined;
+}) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden className={className} {...S}>
       {children}

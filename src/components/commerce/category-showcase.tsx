@@ -79,16 +79,7 @@ function TileLink({
   );
 }
 
-
-function CategoryTile({
-  tile,
-  index,
-  reduced,
-}: {
-  tile: Tile;
-  index: number;
-  reduced: boolean;
-}) {
+function CategoryTile({ tile, index, reduced }: { tile: Tile; index: number; reduced: boolean }) {
   return (
     <motion.li
       initial={reduced ? false : { opacity: 0, y: 26 }}
@@ -102,7 +93,6 @@ function CategoryTile({
         aria-label={`Shop ${tile.name}`}
         className="group block focus-visible:outline-none"
       >
-
         <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card transition-all duration-[var(--dur-slow)] ease-[var(--ease-enter)] group-hover:-translate-y-1.5 group-hover:border-marigold/50 group-hover:shadow-[0_36px_70px_-40px_color-mix(in_oklab,var(--ink)_45%,transparent)] group-focus-visible:border-marigold">
           {/* dye glow behind the yarn ball */}
           <div
@@ -150,7 +140,6 @@ function CategoryTile({
           <p className="mt-1.5 font-data text-2xs text-muted-foreground">{tile.note}</p>
         </div>
       </TileLink>
-
     </motion.li>
   );
 }
@@ -167,8 +156,8 @@ function SectionHeader() {
           Shop by Category
         </h2>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Every range we wind, sorted the way crafters shop — pick a category and see its
-          shades, weights and live stock.
+          Every range we wind, sorted the way crafters shop — pick a category and see its shades,
+          weights and live stock.
         </p>
       </div>
 

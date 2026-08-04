@@ -141,7 +141,7 @@ export const DEMO_BODIES: Record<string, BlogBlock[]> = {
   "baby-safe-dyes": [
     {
       type: "p",
-      text: "\"Baby-safe\" is not a marketing word for us. It is a short list of tests a shade has to pass before it goes anywhere near a blanket.",
+      text: '"Baby-safe" is not a marketing word for us. It is a short list of tests a shade has to pass before it goes anywhere near a blanket.',
     },
     { type: "h2", text: "Colour fastness" },
     {

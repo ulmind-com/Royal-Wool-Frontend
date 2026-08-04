@@ -46,7 +46,10 @@ const ALIASES: Record<string, AssuranceId> = {
 };
 
 function normalizeKey(key: string): string {
-  return key.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+  return key
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
 }
 
 function text(value: unknown): string | null {
@@ -77,7 +80,8 @@ export function storeAssurances(...sources: unknown[]): AssuranceRow[] {
         found.set(id, {
           id,
           title: title ?? DEFAULTS[id].title,
-          note: text(row["note"]) ?? text(row["text"]) ?? text(row["subtitle"]) ?? DEFAULTS[id].note,
+          note:
+            text(row["note"]) ?? text(row["text"]) ?? text(row["subtitle"]) ?? DEFAULTS[id].note,
         });
       }
     }

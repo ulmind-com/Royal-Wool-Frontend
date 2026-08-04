@@ -13,6 +13,9 @@ import { SpecTiles } from "@/components/commerce/spec-tiles";
 import { DataError } from "@/components/data-state";
 import { Glass } from "@/components/ui/glass";
 import { useSettings } from "@/hooks/use-settings";
+import { useAuthStore } from "@/store/auth-store";
+import { useCartStore } from "@/store/cart-store";
+import { toast } from "sonner";
 import { storeAssurances } from "@/lib/api/assurance";
 import { productQuery, productsQuery } from "@/lib/api/queries";
 import { productReviewsQuery } from "@/lib/api/reviews";
@@ -49,16 +52,18 @@ export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
 });
 
-
 function ProductPage() {
   const { id } = Route.useParams();
   const { formatMoney, returnWindowDays, shop, settings } = useSettings();
+  const { isAuthenticated, setLoginModalOpen } = useAuthStore();
   const { data: product, isPending, isError, error, refetch } = useQuery(productQuery(id));
 
   const [colorName, setColorName] = useState<string | null>(null);
   const [sizeName, setSizeName] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(1);
+
+  const addItem = useCartStore((s) => s.addItem);
 
   // A new product id means a clean slate for every selection.
   useEffect(() => {
@@ -83,6 +88,25 @@ function ProductPage() {
     const all = [...(color?.images ?? []), ...(product?.images ?? [])].filter(Boolean);
     return Array.from(new Set(all));
   }, [color, product]);
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      setLoginModalOpen(true);
+      return;
+    }
+    if (product) {
+      addItem({
+        productId: product.id,
+        title: product.title,
+        color: color?.name,
+        size: size?.size,
+        price,
+        qty,
+        image: gallery[0] || product.images?.[0],
+      });
+    }
+    toast.success(`${qty} item(s) of ${product?.title || "Yarn"} added to your cart! 🛍️`);
+  };
 
   const specs = product ? productSpecs(product) : [];
   const care = product ? washCare(product) : null;
@@ -148,7 +172,10 @@ function ProductPage() {
 
   return (
     <div className="pb-28 lg:pb-0">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <div className="mx-auto w-full max-w-[1600px] px-4 pt-5 sm:px-6 sm:pt-7 lg:px-10">
         <nav aria-label="Breadcrumb" className="font-data text-2xs text-muted-foreground/70">
@@ -177,6 +204,8 @@ function ProductPage() {
                 soldOut={soldOut}
                 formatMoney={formatMoney}
                 shareUrl={shareUrl}
+                isAuthenticated={isAuthenticated}
+                handleAddToCart={handleAddToCart}
               />
             }
           />
@@ -225,7 +254,6 @@ function ProductPage() {
 
           {colors.length ? (
             <div className="mt-6 border-t border-border pt-6">
-
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
                   Shade
@@ -291,8 +319,6 @@ function ProductPage() {
 
           <AssuranceBand rows={storeAssurances(product, settings)} />
 
-
-
           <div className="mt-8 divide-y divide-border border-y border-border">
             <Accordion title="Name & Address of Manufacturer">
               <p className="whitespace-pre-line">
@@ -318,8 +344,8 @@ function ProductPage() {
 
           <p className="mt-6 text-xs text-muted-foreground/80">
             <span className="font-data text-2xs text-foreground">NOTE:</span> Actual yarn colour may
-            vary from the images due to monitor/mobile display differences, individual perception and
-            lighting during photography.
+            vary from the images due to monitor/mobile display differences, individual perception
+            and lighting during photography.
           </p>
         </div>
       </div>
@@ -392,6 +418,7 @@ function ProductPage() {
           <button
             type="button"
             disabled={soldOut}
+            onClick={handleAddToCart}
             data-cursor="link"
             className="ml-auto inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-madder px-4 font-data text-2xs text-madder disabled:opacity-40"
           >
@@ -420,6 +447,8 @@ function ProductActions({
   soldOut,
   formatMoney,
   shareUrl,
+  isAuthenticated,
+  handleAddToCart,
   variant = "default",
 }: {
   product: Product;
@@ -430,6 +459,8 @@ function ProductActions({
   soldOut: boolean;
   formatMoney: (n: number) => string;
   shareUrl: string;
+  isAuthenticated: boolean;
+  handleAddToCart: () => void;
   variant?: "default" | "compact";
 }) {
   const compact = variant === "compact";
@@ -468,8 +499,9 @@ function ProductActions({
         <button
           type="button"
           disabled={soldOut}
+          onClick={handleAddToCart}
           data-cursor="link"
-          title="Cart wiring lands with the commerce phase"
+          title={isAuthenticated ? "Add to your cart" : "Login to add to cart"}
           className="sheen inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-madder px-3 py-2 font-data text-2xs text-primary-foreground disabled:opacity-40"
         >
           <ShoppingBag className="h-3.5 w-3.5 shrink-0" />
@@ -485,7 +517,6 @@ function ProductActions({
           Buy Now
         </button>
       </div>
-
 
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-data text-2xs text-muted-foreground/80">
         <span className="inline-flex items-center gap-1.5">
@@ -518,7 +549,10 @@ function Accordion({ title, children }: { title: string; children: React.ReactNo
       >
         <span className="font-data text-2xs text-foreground">{title}</span>
         <ChevronDown
-          className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-180")}
+          className={cn(
+            "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+            open && "rotate-180",
+          )}
           aria-hidden
         />
       </button>

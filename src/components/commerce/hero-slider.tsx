@@ -143,8 +143,10 @@ export function HeroSlider() {
                     {slide.subtitle}
                   </motion.p>
                 ) : null}
-                <motion.div {...rise(0.24)} className="mt-5 flex flex-wrap items-center gap-4 sm:mt-6">
-
+                <motion.div
+                  {...rise(0.24)}
+                  className="mt-5 flex flex-wrap items-center gap-4 sm:mt-6"
+                >
                   {isInternal ? (
                     <Link
                       to={href}
@@ -174,7 +176,6 @@ export function HeroSlider() {
           {/* Controls — dots left, arrows right on phones; one cluster from sm up */}
           {count > 1 ? (
             <div className="absolute inset-x-4 bottom-4 flex items-center justify-between gap-4 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:justify-end sm:gap-5">
-
               <div className="flex items-center gap-2 sm:gap-3">
                 {slides.map((s, i) => (
                   <button
@@ -217,7 +218,6 @@ export function HeroSlider() {
               </div>
             </div>
           ) : null}
-
         </div>
       </div>
     </section>

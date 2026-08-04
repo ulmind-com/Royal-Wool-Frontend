@@ -39,12 +39,7 @@ function getFontSize(font: string) {
   return match ? parseInt(match[1]!, 10) : 30;
 }
 
-function createTextTexture(
-  gl: OGLRenderingContext,
-  text: string,
-  font: string,
-  color: string,
-) {
+function createTextTexture(gl: OGLRenderingContext, text: string, font: string, color: string) {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d")!;
   context.font = font;
@@ -283,10 +278,7 @@ class Media {
     this.scale = s.height / 1500;
     this.plane.scale.y = (v.height * (900 * this.scale)) / s.height;
     this.plane.scale.x = (v.width * (700 * this.scale)) / s.width;
-    this.plane.program.uniforms["uPlaneSizes"]!.value = [
-      this.plane.scale.x,
-      this.plane.scale.y,
-    ];
+    this.plane.program.uniforms["uPlaneSizes"]!.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 1.4;
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.opts.length;
@@ -403,7 +395,6 @@ class App {
     else this.startAutoplay();
   };
 
-
   private createRenderer() {
     this.renderer = new Renderer({
       alpha: true,
@@ -482,13 +473,9 @@ class App {
   private handleTap(e: MouseEvent | TouchEvent) {
     const rect = this.container.getBoundingClientRect();
     const clientX =
-      "changedTouches" in e && e.changedTouches?.[0]
-        ? e.changedTouches[0].clientX
-        : this.start;
+      "changedTouches" in e && e.changedTouches?.[0] ? e.changedTouches[0].clientX : this.start;
     const clientY =
-      "changedTouches" in e && e.changedTouches?.[0]
-        ? e.changedTouches[0].clientY
-        : this.startY;
+      "changedTouches" in e && e.changedTouches?.[0] ? e.changedTouches[0].clientY : this.startY;
     if (
       clientX < rect.left ||
       clientX > rect.right ||

@@ -5,7 +5,6 @@ import { ApiError, apiFetch } from "@/lib/api/client";
 import type { Product } from "@/lib/api/types";
 import { primaryImage } from "@/lib/api/types";
 
-
 /**
  * Site-wide customer review feed.
  *
@@ -73,7 +72,6 @@ export interface ReviewFeed {
   isDemo: boolean;
 }
 
-
 function normalise(raw: RawReview, product?: Product): Review | null {
   const rating = Number(raw.rating ?? 0);
   if (!Number.isFinite(rating) || rating <= 0) return null;
@@ -99,10 +97,7 @@ function normalise(raw: RawReview, product?: Product): Review | null {
       id: raw.product?.id ?? raw.product_id ?? product?.id ?? null,
       title: raw.product?.title ?? product?.title ?? null,
       image:
-        raw.product?.images?.[0] ??
-        (product ? primaryImage(product) : null) ??
-        photos[0] ??
-        null,
+        raw.product?.images?.[0] ?? (product ? primaryImage(product) : null) ?? photos[0] ?? null,
     },
   };
 }
@@ -123,7 +118,6 @@ function summarise(reviews: Review[], isDemo = false): ReviewFeed {
 
   return { reviews: sorted, count, average, breakdown, isDemo };
 }
-
 
 /** Swallow "endpoint/auth not available" so one dead read can't kill the feed. */
 async function soft<T>(promise: Promise<T>): Promise<T | null> {
@@ -167,7 +161,6 @@ async function fetchFeed(signal: AbortSignal): Promise<ReviewFeed> {
 
   return summarise(merged);
 }
-
 
 export const reviewFeedQuery = queryOptions({
   queryKey: ["reviews", "feed"],

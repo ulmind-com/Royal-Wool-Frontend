@@ -76,9 +76,9 @@ export function CustomerReviews() {
           <div className="min-w-0">
             <p className="font-data text-2xs text-marigold">Straight from the basket</p>
             <h2 className="mt-2.5 max-w-2xl font-display text-3xl font-light leading-[1.1] text-foreground sm:mt-3 sm:text-5xl">
-              What crafters say after<br className="hidden sm:block" /> the first skein
+              What crafters say after
+              <br className="hidden sm:block" /> the first skein
             </h2>
-
 
             {isPending ? (
               <div className="mt-6 h-10 w-56 animate-pulse rounded-full bg-foreground/5" />
@@ -111,7 +111,6 @@ export function CustomerReviews() {
               </p>
             ) : null}
           </div>
-
 
           {/* rating breakdown */}
           {data?.count ? (
@@ -148,7 +147,6 @@ export function CustomerReviews() {
         {data?.count ? (
           <ul className="no-scrollbar -mx-4 mt-8 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:mt-10 sm:flex-wrap sm:overflow-visible sm:px-0">
             {FILTERS.map(({ id, label }) => {
-
               const count = (data.reviews ?? []).filter((r) => matches(r, id)).length;
               if (!count) return null;
               const active = filter === id;
@@ -180,11 +178,7 @@ export function CustomerReviews() {
 
         <div className="mt-8">
           {isError ? (
-            <DataError
-              error={error}
-              retry={() => void refetch()}
-              title="Reviews didn't load"
-            />
+            <DataError error={error} retry={() => void refetch()} title="Reviews didn't load" />
           ) : isPending ? (
             <div className="columns-1 gap-5 sm:columns-2 lg:columns-3" aria-hidden>
               {["h-56", "h-80", "h-44", "h-72", "h-52", "h-[21rem]"].map((h, i) => (
@@ -216,7 +210,9 @@ export function CustomerReviews() {
                     onClick={() => setShown(expanded ? PAGE : shown + PAGE)}
                     className="sheen inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 font-data text-2xs text-foreground transition-colors hover:border-madder/60"
                   >
-                    {expanded ? "Show less" : `See ${Math.min(remaining, PAGE)} more review${Math.min(remaining, PAGE) === 1 ? "" : "s"}`}
+                    {expanded
+                      ? "Show less"
+                      : `See ${Math.min(remaining, PAGE)} more review${Math.min(remaining, PAGE) === 1 ? "" : "s"}`}
                     <ChevronDown
                       className={cn("h-4 w-4 transition-transform", expanded && "rotate-180")}
                       aria-hidden

@@ -204,7 +204,9 @@ type ListPayload =
 
 function extractRows(payload: ListPayload): RawPost[] {
   if (Array.isArray(payload)) return payload;
-  return payload?.items ?? payload?.results ?? payload?.data ?? payload?.posts ?? payload?.blogs ?? [];
+  return (
+    payload?.items ?? payload?.results ?? payload?.data ?? payload?.posts ?? payload?.blogs ?? []
+  );
 }
 
 export interface BlogFeedPage {

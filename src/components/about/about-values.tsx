@@ -10,10 +10,7 @@ export function AboutValues() {
       <p className="font-data text-2xs text-marigold">How we work</p>
       <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-border/70 pt-10 lg:grid-cols-4 lg:divide-x lg:divide-border/60">
         {ABOUT_VALUES.map((value) => (
-          <li
-            key={value.id}
-            className="group flex flex-col items-center px-1 text-center lg:px-6"
-          >
+          <li key={value.id} className="group flex flex-col items-center px-1 text-center lg:px-6">
             <span
               aria-hidden
               className="grid h-16 w-16 place-items-center rounded-full border border-border/60 bg-card/70 transition-all duration-[var(--dur-standard)] ease-[var(--ease-enter)] group-hover:-translate-y-0.5 group-hover:border-marigold/60"

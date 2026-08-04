@@ -70,9 +70,7 @@ function FanCard({
         filter: s.filter,
       }}
       transition={
-        reduced
-          ? { duration: 0 }
-          : { type: "spring", stiffness: 130, damping: 20, mass: 0.9 }
+        reduced ? { duration: 0 } : { type: "spring", stiffness: 130, damping: 20, mass: 0.9 }
       }
     >
       <button

@@ -34,9 +34,8 @@ export function ShadeGrid({
     return colors.filter((c) => c.name.toLowerCase().includes(q));
   }, [colors, query]);
 
-  const visible = expanded || filtered.length <= COLLAPSED_COUNT
-    ? filtered
-    : filtered.slice(0, COLLAPSED_COUNT);
+  const visible =
+    expanded || filtered.length <= COLLAPSED_COUNT ? filtered : filtered.slice(0, COLLAPSED_COUNT);
   const hidden = filtered.length - visible.length;
 
   return (
@@ -72,8 +71,8 @@ export function ShadeGrid({
                 className={cn(
                   "group relative aspect-square w-full overflow-hidden rounded-full border transition-all duration-[var(--dur-standard)] ease-[var(--ease-enter)]",
                   active
-                    ? "border-marigold ring-2 ring-marigold/45 ring-offset-2 ring-offset-background"
-                    : "border-border hover:-translate-y-0.5 hover:border-marigold/60",
+                    ? "border-foreground ring-1 ring-foreground ring-offset-2 ring-offset-background"
+                    : "border-transparent hover:-translate-y-0.5",
                   soldOut && "opacity-40",
                 )}
                 style={img ? undefined : { backgroundColor: c.hex ?? "transparent" }}
@@ -84,7 +83,7 @@ export function ShadeGrid({
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 ) : null}
                 {soldOut ? (

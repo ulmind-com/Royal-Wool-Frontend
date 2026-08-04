@@ -36,14 +36,34 @@ export const SPEC_PLACEHOLDERS = true;
 type Bag = Record<string, unknown>;
 
 const SPEC_DEFS: { id: SpecId; label: string; keys: string[] }[] = [
-  { id: "fibre", label: "Fibre / Blend", keys: ["fibre", "fiber", "blend", "composition", "material"] },
+  {
+    id: "fibre",
+    label: "Fibre / Blend",
+    keys: ["fibre", "fiber", "blend", "composition", "material"],
+  },
   { id: "weight", label: "Yarn Weight", keys: ["yarn_weight", "weight", "thickness", "ply"] },
-  { id: "length", label: "Yarn Length", keys: ["yarn_length", "length", "meterage", "metres", "meters"] },
+  {
+    id: "length",
+    label: "Yarn Length",
+    keys: ["yarn_length", "length", "meterage", "metres", "meters"],
+  },
   { id: "needle", label: "Needle Size", keys: ["needle_size", "needle", "needles"] },
-  { id: "hook", label: "Crochet Hook Size", keys: ["hook_size", "crochet_hook", "crochet_hook_size", "hook"] },
-  { id: "needle_stitch", label: "Needle Stitch", keys: ["needle_stitch", "needle_gauge", "knit_gauge"] },
+  {
+    id: "hook",
+    label: "Crochet Hook Size",
+    keys: ["hook_size", "crochet_hook", "crochet_hook_size", "hook"],
+  },
+  {
+    id: "needle_stitch",
+    label: "Needle Stitch",
+    keys: ["needle_stitch", "needle_gauge", "knit_gauge"],
+  },
   { id: "crochet_stitch", label: "Crochet Stitch", keys: ["crochet_stitch", "crochet_gauge"] },
-  { id: "ball_weight", label: "Ball Weight", keys: ["ball_weight", "net_weight", "pack_weight", "grams"] },
+  {
+    id: "ball_weight",
+    label: "Ball Weight",
+    keys: ["ball_weight", "net_weight", "pack_weight", "grams"],
+  },
 ];
 
 /** Demo pools — one plausible value set per spec, varied per product. */
@@ -75,7 +95,6 @@ function pick(pool: string[], key: string, salt: number): string {
   return pool[(seed(key) + salt * 7) % pool.length]!;
 }
 
-
 function bags(product: Product): Bag[] {
   const p = product as unknown as Bag;
   const out: Bag[] = [p];
@@ -98,7 +117,10 @@ function bags(product: Product): Bag[] {
 }
 
 function normalizeKey(key: string): string {
-  return key.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+  return key
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
 }
 
 function read(bag: Bag, keys: string[]): string | null {
@@ -152,7 +174,6 @@ export function washCare(product: Product): string | null {
   }
   return null;
 }
-
 
 /** Shade code such as "DSR001" when the admin stores one on the colour. */
 export function shadeCode(color: { name: string } & Record<string, unknown>): string | null {

@@ -61,7 +61,10 @@ const KEY_ALIASES: Record<string, ChannelKey> = {
 const ORDER: ChannelKey[] = ["hotline", "whatsapp", "email", "location", "hours"];
 
 function slug(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
 }
 
 function text(value: unknown): string | null {
@@ -112,8 +115,7 @@ export function normalizeContact(
   payload: unknown,
   settings?: Settings | null | undefined,
 ): ContactContent {
-  const bag =
-    payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
+  const bag = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
   const nested =
     bag["contact"] && typeof bag["contact"] === "object"
       ? (bag["contact"] as Record<string, unknown>)

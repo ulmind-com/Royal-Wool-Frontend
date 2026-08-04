@@ -40,4 +40,3 @@ export const WOOL_CATEGORIES: WoolCategory[] = [
     blurb: "Everyday knitting wool",
   },
 ];
-
