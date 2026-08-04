@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Home, ShoppingBag, Search, ShoppingCart, Heart, User } from "lucide-react";
+import { Home, ShoppingBag, ShoppingCart, Heart, User, Search } from "lucide-react";
 
 import { useCartStore } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Ultra-premium Adaptive Liquid Glass bottom navigation bar designed specifically for mobile view.
- * Dynamically resizes to fit ANY phone screen perfectly with a unified 6-column capsule design,
- * floating spring-physics circular droplet indicator, and crystal-clear VisionOS refractive optics.
+ * Features an architecturally balanced 5-item main capsule paired with a separate circular Search button beside it.
+ * Precision-engineered to resize and look luxurious on ANY phone screen size (320px to 450px+).
  */
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
@@ -50,13 +50,10 @@ export function MobileBottomNav() {
   const isUserAuthenticated = mounted ? isAuthenticated : false;
   const currentUser = mounted ? user : null;
 
-  // Determine active item inside the unified liquid glass pill
+  // Determine active item inside the main liquid glass pill
   const activeId = useMemo(() => {
     if (isCartOpen || pathname === "/cart" || pathname === "/checkout") {
       return "cart";
-    }
-    if (pathname.startsWith("/search")) {
-      return "search";
     }
     if (pathname.startsWith("/account/wishlist")) {
       return "wishlist";
@@ -78,6 +75,8 @@ export function MobileBottomNav() {
     return null;
   }, [pathname, isCartOpen]);
 
+  const isSearchActive = pathname.startsWith("/search") && !isCartOpen;
+
   const triggerHaptic = () => {
     try {
       if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
@@ -91,17 +90,16 @@ export function MobileBottomNav() {
   const navItems = [
     { id: "home", label: "Home", path: "/" },
     { id: "shop", label: "Shop", path: "/collections" },
-    { id: "search", label: "Search", path: "/search" },
     { id: "cart", label: "Cart", isCart: true },
     { id: "wishlist", label: "Wishlist", path: "/account/wishlist" },
     { id: "profile", label: "Profile", path: "/account" },
   ];
 
   return (
-    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center max-w-[460px] mx-auto select-none">
-      {/* Unified 6-Item Liquid Glass Capsule - Perfectly sized for all mobile devices */}
+    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-2 sm:gap-2.5 max-w-[460px] mx-auto select-none">
+      {/* Main 5-Item Liquid Glass Capsule - Perfectly sized (58px/62px) to prevent squashing on any phone */}
       <div
-        className="w-full h-[60px] sm:h-[64px] pointer-events-auto grid grid-cols-6 items-center rounded-full px-1 sm:px-2 transition-all duration-[var(--dur-standard)] isolate relative shadow-2xl"
+        className="flex-1 min-w-0 h-[58px] sm:h-[62px] pointer-events-auto grid grid-cols-5 items-center rounded-full px-1 sm:px-1.5 transition-all duration-[var(--dur-standard)] isolate relative shadow-2xl"
         style={LIQUID_GLASS_CONTAINER}
       >
         {navItems.map((item) => {
@@ -159,17 +157,6 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
-                    )}
-                  />
-                )}
-
-                {item.id === "search" && (
-                  <Search
-                    className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
-                      isActive
-                        ? "scale-110 text-ink stroke-[2.5px] drop-shadow-xs"
                         : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
                     )}
                   />
@@ -245,6 +232,36 @@ export function MobileBottomNav() {
           );
         })}
       </div>
+
+      {/* Separate Circular Liquid Glass Search Button - Perfectly sized (58px/62px) */}
+      <button
+        type="button"
+        onClick={() => {
+          triggerHaptic();
+          closeCart();
+          navigate({ to: "/search" });
+        }}
+        className={cn(
+          "h-[58px] w-[58px] sm:h-[62px] sm:w-[62px] shrink-0 pointer-events-auto grid place-items-center rounded-full transition-all duration-[var(--dur-standard)] isolate relative outline-none active:scale-95 shadow-2xl group",
+          isSearchActive && "ring-1 ring-white shadow-[0_8px_25px_rgba(255,178,0,0.25)]"
+        )}
+        style={LIQUID_GLASS_CONTAINER}
+        aria-label="Search yarns"
+        data-cursor="link"
+      >
+        {isSearchActive && (
+          <div
+            className="absolute h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] rounded-full z-0 pointer-events-none animate-in fade-in duration-300"
+            style={LIQUID_GLASS_INDICATOR}
+          />
+        )}
+        <Search
+          className={cn(
+            "relative z-10 h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+            isSearchActive ? "scale-110 text-ink stroke-[2.5px] drop-shadow-xs" : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+          )}
+        />
+      </button>
     </div>
   );
 }
