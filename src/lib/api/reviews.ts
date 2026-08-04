@@ -123,9 +123,8 @@ function summarise(reviews: Review[], isDemo = false): ReviewFeed {
 async function soft<T>(promise: Promise<T>): Promise<T | null> {
   try {
     return await promise;
-  } catch (error) {
-    if (error instanceof ApiError && !error.isOffline) return null;
-    throw error;
+  } catch {
+    return null;
   }
 }
 
@@ -166,10 +165,7 @@ export const reviewFeedQuery = queryOptions({
   queryKey: ["reviews", "feed"],
   queryFn: ({ signal }) => fetchFeed(signal),
   staleTime: 10 * MINUTE,
-  retry: (failureCount: number, error: unknown) => {
-    if (error instanceof ApiError && !error.isOffline) return false;
-    return failureCount < 1;
-  },
+  retry: false,
 });
 
 /** "3 weeks ago" style label; null when the API gave us no date. */
@@ -205,8 +201,5 @@ export const productReviewsQuery = (productId: string) =>
       return summarise(rows.map((r) => normalise(r)).filter((r): r is Review => !!r));
     },
     staleTime: 5 * MINUTE,
-    retry: (failureCount: number, error: unknown) => {
-      if (error instanceof ApiError && !error.isOffline) return false;
-      return failureCount < 1;
-    },
+    retry: false,
   });
