@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/auth-store";
 import { getFirebaseAuth, getGoogleProvider } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { getRedirectResult, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +22,35 @@ export function LoginModal() {
   const [password, setPassword] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+  /** Exchanges a Firebase user for our own token; shared by popup and redirect. */
+  const exchangeFirebaseUser = async (user: { getIdToken: () => Promise<string> }) => {
+    const firebaseIdToken = await user.getIdToken();
+    const res = await fetch(`${API_BASE_URL}/auth/firebase`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_token: firebaseIdToken }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Backend login failed");
+    }
+    const data = await res.json();
+    loginSuccess(data.user, data.access_token);
+    toast.success(`Welcome, ${data.user.name}! 🎉`);
+    handleClose(false);
+  };
+
+  // Finish a redirect sign-in that started before this page load.
+  useEffect(() => {
+    getRedirectResult(getFirebaseAuth())
+      .then((result) => {
+        if (result?.user) return exchangeFirebaseUser(result.user);
+        return undefined;
+      })
+      .catch((err: Error) => toast.error(err.message || "Google sign-in failed."));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
@@ -47,25 +76,21 @@ export function LoginModal() {
 
       const auth = getFirebaseAuth();
       const provider = getGoogleProvider();
-      const result = await signInWithPopup(auth, provider);
-
-      const firebaseIdToken = await result.user.getIdToken();
-
-      const res = await fetch(`${API_BASE_URL}/auth/firebase`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: firebaseIdToken }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Backend login failed");
+      // In-app browsers and strict popup blockers reject the popup outright;
+      // a full-page redirect is the only flow that still completes there.
+      let result;
+      try {
+        result = await signInWithPopup(auth, provider);
+      } catch (popupError: unknown) {
+        const code = (popupError as { code?: string }).code ?? "";
+        if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
+          await signInWithRedirect(auth, provider);
+          return;
+        }
+        throw popupError;
       }
 
-      const data = await res.json();
-      loginSuccess(data.user, data.access_token);
-      toast.success(`Welcome, ${data.user.name}! 🎉`);
-      handleClose(false);
+      await exchangeFirebaseUser(result.user);
     } catch (error: unknown) {
       const err = error as Error;
       if (
