@@ -152,3 +152,7 @@ export async function reverseGeocode(lat: number, lng: number) {
     label: data.display_name ?? "",
   };
 }
+
+/** Self-service cancellation — the server enforces the admin's time window. */
+export const cancelOrder = (orderId: string) =>
+  apiFetch<{ status: string; refund: boolean }>(`/orders/${orderId}/cancel`, { method: "POST" });

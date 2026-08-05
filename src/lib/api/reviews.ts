@@ -203,3 +203,33 @@ export const productReviewsQuery = (productId: string) =>
     staleTime: 5 * MINUTE,
     retry: false,
   });
+
+/* ── Writing reviews ──────────────────────────────────────────────────── */
+
+/** Only a shopper with a delivered order, who hasn't reviewed yet, may post. */
+export const canReviewQuery = (productId: string) =>
+  queryOptions({
+    queryKey: ["reviews", "can-review", productId],
+    queryFn: ({ signal }) =>
+      apiFetch<{ can: boolean; delivered: boolean; already: boolean }>("/reviews/can-review", {
+        query: { product_id: productId },
+        signal,
+      }),
+    staleTime: 60_000,
+    retry: false,
+  });
+
+export const postReview = (body: {
+  product_id: string;
+  rating: number;
+  title?: string;
+  text?: string;
+  photos?: string[];
+  tags?: string[];
+}) => apiFetch<unknown>("/reviews", { method: "POST", json: body });
+
+export const voteReview = (reviewId: string, helpful: boolean) =>
+  apiFetch<{ helpful_count?: number }>(`/reviews/${reviewId}/vote`, {
+    method: "POST",
+    json: { helpful },
+  });

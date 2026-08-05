@@ -16,6 +16,11 @@ import { toast } from "sonner";
 import { useSettings } from "@/hooks/use-settings";
 import { ApiError } from "@/lib/api/client";
 import {
+  type CouponOffer,
+  applicableCoupons,
+  validateCoupon,
+} from "@/lib/api/catalog-extras";
+import {
   type Bill,
   type OrderAddress,
   type OrderItemIn,
@@ -82,6 +87,9 @@ function CheckoutPage() {
   const [quoting, setQuoting] = useState(false);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
+  const [couponNote, setCouponNote] = useState<{ ok: boolean; text: string } | null>(null);
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [offers, setOffers] = useState<CouponOffer[]>([]);
   const [paying, setPaying] = useState(false);
 
   const saved: OrderAddress[] = useMemo(() => (user?.addresses ?? []) as OrderAddress[], [user]);
@@ -118,6 +126,13 @@ function CheckoutPage() {
       return { ...EMPTY, name: user.name ?? "", phone: user.phone ?? "" };
     });
   }, [user]);
+
+  useEffect(() => {
+    if (!isAuthenticated || cartTotal <= 0) return;
+    applicableCoupons(cartTotal)
+      .then((r) => setOffers(r.offers ?? []))
+      .catch(() => setOffers([]));
+  }, [isAuthenticated, cartTotal]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -203,10 +218,34 @@ function CheckoutPage() {
     );
   };
 
-  const applyCoupon = () => {
+  // The bill is server-computed, but a bad code has to say so out loud.
+  const applyCoupon = async () => {
     const code = coupon.trim().toUpperCase();
-    setAppliedCoupon(code || null);
-    if (code) toast.success(`Coupon ${code} applied to the bill.`);
+    if (!code) {
+      setAppliedCoupon(null);
+      setCouponNote(null);
+      return;
+    }
+    setCheckingCoupon(true);
+    try {
+      const res = await validateCoupon(code, cartTotal);
+      if (res.valid) {
+        setAppliedCoupon(code);
+        setCouponNote({ ok: true, text: res.message ?? "Coupon applied." });
+        toast.success(res.message ?? `Coupon ${code} applied.`);
+      } else {
+        setAppliedCoupon(null);
+        setCouponNote({ ok: false, text: res.message ?? "That code isn't valid." });
+      }
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponNote({
+        ok: false,
+        text: err instanceof ApiError ? err.message : "Couldn't check that code.",
+      });
+    } finally {
+      setCheckingCoupon(false);
+    }
   };
 
   const handlePlaceOrder = async () => {
@@ -543,12 +582,58 @@ function CheckoutPage() {
                 />
                 <button
                   type="button"
-                  onClick={applyCoupon}
-                  className="shrink-0 rounded-full border border-marigold px-4 py-2 font-data text-2xs text-marigold transition-colors hover:bg-marigold hover:text-ink"
+                  onClick={() => void applyCoupon()}
+                  disabled={checkingCoupon}
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-marigold px-4 py-2 font-data text-2xs text-marigold transition-colors hover:bg-marigold hover:text-ink disabled:opacity-50"
                 >
+                  {checkingCoupon ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                   Apply
                 </button>
               </div>
+
+              {couponNote ? (
+                <p
+                  className={cn(
+                    "mt-2 font-data text-2xs",
+                    couponNote.ok ? "text-indigo" : "text-madder",
+                  )}
+                >
+                  {couponNote.text}
+                </p>
+              ) : null}
+
+              {offers.length && !appliedCoupon ? (
+                <ul className="mt-3 space-y-1.5">
+                  {offers.slice(0, 3).map((o) => (
+                    <li key={o.code}>
+                      <button
+                        type="button"
+                        disabled={!o.applicable}
+                        onClick={() => {
+                          setCoupon(o.code);
+                          setAppliedCoupon(o.code);
+                          setCouponNote({ ok: true, text: `You saved ${formatMoney(o.discount)}!` });
+                        }}
+                        className={cn(
+                          "flex w-full items-center justify-between gap-2 rounded-lg border px-2.5 py-1.5 text-left font-data text-2xs transition-colors",
+                          o.applicable
+                            ? "border-marigold/40 text-foreground hover:border-marigold"
+                            : "border-border text-muted-foreground/70",
+                        )}
+                      >
+                        <span className="truncate">
+                          <b>{o.code}</b> — {o.description || `${o.value} off`}
+                        </span>
+                        <span className="shrink-0">
+                          {o.applicable
+                            ? `− ${formatMoney(o.discount)}`
+                            : `add ${formatMoney(o.needed_more)}`}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
 
               <dl className="mt-4 space-y-2 font-data text-2xs">
                 <Row label="Subtotal" value={formatMoney(bill?.subtotal ?? cartTotal)} />

@@ -13,6 +13,8 @@ import { YarnStackCards } from "@/components/commerce/yarn-stack-cards";
 import { YarnWeightRail } from "@/components/commerce/yarn-weight-rail";
 
 import { HeroSlider } from "@/components/commerce/hero-slider";
+import { PromoBanners } from "@/components/commerce/promo-banners";
+import { AdminHomeSections } from "@/components/commerce/admin-home-sections";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,7 +83,11 @@ function Home() {
       </section>
 
       {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
+      <PromoBanners />
+
       <CategoryShowcase />
+
+      <AdminHomeSections />
 
       <NewArrivalsGallery />
 

@@ -7,6 +7,7 @@ import { DataError, EmptyState, GridSkeleton } from "@/components/data-state";
 import { Glass } from "@/components/ui/glass";
 import { useSettings } from "@/hooks/use-settings";
 import { activeCouponsQuery } from "@/lib/api/queries";
+import { BundleOffers } from "@/components/commerce/bundle-offers";
 import type { Coupon } from "@/lib/api/types";
 
 export const Route = createFileRoute("/offers")({
@@ -56,6 +57,8 @@ function OffersPage() {
           />
         )}
       </div>
+
+      <BundleOffers />
     </div>
   );
 }

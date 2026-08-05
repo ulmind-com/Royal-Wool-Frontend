@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Search as SearchIcon } from "lucide-react";
+import { Search as SearchIcon, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { ProductGrid } from "@/components/commerce/product-card";
 import { DataError, EmptyState, GridSkeleton } from "@/components/data-state";
 import { productsQuery } from "@/lib/api/queries";
+import { trendingSearchQuery } from "@/lib/api/catalog-extras";
 
 export const Route = createFileRoute("/search")({
   validateSearch: (search: Record<string, unknown>): { q?: string | undefined } => ({
@@ -75,6 +76,8 @@ function SearchPage() {
         </button>
       </form>
 
+      <TrendingTerms onPick={(term) => void navigate({ to: "/search", search: { q: term } })} />
+
       <div className="mt-12">
         {!q || q.trim().length < 2 ? (
           <EmptyState
@@ -99,6 +102,31 @@ function SearchPage() {
           />
         )}
       </div>
+    </div>
+  );
+}
+
+/** Terms the admin curates in the panel — the fastest route into the catalogue. */
+function TrendingTerms({ onPick }: { onPick: (term: string) => void }) {
+  const { data } = useQuery(trendingSearchQuery);
+  const terms = data?.terms ?? [];
+  if (terms.length === 0) return null;
+
+  return (
+    <div className="mt-5 flex flex-wrap items-center gap-2">
+      <span className="inline-flex items-center gap-1.5 font-data text-2xs uppercase tracking-wider text-marigold">
+        <TrendingUp className="h-3.5 w-3.5" /> Trending
+      </span>
+      {terms.map((t) => (
+        <button
+          key={t}
+          type="button"
+          onClick={() => onPick(t)}
+          className="rounded-full border border-border px-3 py-1.5 font-data text-2xs text-muted-foreground transition-colors hover:border-marigold hover:text-marigold"
+        >
+          {t}
+        </button>
+      ))}
     </div>
   );
 }
