@@ -23,6 +23,8 @@ import { WakeGate } from "@/components/wake-gate";
 import { Toaster } from "@/components/ui/sonner";
 import { LoginModal } from "@/components/auth/login-modal";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { useAuthStore } from "@/store/auth-store";
+import { useWishlistStore } from "@/store/wishlist-store";
 
 function NotFoundComponent() {
   return (
@@ -143,6 +145,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hydrateWishlist = useWishlistStore((s) => s.hydrate);
+  const clearWishlist = useWishlistStore((s) => s.clearLocal);
+
+  // Hearts across the catalogue need the saved ids before anything renders them.
+  useEffect(() => {
+    if (isAuthenticated) void hydrateWishlist();
+    else clearWishlist();
+  }, [isAuthenticated, hydrateWishlist, clearWishlist]);
 
   return (
     <QueryClientProvider client={queryClient}>

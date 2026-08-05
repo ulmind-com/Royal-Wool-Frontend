@@ -4,6 +4,8 @@ import { ChevronDown, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AssuranceBand } from "@/components/commerce/assurance-band";
+import { CertificationStrip } from "@/components/commerce/certification-strip";
+import { Provenance } from "@/components/commerce/provenance";
 import { ProductCard } from "@/components/commerce/product-card";
 import { ProductGallery } from "@/components/commerce/product-gallery";
 import { RatingStars } from "@/components/commerce/rating-stars";
@@ -19,6 +21,9 @@ import { toast } from "sonner";
 import { storeAssurances } from "@/lib/api/assurance";
 import { productQuery, productsQuery } from "@/lib/api/queries";
 import { productReviewsQuery } from "@/lib/api/reviews";
+import { similarProductsQuery } from "@/lib/api/catalog-extras";
+import { RestockNotify } from "@/components/commerce/restock-notify";
+import { WriteReview } from "@/components/commerce/write-review";
 import { productSpecs, washCare } from "@/lib/api/specs";
 
 import {
@@ -112,12 +117,13 @@ function ProductPage() {
   const care = product ? washCare(product) : null;
 
   const reviews = useQuery({ ...productReviewsQuery(id), enabled: Boolean(product) });
+  const similar = useQuery({ ...similarProductsQuery(id, 8), enabled: Boolean(product) });
   const related = useQuery({
     ...productsQuery({
       limit: 8,
       ...(product?.category_id ? { category_id: product.category_id } : {}),
     }),
-    enabled: Boolean(product),
+    enabled: Boolean(product) && !similar.data?.length,
   });
 
   if (isPending) {
@@ -143,7 +149,9 @@ function ProductPage() {
 
   const shareUrl = typeof window === "undefined" ? `/product/${id}` : window.location.href;
   const soldOut = stock === 0;
-  const relatedItems = (related.data ?? []).filter((p) => p.id !== product.id).slice(0, 4);
+  const relatedItems = (similar.data?.length ? similar.data : (related.data ?? []))
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4);
   const feed = reviews.data;
 
   const jsonLd = {
@@ -307,17 +315,21 @@ function ProductPage() {
             </fieldset>
           ) : null}
 
-          <p className="mt-6 font-data text-2xs text-muted-foreground">
-            {soldOut
-              ? "Sold out in this combination"
-              : stock <= (product.low_stock_threshold ?? 5)
-                ? `Only ${stock} left`
-                : "In stock"}
-          </p>
+          {soldOut ? (
+            <RestockNotify productId={product.id} colorName={color?.name ?? null} />
+          ) : (
+            <p className="mt-6 font-data text-2xs text-muted-foreground">
+              {stock <= (product.low_stock_threshold ?? 5) ? `Only ${stock} left` : "In stock"}
+            </p>
+          )}
 
           <SpecTiles specs={specs} />
 
           <AssuranceBand rows={storeAssurances(product, settings)} />
+
+          <Provenance product={product} />
+
+          <CertificationStrip />
 
           <div className="mt-8 divide-y divide-border border-y border-border">
             <Accordion title="Name & Address of Manufacturer">
@@ -335,9 +347,9 @@ function ProductPage() {
             </Accordion>
             <Accordion title="Returns">
               <p>
-                {product.returnable === false
-                  ? "This item is not returnable."
-                  : `Returnable within ${product.return_days ?? returnWindowDays ?? 7} days of delivery.`}
+                {product.returnable === false || !(product.return_days ?? returnWindowDays)
+                  ? "All sales are final — this item can't be returned or exchanged."
+                  : `Returnable within ${product.return_days ?? returnWindowDays} days of delivery.`}
               </p>
             </Accordion>
           </div>
@@ -349,6 +361,8 @@ function ProductPage() {
           </p>
         </div>
       </div>
+
+      <WriteReview productId={product.id} title={product.title} />
 
       {feed?.reviews.length ? (
         <section

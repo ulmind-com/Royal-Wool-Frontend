@@ -29,25 +29,37 @@ function ReturnsPolicyPage() {
       <Prose>
         <h2>Window</h2>
         <p>
-          {returnWindowDays != null
+          {returnWindowDays
             ? `You can raise a return within ${returnWindowDays} days of delivery. The return option stays visible on your order for as long as it's eligible.`
-            : "You can raise a return within the window shown on your order, and the return option stays visible for as long as it's eligible."}
+            : "All sales are final. Because every skein is wound to order from small dye batches, we don't accept returns or exchanges once an order is placed."}
         </p>
-        <h2>Condition</h2>
-        <p>
-          Skeins must be unused with the band intact. Wound or partially worked yarn can't be
-          resold, so it isn't returnable.
-        </p>
-        <h2>Refund vs exchange</h2>
-        <p>
-          Both are supported. Refunds go back to the original payment method; exchanges ship once we
-          receive the returned skeins.
-        </p>
+        {returnWindowDays ? (
+          <>
+            <h2>Condition</h2>
+            <p>
+              Skeins must be unused with the band intact. Wound or partially worked yarn can't be
+              resold, so it isn't returnable.
+            </p>
+            <h2>Refund vs exchange</h2>
+            <p>
+              Both are supported. Refunds go back to the original payment method; exchanges ship
+              once we receive the returned skeins.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2>Damaged or wrong delivery</h2>
+            <p>
+              If a parcel arrives damaged or isn't what you ordered, message us the same day with
+              photos and we'll make it right — that sits outside this policy.
+            </p>
+          </>
+        )}
         <h2>Cancellations</h2>
         <p>
-          {cancelWindowHours != null
+          {cancelWindowHours
             ? `Orders can be cancelled from the order page within ${cancelWindowHours} hours of placing them, as long as they haven't shipped.`
-            : "Orders can be cancelled from the order page as long as they haven't shipped."}
+            : "Once payment goes through, an order is confirmed and can't be cancelled — we start winding it straight away."}
         </p>
       </Prose>
     </PageShell>

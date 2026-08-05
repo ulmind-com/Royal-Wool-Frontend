@@ -4,6 +4,9 @@ import { useCartStore } from "@/store/cart-store";
 import { ShoppingBag, Plus, Minus, Trash2, ArrowRight, CheckCircle2, Sparkles, ShieldCheck, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { ProductCard } from "@/components/commerce/product-card";
+import { cartRecommendationsQuery } from "@/lib/api/catalog-extras";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -183,6 +186,31 @@ function CartPage() {
           </div>
         </div>
       )}
+
+      {items.length ? <CartRecommendations items={items} /> : null}
     </div>
+  );
+}
+
+/** "Goes well with" — the recommender scores these against the bag's contents. */
+function CartRecommendations({ items }: { items: { productId: string }[] }) {
+  const ids = items.map((i) => i.productId);
+  const { data } = useQuery(cartRecommendationsQuery(ids, 8));
+  const picks = (data ?? []).filter((p) => !ids.includes(p.id)).slice(0, 4);
+  if (picks.length === 0) return null;
+
+  return (
+    <section aria-label="Goes well with your bag" className="mt-14">
+      <h2 className="font-display text-xl font-light text-foreground sm:text-2xl">
+        Goes well with your bag
+      </h2>
+      <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        {picks.map((p) => (
+          <li key={p.id}>
+            <ProductCard product={p} className="h-full" />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

@@ -14,17 +14,19 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
+import { useWishlistStore } from "@/store/wishlist-store";
 
 /**
  * Catalogue card. Price and stock come exclusively from the server-resolved
  * variant fields (see lib/api/types) — never from product.price alone.
- * The wishlist heart is inert until auth lands in Phase 3.
  */
 export function ProductCard({ product, className }: { product: Product; className?: string }) {
   const { formatMoney } = useSettings();
   const navigate = useNavigate();
   const { isAuthenticated, setLoginModalOpen } = useAuthStore();
   const addItem = useCartStore((s) => s.addItem);
+  const wishlisted = useWishlistStore((s) => s.ids.includes(product.id));
+  const toggleWishlist = useWishlistStore((s) => s.toggle);
   const image = primaryImage(product);
   const struck = struckPrice(product);
   const off = discountPct(product);
@@ -56,6 +58,19 @@ export function ProductCard({ product, className }: { product: Product; classNam
   const handleAddToCart = () => {
     if (!pushToCart()) return;
     toast.success(`${product.title} added to your cart! 🛍️`);
+  };
+
+  const handleWishlist = async () => {
+    if (!isAuthenticated) {
+      setLoginModalOpen(true);
+      return;
+    }
+    try {
+      const added = await toggleWishlist(product.id);
+      toast.success(added ? "Saved to your wishlist ♥" : "Removed from your wishlist");
+    } catch {
+      toast.error("Couldn't update your wishlist — try again.");
+    }
   };
 
   const handleBuyNow = () => {
@@ -184,12 +199,21 @@ export function ProductCard({ product, className }: { product: Product; classNam
 
       <button
         type="button"
-        aria-label={`Save ${product.title} to wishlist`}
-        title="Wishlist opens up once you sign in"
+        onClick={handleWishlist}
+        aria-pressed={wishlisted}
+        aria-label={
+          wishlisted ? `Remove ${product.title} from wishlist` : `Save ${product.title} to wishlist`
+        }
+        title={isAuthenticated ? "Save to wishlist" : "Sign in to save this"}
         data-cursor="link"
-        className="absolute right-2.5 top-2.5 grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground backdrop-blur-md transition-colors hover:text-marigold sm:right-3 sm:top-3"
+        className={cn(
+          "absolute right-2.5 top-2.5 grid h-9 w-9 place-items-center rounded-full border backdrop-blur-md transition-colors sm:right-3 sm:top-3",
+          wishlisted
+            ? "border-madder/50 bg-madder/10 text-madder"
+            : "border-border text-muted-foreground hover:text-marigold",
+        )}
       >
-        <Heart className="h-4 w-4" />
+        <Heart className={cn("h-4 w-4", wishlisted && "fill-current")} />
       </button>
     </article>
   );

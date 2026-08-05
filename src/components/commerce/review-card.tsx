@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BadgeCheck, Quote } from "lucide-react";
+import { BadgeCheck, Quote, ThumbsUp } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { RatingStars } from "@/components/commerce/rating-stars";
-import { type Review, relativeDate } from "@/lib/api/reviews";
+import { type Review, relativeDate, voteReview } from "@/lib/api/reviews";
 import { API_BASE_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -166,7 +168,41 @@ export function ReviewCard({
           </div>
         )
       ) : null}
+
+      <HelpfulVote reviewId={review.id} />
     </motion.article>
+  );
+}
+
+/** "Was this helpful?" — the counter the admin panel reads back. */
+function HelpfulVote({ reviewId }: { reviewId: string }) {
+  const [voted, setVoted] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const vote = async () => {
+    if (voted || busy) return;
+    setBusy(true);
+    try {
+      await voteReview(reviewId, true);
+      setVoted(true);
+      toast.success("Thanks for the signal");
+    } catch {
+      toast.error("Couldn't record that vote.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={vote}
+      disabled={voted || busy}
+      className="mt-4 inline-flex items-center gap-1.5 font-data text-2xs text-muted-foreground transition-colors hover:text-marigold disabled:opacity-60"
+    >
+      <ThumbsUp className={cn("h-3.5 w-3.5", voted && "fill-current text-marigold")} />
+      {voted ? "Marked helpful" : "Helpful"}
+    </button>
   );
 }
 
