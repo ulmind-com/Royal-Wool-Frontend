@@ -15,21 +15,21 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(150deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.82) 100%)",
-  backdropFilter: "blur(28px) saturate(190%)",
-  WebkitBackdropFilter: "blur(28px) saturate(190%)",
-  border: "1px solid rgba(255, 255, 255, 0.96)",
+    "linear-gradient(150deg, rgba(255, 255, 255, 0.99) 0%, rgba(252, 251, 249, 0.96) 100%)",
+  backdropFilter: "blur(34px) saturate(200%)",
+  border: "1px solid rgba(255, 255, 255, 1)",
   boxShadow:
-    "0 18px 45px -10px rgba(15, 12, 20, 0.22), 0 6px 18px -4px rgba(15, 12, 20, 0.12), inset 0 2px 3px -1px rgba(255, 255, 255, 1), inset 0 -3px 6px -2px rgba(15, 12, 20, 0.12)",
+    "0 24px 55px -12px rgba(15, 12, 20, 0.30), 0 10px 24px -6px rgba(15, 12, 20, 0.18), inset 0 2.5px 3px -1px rgba(255, 255, 255, 1), inset 0 -4px 8px -2px rgba(15, 12, 20, 0.10)",
 };
 
-const LIQUID_GLASS_INDICATOR: React.CSSProperties = {
+const LIQUID_GLASS_INDICATOR = {
   background:
-    "linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(245, 243, 240, 0.9) 100%)",
+    "linear-gradient(135deg, rgba(233, 231, 228, 0.95) 0%, rgba(216, 213, 209, 0.92) 100%)",
   boxShadow:
-    "0 4px 14px -2px rgba(15, 12, 20, 0.22), 0 2px 6px -1px rgba(15, 12, 20, 0.14), inset 0 1.5px 2px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(15, 12, 20, 0.08)",
-  border: "1px solid rgba(255, 255, 255, 1)",
+    "inset 0 2px 4px rgba(15, 12, 20, 0.10), inset 0 -1.5px 2px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(15, 12, 20, 0.06)",
+  border: "1px solid rgba(255, 255, 255, 0.85)",
 };
+
 
 export function MobileBottomNav() {
   const navigate = useNavigate();
