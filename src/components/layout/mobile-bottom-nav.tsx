@@ -1,35 +1,34 @@
 import { useMemo, useState, useEffect } from "react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { Home, ShoppingBag, ShoppingCart, Heart, User, Search } from "lucide-react";
+import { motion, type MotionStyle } from "framer-motion";
+import { Home, ShoppingBag, ShoppingCart, Search, User } from "lucide-react";
 
 import { useCartStore } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 
 /**
- * Ultra-premium Adaptive Liquid Glass bottom navigation bar designed specifically for mobile view.
- * Features an architecturally balanced 5-item main capsule paired with a separate circular Search button beside it.
- * Precision-engineered to resize and look luxurious on ANY phone screen size (320px to 450px+).
+ * Reference-matched mobile bottom navigation.
+ * Single 5-item liquid-glass pill: Home / Shop / Cart / Search / Profile.
+ * Wide rounded active bubble, filled active icons, solid frosted capsule.
  */
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(150deg, rgba(255, 255, 255, 0.99) 0%, rgba(252, 251, 249, 0.96) 100%)",
-  backdropFilter: "blur(34px) saturate(200%)",
+    "linear-gradient(150deg, rgba(255, 255, 255, 1) 0%, rgba(250, 248, 245, 0.98) 100%)",
+  backdropFilter: "blur(40px) saturate(220%)",
   border: "1px solid rgba(255, 255, 255, 1)",
   boxShadow:
-    "0 24px 55px -12px rgba(15, 12, 20, 0.30), 0 10px 24px -6px rgba(15, 12, 20, 0.18), inset 0 2.5px 3px -1px rgba(255, 255, 255, 1), inset 0 -4px 8px -2px rgba(15, 12, 20, 0.10)",
+    "0 28px 60px -14px rgba(15, 12, 20, 0.28), 0 12px 28px -8px rgba(15, 12, 20, 0.18), inset 0 2px 3px -1px rgba(255, 255, 255, 1), inset 0 -4px 8px -2px rgba(15, 12, 20, 0.08)",
 };
 
-const LIQUID_GLASS_INDICATOR = {
+const LIQUID_GLASS_INDICATOR: MotionStyle = {
   background:
-    "linear-gradient(135deg, rgba(233, 231, 228, 0.95) 0%, rgba(216, 213, 209, 0.92) 100%)",
+    "linear-gradient(135deg, rgba(235, 233, 230, 0.98) 0%, rgba(220, 217, 213, 0.95) 100%)",
   boxShadow:
-    "inset 0 2px 4px rgba(15, 12, 20, 0.10), inset 0 -1.5px 2px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(15, 12, 20, 0.06)",
-  border: "1px solid rgba(255, 255, 255, 0.85)",
+    "inset 0 2.5px 5px rgba(15, 12, 20, 0.10), inset 0 -1.5px 2px rgba(255, 255, 255, 0.95), 0 1px 2px rgba(15, 12, 20, 0.05)",
+  border: "1px solid rgba(255, 255, 255, 0.9)",
 };
-
 
 export function MobileBottomNav() {
   const navigate = useNavigate();
@@ -50,16 +49,15 @@ export function MobileBottomNav() {
   const isUserAuthenticated = mounted ? isAuthenticated : false;
   const currentUser = mounted ? user : null;
 
-  // Determine active item inside the main liquid glass pill
   const activeId = useMemo(() => {
     if (isCartOpen || pathname === "/cart" || pathname === "/checkout") {
       return "cart";
     }
-    if (pathname.startsWith("/account/wishlist")) {
-      return "wishlist";
-    }
     if (pathname.startsWith("/account")) {
       return "profile";
+    }
+    if (pathname.startsWith("/search")) {
+      return "search";
     }
     if (
       pathname.startsWith("/collections") ||
@@ -75,8 +73,6 @@ export function MobileBottomNav() {
     return null;
   }, [pathname, isCartOpen]);
 
-  const isSearchActive = pathname.startsWith("/search") && !isCartOpen;
-
   const triggerHaptic = () => {
     try {
       if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
@@ -91,15 +87,15 @@ export function MobileBottomNav() {
     { id: "home", label: "Home", path: "/" },
     { id: "shop", label: "Shop", path: "/collections" },
     { id: "cart", label: "Cart", isCart: true },
-    { id: "wishlist", label: "Wishlist", path: "/account/wishlist" },
+    { id: "search", label: "Search", path: "/search" },
     { id: "profile", label: "Profile", path: "/account" },
   ];
 
   return (
-    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-2.5 xs:px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 max-w-[470px] mx-auto select-none">
-      {/* Main 5-Item Liquid Glass Capsule - sized (62px/68px) to prevent squashing on any phone */}
+    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 xs:px-4 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center max-w-[470px] mx-auto select-none">
+      {/* Single 5-Item Liquid Glass Capsule */}
       <div
-        className="flex-1 min-w-0 h-[62px] sm:h-[68px] pointer-events-auto grid grid-cols-5 items-center rounded-full px-1 xs:px-1.5 sm:px-2 transition-all duration-[var(--dur-standard)] isolate relative"
+        className="w-full pointer-events-auto grid grid-cols-5 items-center h-[64px] xs:h-[66px] sm:h-[72px] rounded-[36px] px-1.5 xs:px-2 sm:px-2.5 transition-all duration-[var(--dur-standard)] isolate relative"
         style={LIQUID_GLASS_CONTAINER}
       >
         {navItems.map((item) => {
@@ -123,17 +119,17 @@ export function MobileBottomNav() {
               aria-label={item.label}
               data-cursor="link"
             >
-              {/* Perfectly round sliding liquid bubble indicator */}
+              {/* Wide rounded active bubble */}
               {isActive && (
                 <motion.div
-                  layoutId="liquid-glass-tab-indicator"
-                  className="absolute h-[46px] w-[46px] xs:h-[48px] xs:w-[48px] sm:h-[52px] sm:w-[52px] rounded-full z-0 pointer-events-none"
+                  layoutId="mobile-bottom-nav-indicator"
+                  className="absolute h-[40px] w-[58px] xs:h-[42px] xs:w-[64px] sm:h-[46px] sm:w-[72px] rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] z-0 pointer-events-none"
                   style={LIQUID_GLASS_INDICATOR}
                   transition={{
                     type: "spring",
-                    stiffness: 450,
-                    damping: 32,
-                    mass: 0.8,
+                    stiffness: 420,
+                    damping: 30,
+                    mass: 0.85,
                   }}
                 />
               )}
@@ -143,10 +139,10 @@ export function MobileBottomNav() {
                 {item.id === "home" && (
                   <Home
                     className={cn(
-                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+                      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
-                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink stroke-[2.4px] drop-shadow-xs"
+                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -154,10 +150,10 @@ export function MobileBottomNav() {
                 {item.id === "shop" && (
                   <ShoppingBag
                     className={cn(
-                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+                      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
-                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
+                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -166,27 +162,27 @@ export function MobileBottomNav() {
                   <div className="relative grid place-items-center">
                     <ShoppingCart
                       className={cn(
-                        "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+                        "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
-                          ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
-                          : "text-ink/80 stroke-[2px] group-hover:text-ink"
+                          ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
+                          : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
                       )}
                     />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1.5 -right-2.5 z-30 grid h-4 min-w-[16px] sm:h-[18px] sm:min-w-[18px] place-items-center rounded-full bg-marigold px-1 font-data text-[10px] sm:text-[11px] font-extrabold text-black leading-none shadow-[0_2px_6px_rgba(255,178,0,0.5)] ring-1 ring-white/90 animate-in zoom-in-75">
+                      <span className="absolute -top-1.5 -right-2.5 z-30 grid h-[18px] min-w-[18px] xs:h-5 xs:min-w-[20px] place-items-center rounded-full bg-red-500 px-1 font-data text-[10px] xs:text-[11px] font-extrabold text-white leading-none shadow-[0_2px_6px_rgba(239,68,68,0.45)] ring-2 ring-white animate-in zoom-in-75">
                         {cartCount}
                       </span>
                     )}
                   </div>
                 )}
 
-                {item.id === "wishlist" && (
-                  <Heart
+                {item.id === "search" && (
+                  <Search
                     className={cn(
-                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+                      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-madder fill-madder stroke-[2.6px] drop-shadow-[0_2px_8px_rgba(225,53,53,0.35)]"
-                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
+                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -198,19 +194,19 @@ export function MobileBottomNav() {
                         src={currentUser.avatar}
                         alt={currentUser.name || "User profile"}
                         className={cn(
-                          "h-6 w-6 sm:h-[26px] sm:w-[26px] rounded-full object-cover transition-all duration-300",
+                          "h-6 w-6 xs:h-7 xs:w-7 sm:h-[26px] sm:w-[26px] rounded-full object-cover transition-all duration-300",
                           isActive
-                            ? "border-[2px] border-marigold scale-110 shadow-[0_2px_8px_rgba(255,178,0,0.45)] ring-1 ring-white/90"
+                            ? "border-[2px] border-ink scale-110 shadow-[0_2px_8px_rgba(15,12,20,0.18)] ring-1 ring-white/90"
                             : "border border-ink/30 opacity-90 group-hover:opacity-100"
                         )}
                       />
                     ) : (
                       <div
                         className={cn(
-                          "grid h-6 w-6 sm:h-[26px] sm:w-[26px] place-items-center rounded-full border text-[11px] font-black uppercase tracking-tight transition-all duration-300",
+                          "grid h-6 w-6 xs:h-7 xs:w-7 sm:h-[26px] sm:w-[26px] place-items-center rounded-full border text-[11px] font-black uppercase tracking-tight transition-all duration-300",
                           isActive
-                            ? "bg-marigold text-black border-white scale-110 shadow-[0_2px_8px_rgba(255,178,0,0.4)] ring-1 ring-white/80"
-                            : "bg-marigold/25 text-ink/90 border-ink/25"
+                            ? "bg-ink text-cream border-white scale-110 shadow-[0_2px_8px_rgba(15,12,20,0.18)] ring-1 ring-white/80"
+                            : "bg-ink/10 text-ink/90 border-ink/25"
                         )}
                       >
                         {currentUser?.name ? currentUser.name.charAt(0) : <User className="h-3.5 w-3.5 text-ink" />}
@@ -219,10 +215,10 @@ export function MobileBottomNav() {
                   ) : (
                     <User
                       className={cn(
-                        "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+                        "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
-                          ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
-                          : "text-ink/80 stroke-[2px] group-hover:text-ink"
+                          ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
+                          : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
                       )}
                     />
                   )
@@ -232,36 +228,6 @@ export function MobileBottomNav() {
           );
         })}
       </div>
-
-      {/* Separate Circular Liquid Glass Search Button - matches capsule height (62px/68px) */}
-      <button
-        type="button"
-        onClick={() => {
-          triggerHaptic();
-          closeCart();
-          navigate({ to: "/search" });
-        }}
-        className={cn(
-          "h-[62px] w-[62px] sm:h-[68px] sm:w-[68px] shrink-0 pointer-events-auto grid place-items-center rounded-full transition-all duration-[var(--dur-standard)] isolate relative outline-none active:scale-95 group",
-          isSearchActive && "ring-1 ring-white"
-        )}
-        style={LIQUID_GLASS_CONTAINER}
-        aria-label="Search yarns"
-        data-cursor="link"
-      >
-        {isSearchActive && (
-          <div
-            className="absolute h-[46px] w-[46px] xs:h-[48px] xs:w-[48px] sm:h-[52px] sm:w-[52px] rounded-full z-0 pointer-events-none animate-in fade-in duration-300"
-            style={LIQUID_GLASS_INDICATOR}
-          />
-        )}
-        <Search
-          className={cn(
-            "relative z-10 h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
-            isSearchActive ? "scale-110 text-ink stroke-[2.6px] drop-shadow-xs" : "text-ink/80 stroke-[2px] group-hover:text-ink"
-          )}
-        />
-      </button>
     </div>
   );
 }
