@@ -17,3 +17,6 @@ No change to nav items, routes, cart toggle behaviour, or anything above the nav
 ## Technical notes
 
 Single file: `src/components/layout/mobile-bottom-nav.tsx`. Edit the `LIQUID_GLASS_CONTAINER` and `LIQUID_GLASS_INDICATOR` style objects plus the height/size/gap utility classes. Keep `backdropFilter` written once (no hand-written `-webkit-` twin) so the production build keeps the standard property. Verify with a Playwright pass at 320 / 375 / 430 px widths.
+
+Also fix an existing type error in this file: the indicator's style object is typed `React.CSSProperties` but passed to a `motion.div`, which fails under `exactOptionalPropertyTypes`. Type the indicator style as Motion's `MotionStyle` (or drop the annotation and let it infer) so the build passes.
+
