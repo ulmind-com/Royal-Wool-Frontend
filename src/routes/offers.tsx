@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Check, Package2, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { DataError, EmptyState, GridSkeleton } from "@/components/data-state";
@@ -12,6 +12,90 @@ import { activeCouponsQuery, productsQuery } from "@/lib/api/queries";
 import type { Coupon, Product } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
+
+/** Hero slides — cutout skeins fanned per theme. Copy and shades rotate on
+ *  their own; the imagery is decorative. */
+const HERO_SLIDES = [
+  {
+    badge: "Bundles & offers",
+    title: "Buy them in sets. Pay the bundle price.",
+    note: "Pick your shades, add the set, and the flat price lands on the bill. Coupons stack on top — applied automatically at checkout.",
+    skeins: [
+      { src: "/assets/yarn-cutout/delight-pink.webp", left: "6%", top: "14%", rotate: -12 },
+      { src: "/assets/yarn-cutout/candy-lilac.webp", left: "30%", top: "2%", rotate: -4 },
+      { src: "/assets/yarn-cutout/hobby-yellow.webp", left: "54%", top: "12%", rotate: 9 },
+      { src: "/assets/yarn-cutout/candy-blue.webp", left: "18%", top: "44%", rotate: 6 },
+      { src: "/assets/yarn-cutout/delight-rust.webp", left: "44%", top: "50%", rotate: -8 },
+    ],
+  },
+  {
+    badge: "Coupons",
+    title: "Your best code, applied for you.",
+    note: "No code to hunt for. Checkout reads every live coupon and keeps the one that saves you the most.",
+    skeins: [
+      { src: "/assets/yarn-cutout/hobby-red.webp", left: "8%", top: "10%", rotate: 10 },
+      { src: "/assets/yarn-cutout/delight-coral.webp", left: "33%", top: "4%", rotate: -6 },
+      { src: "/assets/yarn-cutout/candy-black.webp", left: "56%", top: "16%", rotate: 7 },
+      { src: "/assets/yarn-cutout/hobby-green.webp", left: "20%", top: "46%", rotate: -9 },
+      { src: "/assets/yarn-cutout/candy-lilac.webp", left: "46%", top: "48%", rotate: 5 },
+    ],
+  },
+  {
+    badge: "Free delivery",
+    title: "Cross ₹1,500 and we ship it free.",
+    note: "Pan-India dispatch from West Bengal, tracked end to end. Bundles are the quickest way past the threshold.",
+    skeins: [
+      { src: "/assets/yarn-cutout/candy-blue.webp", left: "5%", top: "16%", rotate: -8 },
+      { src: "/assets/yarn-cutout/hobby-yellow.webp", left: "29%", top: "3%", rotate: 6 },
+      { src: "/assets/yarn-cutout/delight-rust.webp", left: "55%", top: "12%", rotate: -5 },
+      { src: "/assets/yarn-cutout/delight-pink.webp", left: "17%", top: "45%", rotate: 11 },
+      { src: "/assets/yarn-cutout/hobby-green.webp", left: "45%", top: "47%", rotate: -7 },
+    ],
+  },
+];
+
+/** Shown only while the admin has no live bundle — a worked example of what a
+ *  bundle looks like, never addable. The moment /combos returns one, this goes. */
+const PREVIEW_BUNDLES = [
+  {
+    name: "Pastel Trio",
+    qty: 3,
+    price: 249,
+    was: 390,
+    note: "Any three pastel skeins — baby blankets and amigurumi.",
+    shades: [
+      "/assets/yarn-cutout/delight-pink.webp",
+      "/assets/yarn-cutout/candy-lilac.webp",
+      "/assets/yarn-cutout/candy-blue.webp",
+    ],
+  },
+  {
+    name: "Warm Five",
+    qty: 5,
+    price: 399,
+    was: 650,
+    note: "Rust, coral and marigold shades wound for stitch definition.",
+    shades: [
+      "/assets/yarn-cutout/delight-rust.webp",
+      "/assets/yarn-cutout/delight-coral.webp",
+      "/assets/yarn-cutout/hobby-yellow.webp",
+      "/assets/yarn-cutout/hobby-red.webp",
+    ],
+  },
+  {
+    name: "Studio Six",
+    qty: 6,
+    price: 449,
+    was: 780,
+    note: "A full palette for one project — mix any six from the range.",
+    shades: [
+      "/assets/yarn-cutout/hobby-green.webp",
+      "/assets/yarn-cutout/candy-black.webp",
+      "/assets/yarn-cutout/delight-pink.webp",
+      "/assets/yarn-cutout/candy-blue.webp",
+    ],
+  },
+];
 
 export const Route = createFileRoute("/offers")({
   head: () => ({
@@ -33,42 +117,129 @@ export const Route = createFileRoute("/offers")({
 
 function OffersPage() {
   const coupons = useQuery(activeCouponsQuery);
+  const [slide, setSlide] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  // Auto-advance the hero; hovering (or focusing a control) holds it still.
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(() => setSlide((i) => (i + 1) % HERO_SLIDES.length), 5000);
+    return () => clearInterval(timer);
+  }, [paused]);
+
+  const active = HERO_SLIDES[slide]!;
   const combos = useQuery(combosQuery);
-  const catalogue = useQuery(productsQuery({ limit: 200 }));
+  const catalogue = useQuery(productsQuery({ limit: 100 }));
 
   const liveCombos = (combos.data ?? []).filter(comboIsLive);
 
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-20 pt-10 sm:px-6 sm:pb-28 sm:pt-16 lg:px-10">
-      {/* ── Masthead ───────────────────────────────────────────────── */}
-      <header className="relative overflow-hidden rounded-3xl border border-border px-6 py-12 sm:px-12 sm:py-16">
+      {/* ── Hero ──────────────────────────────────────────────────── */}
+      <header
+        className="relative overflow-hidden rounded-3xl border border-border"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
         <div
-          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-3xl"
-          style={{ background: "color-mix(in oklab, var(--marigold) 22%, transparent)" }}
+          className="pointer-events-none absolute -right-32 -top-32 h-[26rem] w-[26rem] rounded-full blur-3xl"
+          style={{ background: "color-mix(in oklab, var(--marigold) 26%, transparent)" }}
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full blur-3xl"
-          style={{ background: "color-mix(in oklab, var(--indigo) 14%, transparent)" }}
+          className="pointer-events-none absolute -bottom-40 -left-24 h-[24rem] w-[24rem] rounded-full blur-3xl"
+          style={{ background: "color-mix(in oklab, var(--indigo) 16%, transparent)" }}
           aria-hidden
         />
 
-        <div className="relative">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-marigold/40 px-3 py-1 font-data text-2xs uppercase tracking-[0.18em] text-marigold">
-            <Sparkles className="h-3 w-3" /> Offers
-          </span>
-          <h1 className="mt-5 max-w-3xl font-display text-4xl font-light leading-[1.05] tracking-[-0.03em] text-foreground sm:text-6xl">
-            Every saving we're running, on one shelf
-          </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Coupons apply themselves at checkout — the best one always wins. Bundles are built
-            here: pick your shades, add the set, and the bundle price lands on the bill.
-          </p>
+        <div className="relative grid items-center gap-6 px-6 py-8 sm:px-10 sm:py-10 lg:grid-cols-[1.1fr_0.9fr]">
+          {/* copy — keyed so each slide fades in on its own */}
+          <div key={slide} className="animate-[rw-slide-in_600ms_ease-out]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-marigold/40 px-3 py-1 font-data text-2xs uppercase tracking-[0.18em] text-marigold">
+              <Sparkles className="h-3 w-3" /> {active.badge}
+            </span>
+            <h1 className="mt-4 max-w-xl font-display text-3xl font-light leading-[1.06] tracking-[-0.03em] text-foreground sm:text-[2.75rem]">
+              {active.title}
+            </h1>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+              {active.note}
+            </p>
+
+            <div className="mt-5 flex flex-wrap items-center gap-2.5">
+              <a
+                href="#bundles"
+                data-cursor="link"
+                className="sheen inline-flex items-center gap-2 rounded-full bg-madder px-5 py-2.5 font-data text-2xs text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                <Package2 className="h-4 w-4" /> Build a bundle
+              </a>
+              <Link
+                to="/collections"
+                data-cursor="link"
+                className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 font-data text-2xs text-foreground transition-colors hover:border-marigold hover:text-marigold"
+              >
+                Browse every yarn
+              </Link>
+            </div>
+
+            {/* slide dots */}
+            <div className="mt-6 flex items-center gap-2">
+              {HERO_SLIDES.map((sl, i) => (
+                <button
+                  key={sl.badge}
+                  type="button"
+                  onClick={() => setSlide(i)}
+                  aria-label={`Show ${sl.badge}`}
+                  aria-current={i === slide}
+                  data-cursor="link"
+                  className={cn(
+                    "h-1 rounded-full transition-all duration-300",
+                    i === slide ? "w-8 bg-marigold" : "w-4 bg-border hover:bg-marigold/50",
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* skein stack — one fan per slide, cross-faded */}
+          <div className="relative mx-auto hidden h-52 w-full max-w-sm sm:block">
+            <div
+              className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
+              style={{ background: "color-mix(in oklab, var(--marigold) 30%, transparent)" }}
+              aria-hidden
+            />
+            {HERO_SLIDES.map((sl, si) => (
+              <div
+                key={sl.badge}
+                className={cn(
+                  "absolute inset-0 transition-opacity duration-700",
+                  si === slide ? "opacity-100" : "opacity-0",
+                )}
+                aria-hidden
+              >
+                {sl.skeins.map((sk, i) => (
+                  <img
+                    key={sk.src}
+                    src={sk.src}
+                    alt=""
+                    loading="lazy"
+                    className="absolute w-[38%] drop-shadow-xl transition-transform duration-500 hover:-translate-y-1.5"
+                    style={{
+                      left: sk.left,
+                      top: sk.top,
+                      transform: `rotate(${sk.rotate}deg)`,
+                      zIndex: sl.skeins.length - i,
+                    }}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </header>
 
       {/* ── Bundles ────────────────────────────────────────────────── */}
-      <section className="mt-14 sm:mt-20" aria-label="Yarn bundles">
+      <section id="bundles" className="mt-14 scroll-mt-24 sm:mt-20" aria-label="Yarn bundles">
         <SectionHead
           eyebrow="01 · Bundles"
           title="Build a bundle"
@@ -81,16 +252,13 @@ function OffersPage() {
           ) : combos.isError ? (
             <DataError error={combos.error} retry={() => void combos.refetch()} />
           ) : liveCombos.length ? (
-            <div className="grid gap-6 xl:grid-cols-2">
+            <div className="grid max-w-5xl items-start gap-5 lg:grid-cols-2">
               {liveCombos.map((c) => (
                 <BundleCard key={c.id} combo={c} catalogue={catalogue.data ?? []} />
               ))}
             </div>
           ) : (
-            <EmptyState
-              title="No bundles running right now"
-              note="New bundles drop with each dye batch — coupons below still apply."
-            />
+            <PreviewBundles />
           )}
         </div>
       </section>
@@ -144,23 +312,34 @@ function SectionHead({ eyebrow, title, note }: { eyebrow: string; title: string;
 
 function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }) {
   const { formatMoney } = useSettings();
+  const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
-  const openCart = useCartStore((s) => s.openCart);
   const [picked, setPicked] = useState<string[]>([]);
 
-  const eligible = useMemo(
-    () => catalogue.filter((p) => (combo.product_ids ?? []).includes(p.id)),
-    [catalogue, combo.product_ids],
-  );
+  // A bundle either lists its products or qualifies them by skein weight —
+  // both resolve to the same pickable set here.
+  const eligible = useMemo(() => {
+    const ids = combo.product_ids ?? [];
+    if (ids.length) return catalogue.filter((p) => ids.includes(p.id));
+    if (combo.weight_target != null) {
+      return catalogue.filter((p) => Number(p.skein_weight) === Number(combo.weight_target));
+    }
+    return [];
+  }, [catalogue, combo.product_ids, combo.weight_target]);
 
   const priceOf = (p: Product) => p.final_price ?? p.price;
   const need = combo.qty;
-  const chosen = picked.length;
-  const ready = chosen === need;
+  // When the admin pinned exactly as many yarns as the bundle needs, the set is
+  // already decided — nothing for the shopper to choose.
+  const fixed = eligible.length > 0 && eligible.length <= need;
+  const chosen = fixed ? eligible.length : picked.length;
+  const ready = fixed || chosen === need;
 
   // What the picked set would normally cost. Before anything is picked we show
   // the dearest qualifying set, so the headline saving is never overstated.
-  const regular = ready
+  const regular = fixed
+    ? eligible.reduce((sum, p) => sum + priceOf(p), 0)
+    : ready
     ? picked.reduce((sum, id) => {
         const p = eligible.find((x) => x.id === id);
         return sum + (p ? priceOf(p) : 0);
@@ -180,10 +359,13 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
     });
   };
 
-  const addBundle = () => {
-    picked.forEach((id) => {
-      const p = eligible.find((x) => x.id === id);
-      if (!p) return;
+  /** Straight to checkout with the set in the bag — no cart detour. */
+  const buyBundle = () => {
+    const chosenProducts = fixed
+      ? eligible
+      : picked.map((id) => eligible.find((x) => x.id === id)).filter(Boolean as unknown as (p: Product | undefined) => p is Product);
+
+    chosenProducts.forEach((p) => {
       addItem({
         productId: p.id,
         title: p.title,
@@ -193,8 +375,8 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
       });
     });
     setPicked([]);
-    openCart();
     toast.success(`${combo.name} added — bundle price applies at checkout.`);
+    void navigate({ to: "/checkout" });
   };
 
   return (
@@ -239,32 +421,37 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
           <>
             <div className="flex items-center justify-between gap-3">
               <p className="font-data text-2xs uppercase tracking-[0.14em] text-muted-foreground">
-                Pick your shades
+                {fixed ? "What's in the bundle" : "Pick your shades"}
               </p>
-              <p className="font-data text-2xs text-foreground">
-                {chosen} / {need} chosen
-              </p>
+              {fixed ? null : (
+                <p className="font-data text-2xs text-foreground">
+                  {chosen} / {need} chosen
+                </p>
+              )}
             </div>
 
-            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border">
-              <div
-                className="h-full rounded-full bg-marigold transition-[width] duration-300"
-                style={{ width: `${Math.min(100, (chosen / need) * 100)}%` }}
-              />
-            </div>
+            {fixed ? null : (
+              <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-border">
+                <div
+                  className="h-full rounded-full bg-marigold transition-[width] duration-300"
+                  style={{ width: `${Math.min(100, (chosen / need) * 100)}%` }}
+                />
+              </div>
+            )}
 
-            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <ul className="mt-3 flex flex-wrap justify-center gap-2">
               {eligible.map((p) => {
-                const on = picked.includes(p.id);
+                const on = fixed || picked.includes(p.id);
                 return (
-                  <li key={p.id}>
+                  <li key={p.id} className="w-[92px] sm:w-[100px]">
                     <button
                       type="button"
-                      onClick={() => toggle(p.id)}
-                      data-cursor="link"
+                      onClick={fixed ? undefined : () => toggle(p.id)}
+                      disabled={fixed}
+                      data-cursor={fixed ? undefined : "link"}
                       aria-pressed={on}
                       className={cn(
-                        "group w-full overflow-hidden rounded-2xl border text-left transition-all",
+                        "group w-full overflow-hidden rounded-xl border text-left transition-all",
                         on
                           ? "border-marigold shadow-[0_0_0_1px_var(--marigold)]"
                           : "border-border hover:border-marigold/60",
@@ -281,18 +468,18 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
                         ) : null}
                         <span
                           className={cn(
-                            "absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full border transition-all",
+                            "absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border transition-all",
                             on
                               ? "border-marigold bg-marigold text-ink"
                               : "border-border bg-background/80 text-transparent",
                           )}
                           aria-hidden
                         >
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="h-3 w-3" />
                         </span>
                       </span>
-                      <span className="block px-2.5 py-2">
-                        <span className="line-clamp-2 text-2xs text-foreground">{p.title}</span>
+                      <span className="block px-2 py-1.5">
+                        <span className="line-clamp-1 text-2xs text-foreground">{p.title}</span>
                         <span className="mt-0.5 block font-data text-2xs text-muted-foreground">
                           {formatMoney(priceOf(p))}
                         </span>
@@ -315,21 +502,23 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-4 sm:px-6">
         <p className="font-data text-2xs text-muted-foreground">
           {eligible.length
-            ? ready
-              ? `Bundle ready · ${formatMoney(combo.price)} at checkout`
-              : `Choose ${need - chosen} more to unlock this price`
+            ? fixed
+              ? `${eligible.length} yarns · ${formatMoney(combo.price)} at checkout`
+              : ready
+                ? `Bundle ready · ${formatMoney(combo.price)} at checkout`
+                : `Choose ${need - chosen} more to unlock this price`
             : "Bundle price is applied automatically"}
         </p>
 
         {eligible.length ? (
           <button
             type="button"
-            onClick={addBundle}
+            onClick={buyBundle}
             disabled={!ready}
             data-cursor="link"
             className="sheen inline-flex shrink-0 items-center gap-2 rounded-full bg-madder px-5 py-2.5 font-data text-2xs text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            <Package2 className="h-3.5 w-3.5" /> Add bundle to bag
+            <Package2 className="h-3.5 w-3.5" /> Buy this bundle
           </button>
         ) : (
           <Link
@@ -342,6 +531,87 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
         )}
       </div>
     </article>
+  );
+}
+
+/* ── Preview (no live bundle yet) ─────────────────────────────────── */
+
+function PreviewBundles() {
+  const { formatMoney } = useSettings();
+
+  return (
+    <div>
+      <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 font-data text-2xs text-muted-foreground">
+        <Package2 className="h-3.5 w-3.5 text-marigold" />
+        No bundle is live yet — here is how one will look
+      </p>
+
+      <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {PREVIEW_BUNDLES.map((b) => (
+          <li
+            key={b.name}
+            className="flex flex-col overflow-hidden rounded-3xl border border-dashed border-border"
+          >
+            <div
+              className="relative flex h-44 items-center justify-center overflow-hidden"
+              style={{ background: "color-mix(in oklab, var(--marigold) 8%, transparent)" }}
+            >
+              <div
+                className="absolute h-32 w-32 rounded-full blur-2xl"
+                style={{ background: "color-mix(in oklab, var(--marigold) 34%, transparent)" }}
+                aria-hidden
+              />
+              {b.shades.map((src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className="relative h-24 w-24 object-contain drop-shadow-lg"
+                  style={{
+                    marginLeft: i === 0 ? 0 : "-1.6rem",
+                    transform: `rotate(${(i - 1.5) * 7}deg)`,
+                    zIndex: b.shades.length - i,
+                  }}
+                />
+              ))}
+              <span className="absolute left-3 top-3 rounded-full bg-background/85 px-2.5 py-1 font-data text-2xs uppercase tracking-wider text-muted-foreground">
+                Preview
+              </span>
+            </div>
+
+            <div className="flex flex-1 flex-col px-5 py-4">
+              <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-marigold/15 px-2.5 py-1 font-data text-2xs uppercase tracking-wider text-marigold">
+                <Package2 className="h-3.5 w-3.5" /> Any {b.qty}
+              </span>
+              <h3 className="mt-2.5 font-display text-xl font-light text-foreground">{b.name}</h3>
+              <p className="mt-1 flex-1 text-xs leading-relaxed text-muted-foreground">{b.note}</p>
+
+              <div className="mt-4 flex items-baseline gap-2">
+                <span className="font-display text-2xl font-light text-foreground">
+                  {formatMoney(b.price)}
+                </span>
+                <span className="font-data text-2xs text-muted-foreground/70 line-through">
+                  {formatMoney(b.was)}
+                </span>
+                <span className="ml-auto font-data text-2xs text-indigo">
+                  Save {formatMoney(b.was - b.price)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                disabled
+                className="mt-4 w-full rounded-full border border-border px-5 py-2.5 font-data text-2xs text-muted-foreground opacity-60"
+              >
+                Coming soon
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

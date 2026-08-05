@@ -82,6 +82,8 @@ export interface Product {
   returnable?: boolean;
   return_days?: number;
   low_stock_threshold?: number;
+  /** Grams per skein — bundles can qualify products by this. */
+  skein_weight?: number | null;
   /** Server-computed display fields — always prefer these over raw price. */
   final_price?: number;
   struck_price?: number | null;

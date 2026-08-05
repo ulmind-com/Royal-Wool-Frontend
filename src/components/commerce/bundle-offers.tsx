@@ -14,7 +14,7 @@ import { productsQuery } from "@/lib/api/queries";
 export function BundleOffers() {
   const { formatMoney } = useSettings();
   const { data } = useQuery(combosQuery);
-  const { data: catalogue } = useQuery(productsQuery({ limit: 200 }));
+  const { data: catalogue } = useQuery(productsQuery({ limit: 100 }));
 
   const combos = (data ?? []).filter(comboIsLive);
   if (combos.length === 0) return null;

@@ -658,13 +658,13 @@ function CheckoutPage() {
         </div>
 
         {/* ── Right: order summary ──────────────────────────────────── */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside className="lg:self-start">
           <div className="overflow-hidden rounded-2xl border border-border">
             <div className="border-b border-border px-4 py-3">
               <h2 className="font-display text-lg font-light text-foreground">Order summary</h2>
             </div>
 
-            <ul className="max-h-[330px] divide-y divide-border overflow-y-auto">
+            <ul className="divide-y divide-border">
               {items.map((item) => (
                 <li key={item.id} className="flex gap-3 p-3">
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary">
