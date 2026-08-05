@@ -14,11 +14,10 @@ import {
 import { toast } from "sonner";
 
 import { useSettings } from "@/hooks/use-settings";
-import { ApiError } from "@/lib/api/client";
+import { ApiError, apiFetch } from "@/lib/api/client";
 import {
   type CouponOffer,
   applicableCoupons,
-  validateCoupon,
 } from "@/lib/api/catalog-extras";
 import {
   type Bill,
@@ -30,6 +29,7 @@ import {
   reverseGeocode,
   verifyPayment,
 } from "@/lib/api/orders";
+import { CouponTicket } from "@/components/commerce/coupon-ticket";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
@@ -62,6 +62,53 @@ const EMPTY: OrderAddress = {
   lng: null,
 };
 
+/** GST and the delivery slab both key off this, so it must be a real state —
+ *  free text like "India" would silently price the order as interstate. */
+const INDIAN_STATES = [
+  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar",
+  "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa",
+  "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka",
+  "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+  "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+];
+
+/** First two digits of an Indian PIN pin down the postal circle. Used only to
+ *  warn on a state/pincode mismatch — a wrong state silently flips CGST+SGST to
+ *  IGST and swaps the delivery slab. */
+const PIN_PREFIX_STATES: Record<string, string[]> = {
+  "11": ["Delhi"],
+  "12": ["Haryana"], "13": ["Haryana"],
+  "14": ["Punjab"], "15": ["Punjab"], "16": ["Punjab", "Chandigarh", "Haryana"],
+  "17": ["Himachal Pradesh"],
+  "18": ["Jammu and Kashmir"], "19": ["Jammu and Kashmir", "Ladakh"],
+  "20": ["Uttar Pradesh"], "21": ["Uttar Pradesh"], "22": ["Uttar Pradesh"],
+  "23": ["Uttar Pradesh"], "27": ["Uttar Pradesh"], "28": ["Uttar Pradesh"],
+  "24": ["Uttar Pradesh", "Uttarakhand"], "25": ["Uttar Pradesh", "Uttarakhand"],
+  "26": ["Uttar Pradesh", "Uttarakhand"],
+  "30": ["Rajasthan"], "31": ["Rajasthan"], "32": ["Rajasthan"], "33": ["Rajasthan"],
+  "34": ["Rajasthan"],
+  "36": ["Gujarat"], "37": ["Gujarat"], "38": ["Gujarat"],
+  "39": ["Gujarat", "Dadra and Nagar Haveli and Daman and Diu"],
+  "40": ["Maharashtra"], "41": ["Maharashtra"], "42": ["Maharashtra"], "43": ["Maharashtra"],
+  "44": ["Maharashtra"],
+  "45": ["Madhya Pradesh"], "46": ["Madhya Pradesh"], "47": ["Madhya Pradesh"],
+  "48": ["Madhya Pradesh", "Chhattisgarh"], "49": ["Chhattisgarh", "Madhya Pradesh"],
+  "50": ["Telangana"], "51": ["Andhra Pradesh"], "52": ["Andhra Pradesh", "Telangana"],
+  "53": ["Andhra Pradesh"],
+  "56": ["Karnataka"], "57": ["Karnataka"], "58": ["Karnataka"], "59": ["Karnataka"],
+  "60": ["Tamil Nadu", "Puducherry"], "61": ["Tamil Nadu"], "62": ["Tamil Nadu"], "63": ["Tamil Nadu"],
+  "64": ["Tamil Nadu"],
+  "67": ["Kerala"], "68": ["Kerala"], "69": ["Kerala", "Lakshadweep"],
+  "70": ["West Bengal"], "71": ["West Bengal"], "72": ["West Bengal"],
+  "73": ["West Bengal", "Sikkim"], "74": ["West Bengal", "Andaman and Nicobar Islands"],
+  "75": ["Odisha"], "76": ["Odisha"], "77": ["Odisha"],
+  "78": ["Assam"],
+  "79": ["Arunachal Pradesh", "Meghalaya", "Manipur", "Mizoram", "Nagaland", "Tripura"],
+  "80": ["Bihar"], "81": ["Bihar"], "82": ["Bihar", "Jharkhand"],
+  "83": ["Jharkhand"], "84": ["Bihar"], "85": ["Bihar"],
+};
+
 interface RazorpayResponse {
   razorpay_order_id: string;
   razorpay_payment_id: string;
@@ -71,13 +118,12 @@ interface RazorpayResponse {
 function CheckoutPage() {
   const navigate = useNavigate();
   const { formatMoney, codEnabled } = useSettings();
-  const { user, isAuthenticated, setLoginModalOpen } = useAuthStore();
+  const { user, isAuthenticated, setLoginModalOpen, setUser } = useAuthStore();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
 
   const [address, setAddress] = useState<OrderAddress>(EMPTY);
   const [savedIndex, setSavedIndex] = useState<number | null>(null);
-  const [coupon, setCoupon] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const method = "online";
 
@@ -86,8 +132,8 @@ function CheckoutPage() {
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
   const [couponNote, setCouponNote] = useState<{ ok: boolean; text: string } | null>(null);
-  const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [offers, setOffers] = useState<CouponOffer[]>([]);
+  const [couponTouched, setCouponTouched] = useState(false);
   const [paying, setPaying] = useState(false);
 
   const saved: OrderAddress[] = useMemo(() => (user?.addresses ?? []) as OrderAddress[], [user]);
@@ -106,14 +152,21 @@ function CheckoutPage() {
   const cartTotal = useMemo(() => items.reduce((sum, i) => sum + i.price * i.qty, 0), [items]);
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
 
+  // Before the address is complete there is no server quote yet — still show
+  // what the applied coupon takes off, so the total reflects the saving.
+  const appliedOffer = offers.find((o) => o.code === appliedCoupon);
+  const shownDiscount = bill ? bill.discount : (appliedOffer?.discount ?? 0);
+  const shownTotal = bill ? bill.total : Math.max(0, cartTotal - shownDiscount);
+
   // Prefill from the signed-in profile, preferring a saved address.
   useEffect(() => {
     if (!user) return;
     setAddress((prev) => {
       if (prev.house || prev.pincode) return prev;
-      const first = (user.addresses ?? [])[0] as OrderAddress | undefined;
+      const list = (user.addresses ?? []) as OrderAddress[];
+      const first = list[list.length - 1];
       if (first) {
-        setSavedIndex(0);
+        setSavedIndex(list.length - 1);
         return {
           ...EMPTY,
           ...first,
@@ -125,14 +178,61 @@ function CheckoutPage() {
     });
   }, [user]);
 
+  // Pull the live coupon pool and auto-apply the best saving, unless the
+  // shopper has already picked (or cleared) a code themselves.
   useEffect(() => {
     if (!isAuthenticated || cartTotal <= 0) return;
     applicableCoupons(cartTotal)
-      .then((r) => setOffers(r.offers ?? []))
+      .then((r) => {
+        setOffers(r.offers ?? []);
+        if (couponTouched || !r.best_code) return;
+        setAppliedCoupon(r.best_code);
+        setCouponNote({
+          ok: true,
+          text: `Best offer ${r.best_code} applied automatically — you save ${formatMoney(r.best_discount)}.`,
+        });
+      })
       .catch(() => setOffers([]));
-  }, [isAuthenticated, cartTotal]);
+  }, [isAuthenticated, cartTotal, couponTouched, formatMoney]);
+
+  // Auto-pin on arrival: no saved address means the shopper would otherwise have
+  // to type a city/state we can read off their coordinates. State drives both the
+  // delivery slab (West Bengal vs rest of India) and CGST+SGST vs IGST, so the
+  // whole bill settles without a single tap.
+  const autoLocated = useRef(false);
+  useEffect(() => {
+    if (!isAuthenticated || autoLocated.current) return;
+    if (address.pincode || address.city || saved.length) return;
+    autoLocated.current = true;
+
+    const run = () => locate(true);
+    if (!navigator.permissions?.query) {
+      run();
+      return;
+    }
+    navigator.permissions
+      .query({ name: "geolocation" as PermissionName })
+      .then((status) => {
+        if (status.state !== "denied") run();
+      })
+      .catch(() => run());
+    // Runs once per checkout visit; `locate` is stable enough for that intent.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, saved.length]);
 
 
+
+  // Pricing only needs somewhere to ship to — state + a valid pincode (plus the
+  // GPS pin when we have one). The phone is an order requirement, not a pricing
+  // one, so the bill lands the moment the location is known.
+  const quotable =
+    address.state.trim() !== "" && /^\d{6}$/.test(address.pincode.trim());
+
+  // A pincode that belongs to another circle means the state (and therefore the
+  // whole tax + delivery calculation) is almost certainly wrong.
+  const pinStates = PIN_PREFIX_STATES[address.pincode.trim().slice(0, 2)];
+  const pinMismatch =
+    quotable && !!pinStates && !pinStates.includes(address.state.trim());
 
   const complete =
     address.name.trim() !== "" &&
@@ -145,7 +245,7 @@ function CheckoutPage() {
   // Re-quote whenever the address or coupon settles — debounced, latest wins.
   const quoteSeq = useRef(0);
   useEffect(() => {
-    if (!isAuthenticated || !complete || orderItems.length === 0) {
+    if (!isAuthenticated || !quotable || orderItems.length === 0) {
       setBill(null);
       return;
     }
@@ -168,16 +268,47 @@ function CheckoutPage() {
         });
     }, 500);
     return () => clearTimeout(timer);
-  }, [address, appliedCoupon, orderItems, isAuthenticated, complete]);
+  }, [address, appliedCoupon, orderItems, isAuthenticated, quotable]);
+
+  const [savingAddress, setSavingAddress] = useState(false);
+
+  // Same house + pincode already in the book means there is nothing to save.
+  const alreadySaved = saved.some(
+    (a) =>
+      a.pincode.trim() === address.pincode.trim() &&
+      a.house.trim().toLowerCase() === address.house.trim().toLowerCase(),
+  );
+
+  /** Keep this address on the profile so the next checkout picks it up on its own. */
+  const saveAddress = async (silent = false) => {
+    if (!complete || alreadySaved) return;
+    if (!silent) setSavingAddress(true);
+    try {
+      const updated = await apiFetch<typeof user>("/auth/me", {
+        method: "PATCH",
+        json: { addresses: [...saved, address] },
+      });
+      if (updated) setUser(updated);
+      setSavedIndex(saved.length);
+      if (!silent) toast.success("Address saved — we'll pick it next time.");
+    } catch (err) {
+      if (!silent) toast.error(err instanceof ApiError ? err.message : "Couldn't save that address.");
+    } finally {
+      if (!silent) setSavingAddress(false);
+    }
+  };
 
   const set = (patch: Partial<OrderAddress>) => {
     setSavedIndex(null);
     setAddress((prev) => ({ ...prev, ...patch }));
   };
 
-  const useMyLocation = () => {
+  /** Pin the shopper by GPS and fill the address from those coordinates.
+   *  `silent` is used by the automatic detection on load — it must never
+   *  scold someone who simply dismissed the browser prompt. */
+  const locate = (silent = false) => {
     if (!navigator.geolocation) {
-      toast.error("Your browser can't share a location.");
+      if (!silent) toast.error("Your browser can't share a location.");
       return;
     }
     setLocating(true);
@@ -196,50 +327,22 @@ function CheckoutPage() {
             lat: coords.latitude,
             lng: coords.longitude,
           }));
-          toast.success("Address filled from your location 📍");
+          if (!silent) toast.success("Address filled from your location 📍");
         } catch {
-          toast.error("Couldn't read an address from that location.");
+          if (!silent) toast.error("Couldn't read an address from that location.");
         } finally {
           setLocating(false);
         }
       },
       () => {
         setLocating(false);
-        toast.error("Location permission denied.");
+        if (!silent) toast.error("Location permission denied.");
       },
-      { enableHighAccuracy: true, timeout: 12_000 },
+      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 },
     );
   };
 
-  // The bill is server-computed, but a bad code has to say so out loud.
-  const applyCoupon = async () => {
-    const code = coupon.trim().toUpperCase();
-    if (!code) {
-      setAppliedCoupon(null);
-      setCouponNote(null);
-      return;
-    }
-    setCheckingCoupon(true);
-    try {
-      const res = await validateCoupon(code, cartTotal);
-      if (res.valid) {
-        setAppliedCoupon(code);
-        setCouponNote({ ok: true, text: res.message ?? "Coupon applied." });
-        toast.success(res.message ?? `Coupon ${code} applied.`);
-      } else {
-        setAppliedCoupon(null);
-        setCouponNote({ ok: false, text: res.message ?? "That code isn't valid." });
-      }
-    } catch (err) {
-      setAppliedCoupon(null);
-      setCouponNote({
-        ok: false,
-        text: err instanceof ApiError ? err.message : "Couldn't check that code.",
-      });
-    } finally {
-      setCheckingCoupon(false);
-    }
-  };
+  const useMyLocation = () => locate(false);
 
   const handlePlaceOrder = async () => {
     if (!isAuthenticated) {
@@ -250,6 +353,10 @@ function CheckoutPage() {
       toast.error("Please complete the delivery address and phone number.");
       return;
     }
+    // Ordering from an address is the strongest signal it is a real one — keep
+    // it on the profile so the next checkout opens pre-filled.
+    void saveAddress(true);
+
     setPaying(true);
     try {
       const created = await placeOrder(orderItems, address, method, appliedCoupon);
@@ -418,10 +525,16 @@ function CheckoutPage() {
                 ) : (
                   <LocateFixed className="h-3.5 w-3.5" />
                 )}
-                Use my location
+                {locating ? "Locating…" : "Use my location"}
               </button>
             }
           >
+            {locating ? (
+              <p className="mb-3 inline-flex items-center gap-1.5 font-data text-2xs text-indigo">
+                <Loader2 className="h-3 w-3 animate-spin" /> Detecting your location to price
+                delivery and GST…
+              </p>
+            ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <Field
                 label="Full name"
@@ -456,12 +569,23 @@ function CheckoutPage() {
                 onChange={(v) => set({ city: v })}
                 placeholder="Kolkata"
               />
-              <Field
-                label="State"
-                value={address.state}
-                onChange={(v) => set({ state: v })}
-                placeholder="West Bengal"
-              />
+              <label className="block">
+                <span className="font-data text-2xs uppercase tracking-wider text-muted-foreground">
+                  State
+                </span>
+                <select
+                  value={INDIAN_STATES.includes(address.state) ? address.state : ""}
+                  onChange={(e) => set({ state: e.target.value })}
+                  className="mt-1.5 w-full rounded-xl border border-border bg-transparent px-3.5 py-2.5 text-base sm:text-sm text-foreground outline-none transition-colors focus:border-marigold"
+                >
+                  <option value="">Select state</option>
+                  {INDIAN_STATES.map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <Field
                 label="Pincode"
                 value={address.pincode}
@@ -493,12 +617,31 @@ function CheckoutPage() {
               </div>
             </div>
 
-            {address.lat != null ? (
-              <p className="mt-3 inline-flex items-center gap-1.5 font-data text-2xs text-indigo">
-                <BadgeCheck className="h-3.5 w-3.5 shrink-0" /> Pinned to your exact coordinates —
-                delivery fee is distance-accurate.
-              </p>
-            ) : null}
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+              {address.lat != null ? (
+                <p className="inline-flex items-center gap-1.5 font-data text-2xs text-indigo">
+                  <BadgeCheck className="h-3.5 w-3.5 shrink-0" /> Pinned to your exact coordinates.
+                </p>
+              ) : (
+                <span />
+              )}
+
+              <button
+                type="button"
+                onClick={() => void saveAddress(false)}
+                disabled={!complete || alreadySaved || savingAddress}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-1.5 font-data text-2xs text-foreground transition-colors hover:border-marigold hover:text-marigold disabled:opacity-50"
+              >
+                {savingAddress ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : alreadySaved ? (
+                  <BadgeCheck className="h-3.5 w-3.5" />
+                ) : (
+                  <MapPin className="h-3.5 w-3.5" />
+                )}
+                {alreadySaved ? "Saved to your address book" : "Save this address"}
+              </button>
+            </div>
           </Section>
 
           <Section icon={<CreditCard className="h-4 w-4" />} title="Payment method">
@@ -549,74 +692,87 @@ function CheckoutPage() {
             </ul>
 
             <div className="border-t border-border p-4">
-              <div className="flex gap-2">
-                <input
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value.toUpperCase())}
-                  placeholder="Coupon code"
-                  className="min-w-0 flex-1 rounded-full border border-border bg-transparent px-3.5 py-2 font-data text-base sm:text-2xs uppercase tracking-wider text-foreground outline-none focus:border-marigold"
-                />
-                <button
-                  type="button"
-                  onClick={() => void applyCoupon()}
-                  disabled={checkingCoupon}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-marigold px-4 py-2 font-data text-2xs text-marigold transition-colors hover:bg-marigold hover:text-ink disabled:opacity-50"
-                >
-                  {checkingCoupon ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-                  Apply
-                </button>
-              </div>
-
               {couponNote ? (
-                <p
-                  className={cn(
-                    "mt-2 font-data text-2xs",
-                    couponNote.ok ? "text-indigo" : "text-madder",
-                  )}
-                >
-                  {couponNote.text}
-                </p>
+                <div className="flex items-start justify-between gap-2">
+                  <p
+                    className={cn(
+                      "font-data text-2xs",
+                      couponNote.ok ? "text-indigo" : "text-madder",
+                    )}
+                  >
+                    {couponNote.text}
+                  </p>
+                  {appliedCoupon ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCouponTouched(true);
+                        setAppliedCoupon(null);
+                        setCouponNote(null);
+                      }}
+                      data-cursor="link"
+                      className="shrink-0 font-data text-2xs text-muted-foreground underline-offset-4 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  ) : null}
+                </div>
               ) : null}
 
-              {offers.length && !appliedCoupon ? (
-                <ul className="mt-3 space-y-1.5">
-                  {offers.slice(0, 3).map((o) => (
-                    <li key={o.code}>
-                      <button
-                        type="button"
-                        disabled={!o.applicable}
-                        onClick={() => {
-                          setCoupon(o.code);
-                          setAppliedCoupon(o.code);
-                          setCouponNote({ ok: true, text: `You saved ${formatMoney(o.discount)}!` });
-                        }}
-                        className={cn(
-                          "flex w-full items-center justify-between gap-2 rounded-lg border px-2.5 py-1.5 text-left font-data text-2xs transition-colors",
-                          o.applicable
-                            ? "border-marigold/40 text-foreground hover:border-marigold"
-                            : "border-border text-muted-foreground/70",
-                        )}
-                      >
-                        <span className="truncate">
-                          <b>{o.code}</b> — {o.description || `${o.value} off`}
-                        </span>
-                        <span className="shrink-0">
-                          {o.applicable
-                            ? `− ${formatMoney(o.discount)}`
-                            : `add ${formatMoney(o.needed_more)}`}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+              {offers.length ? (
+                <div className="mt-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-data text-2xs uppercase tracking-[0.14em] text-muted-foreground">
+                      Available coupons
+                    </p>
+                    <Link
+                      to="/offers"
+                      data-cursor="link"
+                      className="font-data text-2xs text-marigold transition-opacity hover:opacity-70"
+                    >
+                      See all
+                    </Link>
+                  </div>
+                  <ul className="mt-2 space-y-1.5">
+                    {offers.slice(0, 4).map((o) => (
+                      <li key={o.code}>
+                        <CouponTicket
+                          code={o.code}
+                          headline={
+                            o.type === "percent"
+                              ? `${Math.round(o.value)}%`
+                              : formatMoney(o.value)
+                          }
+                          description={o.description || undefined}
+                          terms={
+                            o.applicable
+                              ? `You save ${formatMoney(o.discount)}`
+                              : `Add ${formatMoney(o.needed_more)} to unlock`
+                          }
+                          locked={!o.applicable}
+                          applied={appliedCoupon === o.code}
+                          actionLabel={appliedCoupon === o.code ? "Applied" : "Apply"}
+                          onAction={() => {
+                            setCouponTouched(true);
+                            setAppliedCoupon(o.code);
+                            setCouponNote({
+                              ok: true,
+                              text: `${o.code} applied — you save ${formatMoney(o.discount)}.`,
+                            });
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ) : null}
 
               <dl className="mt-4 space-y-2 font-data text-2xs">
                 <Row label="Subtotal" value={formatMoney(bill?.subtotal ?? cartTotal)} />
-                {bill && bill.discount > 0 ? (
+                {shownDiscount > 0 ? (
                   <Row
                     label={`Discount${appliedCoupon ? ` (${appliedCoupon})` : ""}`}
-                    value={`− ${formatMoney(bill.discount)}`}
+                    value={`− ${formatMoney(shownDiscount)}`}
                     tone="good"
                   />
                 ) : null}
@@ -626,10 +782,27 @@ function CheckoutPage() {
                       ? `Delivery · ${bill.distance_km.toFixed(1)} km`
                       : "Delivery"
                   }
-                  value={!bill ? "—" : bill.delivery_free ? "Free" : formatMoney(bill.delivery)}
+                  value={
+                    !bill
+                      ? "Add address"
+                      : bill.delivery_free
+                        ? bill.delivery_free_reason === "coupon"
+                          ? `Free · ${appliedCoupon ?? "coupon"}`
+                          : "Free"
+                        : formatMoney(bill.delivery)
+                  }
                   {...(bill?.delivery_free ? { tone: "good" as const } : {})}
                 />
-                <Row label="GST" value={bill ? formatMoney(bill.tax) : "—"} />
+                {bill?.gst && !bill.gst.interstate && bill.gst.total > 0 ? (
+                  <>
+                    <Row label="CGST" value={formatMoney(bill.gst.cgst)} />
+                    <Row label="SGST" value={formatMoney(bill.gst.sgst)} />
+                  </>
+                ) : bill?.gst?.interstate && bill.gst.total > 0 ? (
+                  <Row label="IGST" value={formatMoney(bill.gst.igst)} />
+                ) : (
+                  <Row label="GST" value={bill ? formatMoney(bill.tax) : "Add address"} />
+                )}
               </dl>
 
               <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
@@ -638,14 +811,24 @@ function CheckoutPage() {
                   {quoting ? (
                     <Loader2 className="h-4 w-4 animate-spin text-marigold" />
                   ) : (
-                    formatMoney(bill?.total ?? cartTotal)
+                    formatMoney(shownTotal)
                   )}
                 </span>
               </div>
 
-              {!complete ? (
+              {pinMismatch ? (
+                <p className="mt-3 font-data text-2xs text-madder">
+                  Pincode {address.pincode} belongs to {pinStates?.join(" / ")} — check the state,
+                  it decides your GST and delivery.
+                </p>
+              ) : null}
+              {!quotable ? (
                 <p className="mt-3 font-data text-2xs text-muted-foreground">
-                  Fill in the delivery address to see final delivery and GST.
+                  Add your city, state and pincode to see delivery and GST.
+                </p>
+              ) : !complete ? (
+                <p className="mt-3 font-data text-2xs text-muted-foreground">
+                  Add your name and mobile number to place the order.
                 </p>
               ) : null}
               {quoteError ? (
@@ -664,7 +847,7 @@ function CheckoutPage() {
                   </>
                 ) : (
                   <>
-                    <Lock className="h-4 w-4" /> Pay {formatMoney(bill?.total ?? cartTotal)} securely
+                    <Lock className="h-4 w-4" /> Pay {formatMoney(shownTotal)} securely
                   </>
                 )}
               </button>

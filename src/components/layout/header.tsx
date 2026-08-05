@@ -206,6 +206,17 @@ export function Header() {
               </li>
               <li>
                 <Link
+                  to="/offers"
+                  activeProps={{ className: NAV_LINK_ACTIVE }}
+                  inactiveProps={{ className: "" }}
+                  className={NAV_LINK}
+                  data-cursor="link"
+                >
+                  Offers
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/contact"
                   activeProps={{ className: NAV_LINK_ACTIVE }}
                   inactiveProps={{ className: "" }}
@@ -370,6 +381,15 @@ export function Header() {
                   className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
                 >
                   Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/offers"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex min-h-12 items-center text-base text-foreground active:text-marigold"
+                >
+                  Offers
                 </Link>
               </li>
               <li>

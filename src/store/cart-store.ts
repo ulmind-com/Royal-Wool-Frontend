@@ -93,7 +93,8 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
 
     saveCart(next);
-    set({ items: next, isOpen: true });
+    // Adding never yanks the drawer open — the bag opens only when tapped.
+    set({ items: next });
     syncWithBackend(next);
   },
 
