@@ -256,7 +256,7 @@ export function CartDrawer() {
 
                 <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground pt-1">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>256-bit encrypted checkout & risk-free returns</span>
+                  <span>256-bit encrypted checkout</span>
                 </div>
               </div>
             )}

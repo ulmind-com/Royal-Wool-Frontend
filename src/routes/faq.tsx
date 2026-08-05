@@ -8,11 +8,10 @@ export const Route = createFileRoute("/faq")({
       { title: "FAQ — Royal Wool yarn, dye lots & delivery" },
       {
         name: "description",
-        content:
-          "Common questions about Royal Wool dye lots, gauge, washing, delivery times and returns.",
+          "Common questions about Royal Wool dye lots, gauge, washing, and delivery times.",
       },
       { property: "og:title", content: "Royal Wool FAQ" },
-      { property: "og:description", content: "Dye lots, gauge, washing, delivery and returns." },
+      { property: "og:description", content: "Dye lots, gauge, washing, and delivery." },
       { property: "og:url", content: "/faq" },
     ],
     links: [{ rel: "canonical", href: "/faq" }],
@@ -61,11 +60,6 @@ export const Route = createFileRoute("/faq")({
         <p>
           Delivery fees and free-delivery thresholds are set in our store settings and shown live at
           checkout — we never quote a number here that could go stale.
-        </p>
-        <h2>Can I return yarn?</h2>
-        <p>
-          Unused skeins with the band intact, inside the return window shown on the product page.
-          See the returns policy for detail.
         </p>
       </Prose>
     </PageShell>

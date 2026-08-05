@@ -17,7 +17,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as ReturnsPolicyRouteImport } from './routes/returns-policy'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -25,7 +24,6 @@ import { Route as UpcomingRouteImport } from './routes/upcoming'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountNotificationsRouteImport } from './routes/account.notifications'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
-import { Route as AccountReturnsRouteImport } from './routes/account.returns'
 import { Route as AccountWishlistRouteImport } from './routes/account.wishlist'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -74,11 +72,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReturnsPolicyRoute = ReturnsPolicyRouteImport.update({
-  id: '/returns-policy',
-  path: '/returns-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -112,11 +105,6 @@ const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
 const AccountOrdersRoute = AccountOrdersRouteImport.update({
   id: '/account/orders',
   path: '/account/orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountReturnsRoute = AccountReturnsRouteImport.update({
-  id: '/account/returns',
-  path: '/account/returns',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountWishlistRoute = AccountWishlistRouteImport.update({
@@ -164,14 +152,12 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
-  '/returns-policy': typeof ReturnsPolicyRoute
   '/search': typeof SearchRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/upcoming': typeof UpcomingRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
-  '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -190,14 +176,12 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
-  '/returns-policy': typeof ReturnsPolicyRoute
   '/search': typeof SearchRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/upcoming': typeof UpcomingRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
-  '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -217,14 +201,12 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
-  '/returns-policy': typeof ReturnsPolicyRoute
   '/search': typeof SearchRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/upcoming': typeof UpcomingRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
-  '/account/returns': typeof AccountReturnsRoute
   '/account/wishlist': typeof AccountWishlistRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -245,14 +227,12 @@ export interface FileRouteTypes {
     | '/faq'
     | '/offers'
     | '/privacy'
-    | '/returns-policy'
     | '/search'
     | '/shipping'
     | '/terms'
     | '/upcoming'
     | '/account/notifications'
     | '/account/orders'
-    | '/account/returns'
     | '/account/wishlist'
     | '/blog/$slug'
     | '/collections/$slug'
@@ -271,14 +251,12 @@ export interface FileRouteTypes {
     | '/faq'
     | '/offers'
     | '/privacy'
-    | '/returns-policy'
     | '/search'
     | '/shipping'
     | '/terms'
     | '/upcoming'
     | '/account/notifications'
     | '/account/orders'
-    | '/account/returns'
     | '/account/wishlist'
     | '/blog/$slug'
     | '/collections/$slug'
@@ -297,14 +275,12 @@ export interface FileRouteTypes {
     | '/faq'
     | '/offers'
     | '/privacy'
-    | '/returns-policy'
     | '/search'
     | '/shipping'
     | '/terms'
     | '/upcoming'
     | '/account/notifications'
     | '/account/orders'
-    | '/account/returns'
     | '/account/wishlist'
     | '/blog/$slug'
     | '/collections/$slug'
@@ -324,14 +300,12 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   OffersRoute: typeof OffersRoute
   PrivacyRoute: typeof PrivacyRoute
-  ReturnsPolicyRoute: typeof ReturnsPolicyRoute
   SearchRoute: typeof SearchRoute
   ShippingRoute: typeof ShippingRoute
   TermsRoute: typeof TermsRoute
   UpcomingRoute: typeof UpcomingRoute
   AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
-  AccountReturnsRoute: typeof AccountReturnsRoute
   AccountWishlistRoute: typeof AccountWishlistRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
@@ -400,13 +374,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/returns-policy': {
-      id: '/returns-policy'
-      path: '/returns-policy'
-      fullPath: '/returns-policy'
-      preLoaderRoute: typeof ReturnsPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -454,13 +421,6 @@ declare module '@tanstack/react-router' {
       path: '/account/orders'
       fullPath: '/account/orders'
       preLoaderRoute: typeof AccountOrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account/returns': {
-      id: '/account/returns'
-      path: '/account/returns'
-      fullPath: '/account/returns'
-      preLoaderRoute: typeof AccountReturnsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/wishlist': {
@@ -524,14 +484,12 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   OffersRoute: OffersRoute,
   PrivacyRoute: PrivacyRoute,
-  ReturnsPolicyRoute: ReturnsPolicyRoute,
   SearchRoute: SearchRoute,
   ShippingRoute: ShippingRoute,
   TermsRoute: TermsRoute,
   UpcomingRoute: UpcomingRoute,
   AccountNotificationsRoute: AccountNotificationsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
-  AccountReturnsRoute: AccountReturnsRoute,
   AccountWishlistRoute: AccountWishlistRoute,
   BlogSlugRoute: BlogSlugRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,
@@ -544,3 +502,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
