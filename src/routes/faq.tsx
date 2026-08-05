@@ -8,7 +8,7 @@ export const Route = createFileRoute("/faq")({
       { title: "FAQ — Royal Wool yarn, dye lots & delivery" },
       {
         name: "description",
-          "Common questions about Royal Wool dye lots, gauge, washing, and delivery times.",
+        content: "Common questions about Royal Wool dye lots, gauge, washing, and delivery times.",
       },
       { property: "og:title", content: "Royal Wool FAQ" },
       { property: "og:description", content: "Dye lots, gauge, washing, and delivery." },
