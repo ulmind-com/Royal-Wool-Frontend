@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Heart, ShoppingBag, Zap } from "lucide-react";
+import { toast } from "sonner";
 
 import { useSettings } from "@/hooks/use-settings";
 import {
@@ -11,6 +12,8 @@ import {
   struckPrice,
 } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth-store";
+import { useCartStore } from "@/store/cart-store";
 
 /**
  * Catalogue card. Price and stock come exclusively from the server-resolved
@@ -19,11 +22,46 @@ import { cn } from "@/lib/utils";
  */
 export function ProductCard({ product, className }: { product: Product; className?: string }) {
   const { formatMoney } = useSettings();
+  const navigate = useNavigate();
+  const { isAuthenticated, setLoginModalOpen } = useAuthStore();
+  const addItem = useCartStore((s) => s.addItem);
   const image = primaryImage(product);
   const struck = struckPrice(product);
   const off = discountPct(product);
   const stocked = isInStock(product);
   const swatches = (product.colors ?? []).slice(0, 5);
+
+  // Cards buy the default variant — the first colour/size the server resolved.
+  const color = product.colors?.[0];
+  const size = color?.sizes?.[0];
+
+  // Returns false when the shopper still has to sign in, so Buy Now can bail out.
+  const pushToCart = () => {
+    if (!isAuthenticated) {
+      setLoginModalOpen(true);
+      return false;
+    }
+    addItem({
+      productId: product.id,
+      title: product.title,
+      color: color?.name,
+      size: size?.size,
+      price: displayPrice(product),
+      qty: 1,
+      image: image ?? undefined,
+    });
+    return true;
+  };
+
+  const handleAddToCart = () => {
+    if (!pushToCart()) return;
+    toast.success(`${product.title} added to your cart! 🛍️`);
+  };
+
+  const handleBuyNow = () => {
+    if (!pushToCart()) return;
+    navigate({ to: "/checkout" });
+  };
 
   return (
     <article
@@ -77,7 +115,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
           ) : null}
         </div>
 
-        <div className="p-3 sm:p-4">
+        <div className="px-3 pb-3 pt-3 sm:px-4 sm:pt-4">
           {product.brand ? (
             <p className="truncate font-data text-2xs text-muted-foreground/80">{product.brand}</p>
           ) : null}
@@ -116,6 +154,33 @@ export function ProductCard({ product, className }: { product: Product; classNam
           ) : null}
         </div>
       </Link>
+
+      <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            disabled={!stocked}
+            onClick={handleAddToCart}
+            data-cursor="link"
+            title={isAuthenticated ? "Add to your cart" : "Login to add to cart"}
+            className="inline-flex min-h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-madder px-2.5 py-2 font-data text-[10px] leading-none text-madder transition-colors hover:bg-madder hover:text-primary-foreground disabled:opacity-40 sm:text-2xs"
+          >
+            <ShoppingBag className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            <span className="truncate">Add to cart</span>
+          </button>
+          <button
+            type="button"
+            disabled={!stocked}
+            onClick={handleBuyNow}
+            data-cursor="link"
+            title={isAuthenticated ? "Straight to checkout" : "Login to buy"}
+            className="sheen inline-flex min-h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-madder px-2.5 py-2 font-data text-[10px] leading-none text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40 sm:text-2xs"
+          >
+            <Zap className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            <span className="truncate">Buy Now</span>
+          </button>
+        </div>
+      </div>
 
       <button
         type="button"
