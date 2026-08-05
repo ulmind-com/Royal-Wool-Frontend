@@ -15,14 +15,24 @@ function Wordmark() {
     <Link
       to="/"
       data-cursor="link"
-      className="group flex min-w-0 items-baseline gap-1.5 sm:gap-2"
+      className="group flex min-w-0 items-center gap-2 sm:gap-2.5"
       aria-label={`${BRAND.name} home`}
     >
-      <span className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground sm:text-2xl">
-        Royal
-      </span>
-      <span className="font-display text-xl font-light italic tracking-[-0.04em] text-marigold sm:text-2xl">
-        Wool
+      <img
+        src="/logo.jpeg"
+        alt=""
+        aria-hidden
+        width={40}
+        height={40}
+        className="h-9 w-9 shrink-0 rounded-full border border-marigold/40 object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10"
+      />
+      <span className="flex min-w-0 items-baseline gap-1.5">
+        <span className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground sm:text-2xl">
+          Royaall
+        </span>
+        <span className="font-display text-xl font-light italic tracking-[-0.04em] text-marigold sm:text-2xl">
+          Wool
+        </span>
       </span>
     </Link>
   );

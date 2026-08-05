@@ -44,6 +44,8 @@ export interface Combo {
   qty: number;
   price: number;
   product_ids?: string[];
+  /** Set when the bundle qualifies yarns by skein weight instead of a list. */
+  weight_target?: number | null;
   start_date?: string | null;
   end_date?: string | null;
 }
