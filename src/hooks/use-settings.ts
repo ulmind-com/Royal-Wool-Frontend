@@ -33,15 +33,15 @@ export function useSettings() {
     formatMoney,
     shop: data?.shop,
     delivery: data?.delivery,
-    freeAbove: data?.delivery.free_above ?? null,
-    freeRadiusKm: data?.delivery.free_radius_km ?? null,
-    perKmRate: data?.delivery.per_km_rate ?? null,
-    baseFee: data?.delivery.base_fee ?? null,
-    maxServiceKm: data?.delivery.max_service_km ?? null,
+    freeAbove: data?.delivery?.free_above ?? null,
+    freeRadiusKm: data?.delivery?.free_radius_km ?? null,
+    perKmRate: data?.delivery?.per_km_rate ?? null,
+    baseFee: data?.delivery?.base_fee ?? null,
+    maxServiceKm: data?.delivery?.max_service_km ?? null,
     returnWindowDays: data?.return_window_days ?? null,
     cancelWindowHours: data?.cancel_window_hours ?? null,
     taxRate: data?.tax_rate ?? null,
-    codEnabled: data?.cod.enabled ?? false,
+    codEnabled: data?.cod?.enabled ?? false,
   };
 }
 
