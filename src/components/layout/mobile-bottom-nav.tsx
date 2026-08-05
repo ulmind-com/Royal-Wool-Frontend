@@ -15,21 +15,21 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(150deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.82) 100%)",
-  backdropFilter: "blur(28px) saturate(190%)",
-  WebkitBackdropFilter: "blur(28px) saturate(190%)",
-  border: "1px solid rgba(255, 255, 255, 0.96)",
+    "linear-gradient(150deg, rgba(255, 255, 255, 0.99) 0%, rgba(252, 251, 249, 0.96) 100%)",
+  backdropFilter: "blur(34px) saturate(200%)",
+  border: "1px solid rgba(255, 255, 255, 1)",
   boxShadow:
-    "0 18px 45px -10px rgba(15, 12, 20, 0.22), 0 6px 18px -4px rgba(15, 12, 20, 0.12), inset 0 2px 3px -1px rgba(255, 255, 255, 1), inset 0 -3px 6px -2px rgba(15, 12, 20, 0.12)",
+    "0 24px 55px -12px rgba(15, 12, 20, 0.30), 0 10px 24px -6px rgba(15, 12, 20, 0.18), inset 0 2.5px 3px -1px rgba(255, 255, 255, 1), inset 0 -4px 8px -2px rgba(15, 12, 20, 0.10)",
 };
 
-const LIQUID_GLASS_INDICATOR: React.CSSProperties = {
+const LIQUID_GLASS_INDICATOR = {
   background:
-    "linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(245, 243, 240, 0.9) 100%)",
+    "linear-gradient(135deg, rgba(233, 231, 228, 0.95) 0%, rgba(216, 213, 209, 0.92) 100%)",
   boxShadow:
-    "0 4px 14px -2px rgba(15, 12, 20, 0.22), 0 2px 6px -1px rgba(15, 12, 20, 0.14), inset 0 1.5px 2px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(15, 12, 20, 0.08)",
-  border: "1px solid rgba(255, 255, 255, 1)",
+    "inset 0 2px 4px rgba(15, 12, 20, 0.10), inset 0 -1.5px 2px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(15, 12, 20, 0.06)",
+  border: "1px solid rgba(255, 255, 255, 0.85)",
 };
+
 
 export function MobileBottomNav() {
   const navigate = useNavigate();
@@ -96,10 +96,10 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-2 sm:gap-2.5 max-w-[460px] mx-auto select-none">
-      {/* Main 5-Item Liquid Glass Capsule - Perfectly sized (58px/62px) to prevent squashing on any phone */}
+    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-2.5 xs:px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 max-w-[470px] mx-auto select-none">
+      {/* Main 5-Item Liquid Glass Capsule - sized (62px/68px) to prevent squashing on any phone */}
       <div
-        className="flex-1 min-w-0 h-[58px] sm:h-[62px] pointer-events-auto grid grid-cols-5 items-center rounded-full px-1 sm:px-1.5 transition-all duration-[var(--dur-standard)] isolate relative shadow-2xl"
+        className="flex-1 min-w-0 h-[62px] sm:h-[68px] pointer-events-auto grid grid-cols-5 items-center rounded-full px-1 xs:px-1.5 sm:px-2 transition-all duration-[var(--dur-standard)] isolate relative"
         style={LIQUID_GLASS_CONTAINER}
       >
         {navItems.map((item) => {
@@ -127,7 +127,7 @@ export function MobileBottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="liquid-glass-tab-indicator"
-                  className="absolute h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] rounded-full z-0 pointer-events-none"
+                  className="absolute h-[46px] w-[46px] xs:h-[48px] xs:w-[48px] sm:h-[52px] sm:w-[52px] rounded-full z-0 pointer-events-none"
                   style={LIQUID_GLASS_INDICATOR}
                   transition={{
                     type: "spring",
@@ -143,10 +143,10 @@ export function MobileBottomNav() {
                 {item.id === "home" && (
                   <Home
                     className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
                     )}
                   />
                 )}
@@ -154,10 +154,10 @@ export function MobileBottomNav() {
                 {item.id === "shop" && (
                   <ShoppingBag
                     className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
                     )}
                   />
                 )}
@@ -166,10 +166,10 @@ export function MobileBottomNav() {
                   <div className="relative grid place-items-center">
                     <ShoppingCart
                       className={cn(
-                        "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                        "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
-                          ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                          ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                          : "text-ink/80 stroke-[2px] group-hover:text-ink"
                       )}
                     />
                     {cartCount > 0 && (
@@ -183,10 +183,10 @@ export function MobileBottomNav() {
                 {item.id === "wishlist" && (
                   <Heart
                     className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-madder fill-madder stroke-[2.5px] drop-shadow-[0_2px_8px_rgba(225,53,53,0.35)]"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                        ? "scale-110 text-madder fill-madder stroke-[2.6px] drop-shadow-[0_2px_8px_rgba(225,53,53,0.35)]"
+                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
                     )}
                   />
                 )}
@@ -219,10 +219,10 @@ export function MobileBottomNav() {
                   ) : (
                     <User
                       className={cn(
-                        "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                        "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
-                          ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                          ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                          : "text-ink/80 stroke-[2px] group-hover:text-ink"
                       )}
                     />
                   )
@@ -233,7 +233,7 @@ export function MobileBottomNav() {
         })}
       </div>
 
-      {/* Separate Circular Liquid Glass Search Button - Perfectly sized (58px/62px) */}
+      {/* Separate Circular Liquid Glass Search Button - matches capsule height (62px/68px) */}
       <button
         type="button"
         onClick={() => {
@@ -242,8 +242,8 @@ export function MobileBottomNav() {
           navigate({ to: "/search" });
         }}
         className={cn(
-          "h-[58px] w-[58px] sm:h-[62px] sm:w-[62px] shrink-0 pointer-events-auto grid place-items-center rounded-full transition-all duration-[var(--dur-standard)] isolate relative outline-none active:scale-95 shadow-2xl group",
-          isSearchActive && "ring-1 ring-white shadow-[0_8px_25px_rgba(255,178,0,0.25)]"
+          "h-[62px] w-[62px] sm:h-[68px] sm:w-[68px] shrink-0 pointer-events-auto grid place-items-center rounded-full transition-all duration-[var(--dur-standard)] isolate relative outline-none active:scale-95 group",
+          isSearchActive && "ring-1 ring-white"
         )}
         style={LIQUID_GLASS_CONTAINER}
         aria-label="Search yarns"
@@ -251,14 +251,14 @@ export function MobileBottomNav() {
       >
         {isSearchActive && (
           <div
-            className="absolute h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] rounded-full z-0 pointer-events-none animate-in fade-in duration-300"
+            className="absolute h-[46px] w-[46px] xs:h-[48px] xs:w-[48px] sm:h-[52px] sm:w-[52px] rounded-full z-0 pointer-events-none animate-in fade-in duration-300"
             style={LIQUID_GLASS_INDICATOR}
           />
         )}
         <Search
           className={cn(
-            "relative z-10 h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
-            isSearchActive ? "scale-110 text-ink stroke-[2.5px] drop-shadow-xs" : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+            "relative z-10 h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+            isSearchActive ? "scale-110 text-ink stroke-[2.6px] drop-shadow-xs" : "text-ink/80 stroke-[2px] group-hover:text-ink"
           )}
         />
       </button>
