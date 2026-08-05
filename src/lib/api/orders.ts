@@ -31,9 +31,17 @@ export interface Bill {
   discount: number;
   delivery: number;
   delivery_free: boolean;
+  delivery_free_reason?: "coupon" | "threshold" | null;
   distance_km: number | null;
   deliverable: boolean;
   tax: number;
+  gst?: {
+    total: number;
+    interstate: boolean;
+    cgst: number;
+    sgst: number;
+    igst: number;
+  };
   total: number;
   currency: string;
   currency_code: string;
@@ -135,21 +143,48 @@ export function loadRazorpay(): Promise<boolean> {
  * OpenStreetMap's Nominatim needs no key and is fine at checkout volume.
  */
 export async function reverseGeocode(lat: number, lng: number) {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-  const res = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!res.ok) throw new Error("Could not read that location");
-  const data = (await res.json()) as {
-    address?: Record<string, string>;
-    display_name?: string;
+  const lookup = async (zoom: number) => {
+    const url =
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1` +
+      `&zoom=${zoom}&accept-language=en&lat=${lat}&lon=${lng}`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("Could not read that location");
+    return (await res.json()) as {
+      address?: Record<string, string>;
+      display_name?: string;
+    };
   };
-  const a = data.address ?? {};
+
+  // zoom=18 is building level — the only zoom that reliably carries a house
+  // number and a postcode. Where OSM has no postcode on the building we widen
+  // to the suburb (zoom 14), which almost always does.
+  const fine = await lookup(18);
+  let a = fine.address ?? {};
+  if (!a["postcode"] || !(a["city"] || a["town"] || a["village"])) {
+    try {
+      const coarse = await lookup(14);
+      a = { ...(coarse.address ?? {}), ...a };
+      if (!a["postcode"] && coarse.address?.["postcode"]) a["postcode"] = coarse.address["postcode"];
+    } catch {
+      /* the fine result is still usable on its own */
+    }
+  }
+
   return {
     house: [a["house_number"], a["building"], a["amenity"]].filter(Boolean).join(", "),
-    area: [a["road"], a["neighbourhood"], a["suburb"]].filter(Boolean).join(", "),
-    city: a["city"] || a["town"] || a["village"] || a["county"] || "",
+    area: [a["road"], a["neighbourhood"], a["suburb"], a["village"]].filter(Boolean).join(", "),
+    city:
+      a["city"] ||
+      a["town"] ||
+      a["municipality"] ||
+      a["city_district"] ||
+      a["village"] ||
+      a["state_district"] ||
+      a["county"] ||
+      "",
     state: a["state"] || "",
-    pincode: a["postcode"] || "",
-    label: data.display_name ?? "",
+    pincode: (a["postcode"] || "").replace(/\s/g, ""),
+    label: fine.display_name ?? "",
   };
 }
 
