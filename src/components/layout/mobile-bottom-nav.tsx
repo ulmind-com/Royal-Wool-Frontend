@@ -143,10 +143,10 @@ export function MobileBottomNav() {
                 {item.id === "home" && (
                   <Home
                     className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
                     )}
                   />
                 )}
@@ -154,10 +154,10 @@ export function MobileBottomNav() {
                 {item.id === "shop" && (
                   <ShoppingBag
                     className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                        ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
                     )}
                   />
                 )}
@@ -166,10 +166,10 @@ export function MobileBottomNav() {
                   <div className="relative grid place-items-center">
                     <ShoppingCart
                       className={cn(
-                        "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                        "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
-                          ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                          ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                          : "text-ink/80 stroke-[2px] group-hover:text-ink"
                       )}
                     />
                     {cartCount > 0 && (
@@ -183,10 +183,10 @@ export function MobileBottomNav() {
                 {item.id === "wishlist" && (
                   <Heart
                     className={cn(
-                      "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                      "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
-                        ? "scale-110 text-madder fill-madder stroke-[2.5px] drop-shadow-[0_2px_8px_rgba(225,53,53,0.35)]"
-                        : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                        ? "scale-110 text-madder fill-madder stroke-[2.6px] drop-shadow-[0_2px_8px_rgba(225,53,53,0.35)]"
+                        : "text-ink/80 stroke-[2px] group-hover:text-ink"
                     )}
                   />
                 )}
@@ -219,10 +219,10 @@ export function MobileBottomNav() {
                   ) : (
                     <User
                       className={cn(
-                        "h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
+                        "h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
-                          ? "scale-110 text-ink fill-ink/10 stroke-[2.5px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+                          ? "scale-110 text-ink fill-ink/10 stroke-[2.6px] drop-shadow-xs"
+                          : "text-ink/80 stroke-[2px] group-hover:text-ink"
                       )}
                     />
                   )
