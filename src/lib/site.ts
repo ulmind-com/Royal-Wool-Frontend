@@ -12,7 +12,6 @@ export const POLICY_LINKS = [
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },
   { to: "/shipping", label: "Shipping" },
-  { to: "/returns-policy", label: "Returns & Exchange" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
 ] as const;

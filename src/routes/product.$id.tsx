@@ -59,7 +59,7 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductPage() {
   const { id } = Route.useParams();
-  const { formatMoney, returnWindowDays, shop, settings } = useSettings();
+  const { formatMoney, shop, settings } = useSettings();
   const { isAuthenticated, setLoginModalOpen } = useAuthStore();
   const { data: product, isPending, isError, error, refetch } = useQuery(productQuery(id));
 
@@ -347,9 +347,7 @@ function ProductPage() {
             </Accordion>
             <Accordion title="Returns">
               <p>
-                {product.returnable === false || !(product.return_days ?? returnWindowDays)
-                  ? "All sales are final — this item can't be returned or exchanged."
-                  : `Returnable within ${product.return_days ?? returnWindowDays} days of delivery.`}
+                "All sales are final — this item can't be returned or exchanged."
               </p>
             </Accordion>
           </div>

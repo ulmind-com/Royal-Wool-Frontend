@@ -23,7 +23,6 @@ import {
   type Bill,
   type OrderAddress,
   type OrderItemIn,
-  codAvailability,
   loadRazorpay,
   placeOrder,
   quoteOrder,
@@ -126,8 +125,7 @@ function CheckoutPage() {
   const [address, setAddress] = useState<OrderAddress>(EMPTY);
   const [savedIndex, setSavedIndex] = useState<number | null>(null);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
-  const [method, setMethod] = useState<"online" | "cod">("online");
-  const [cod, setCod] = useState<{ available: boolean; reason?: string }>({ available: false });
+  const method = "online";
 
   const [bill, setBill] = useState<Bill | null>(null);
   const [quoting, setQuoting] = useState(false);
@@ -222,12 +220,7 @@ function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, saved.length]);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    codAvailability()
-      .then(setCod)
-      .catch(() => setCod({ available: false }));
-  }, [isAuthenticated]);
+
 
   // Pricing only needs somewhere to ship to — state + a valid pincode (plus the
   // GPS pin when we have one). The phone is an order requirement, not a pricing
@@ -368,12 +361,7 @@ function CheckoutPage() {
     try {
       const created = await placeOrder(orderItems, address, method, appliedCoupon);
 
-      if (created.payment_method === "cod") {
-        clearCart();
-        toast.success("Order confirmed — pay on delivery 🎉");
-        navigate({ to: "/order/$id/success", params: { id: created.order_id } });
-        return;
-      }
+
 
       const ready = await loadRazorpay();
       if (!ready) throw new Error("Payment window failed to load. Check your connection.");
@@ -657,25 +645,13 @@ function CheckoutPage() {
           </Section>
 
           <Section icon={<CreditCard className="h-4 w-4" />} title="Payment method">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-1">
               <PayOption
-                active={method === "online"}
-                onClick={() => setMethod("online")}
+                active={true}
+                onClick={() => {}}
                 icon={<CreditCard className="h-4 w-4" />}
                 title="Pay online"
                 body="UPI, cards, net banking & wallets via Razorpay."
-              />
-              <PayOption
-                active={method === "cod"}
-                onClick={() => cod.available && setMethod("cod")}
-                disabled={!cod.available || !codEnabled}
-                icon={<Banknote className="h-4 w-4" />}
-                title="Cash on delivery"
-                body={
-                  cod.available
-                    ? "Pay the courier when it arrives."
-                    : cod.reason || "Not available right now."
-                }
               />
             </div>
           </Section>
@@ -868,10 +844,6 @@ function CheckoutPage() {
                 {paying ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" /> Opening payment…
-                  </>
-                ) : method === "cod" ? (
-                  <>
-                    <Banknote className="h-4 w-4" /> Place order · Pay on delivery
                   </>
                 ) : (
                   <>

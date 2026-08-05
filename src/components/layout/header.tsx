@@ -8,6 +8,7 @@ import { categoryTreeQuery } from "@/lib/api/queries";
 import type { CategoryNode } from "@/lib/api/types";
 import { BRAND } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 
 function Wordmark() {
@@ -37,6 +38,7 @@ const NAV_LINK =
 const NAV_LINK_ACTIVE = "font-medium text-foreground";
 
 export function Header() {
+  const user = useAuthStore((s) => s.user);
   const cartItems = useCartStore((s) => s.items);
   const openCart = useCartStore((s) => s.openCart);
   const [mounted, setMounted] = useState(false);
@@ -242,8 +244,12 @@ export function Header() {
           <Link to="/search" className={cn(ICON_BTN, "lg:hidden")} aria-label="Search yarns">
             <Search className="h-5 w-5" />
           </Link>
-          <Link to="/account" className={ICON_BTN} aria-label="My Account" data-cursor="link">
-            <User className="h-5 w-5" />
+          <Link to="/account" className={cn(ICON_BTN, user?.avatar && "p-0 overflow-hidden")} aria-label="My Account" data-cursor="link">
+            {user?.avatar ? (
+              <img src={user.avatar} alt={user.name} className="h-7 w-7 rounded-full object-cover sm:h-7 sm:w-7" />
+            ) : (
+              <User className="h-5 w-5" />
+            )}
           </Link>
           <button type="button" onClick={openCart} className={ICON_BTN} aria-label="Open Cart Drawer" data-cursor="link">
             <ShoppingBag className="h-5 w-5" />

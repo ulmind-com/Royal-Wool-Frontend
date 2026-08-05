@@ -8,7 +8,7 @@ import { activeCouponsQuery } from "@/lib/api/queries";
  * store's own settings/coupons, so the strip can never advertise a stale offer.
  */
 export function AnnouncementTicker() {
-  const { freeAbove, formatMoney, returnWindowDays } = useSettings();
+  const { freeAbove, formatMoney } = useSettings();
   const { data: coupons } = useQuery(activeCouponsQuery);
   const coupon = coupons?.[0];
 
@@ -19,9 +19,7 @@ export function AnnouncementTicker() {
     coupon
       ? `Use code ${coupon.code} — ${coupon.description ?? "live offer"}`
       : "Skin-safe, tested dyes — gentle enough for baby knits",
-    returnWindowDays
-      ? `Easy returns within ${returnWindowDays} days`
-      : "Support 10am–7pm IST, all days",
+    "Support 10am–7pm IST, all days",
     "Small-batch colour, wound for stitch definition",
   ];
 

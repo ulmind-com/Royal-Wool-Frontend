@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrderSupportChat } from "@/components/chat/support-chat";
-import { OrderActions } from "@/components/account/order-actions";
+
 
 const ORDER_STAGES = ["placed", "confirmed", "shipped", "out_for_delivery", "delivered"];
 const STAGE_LABELS: Record<string, { label: string; icon: string; desc: string }> = {
@@ -745,14 +745,8 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                 ))}
                               </div>
                             </div>
-
-                            {/* Cleo answers about THIS order and can cancel or return it. */}
+                            {/* Cleo answers about THIS order. */}
                             <div className="mt-4 flex flex-col items-start gap-2.5 border-t border-border/40 pt-3 sm:flex-row sm:items-center sm:justify-between">
-                              <OrderActions
-                                orderId={oid}
-                                order={order}
-                                onChanged={() => void pollOrders()}
-                              />
                               <OrderSupportChat
                                 orderId={oid}
                                 orderLabel={`#${oid.slice(-8).toUpperCase()}`}
