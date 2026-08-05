@@ -2,7 +2,7 @@ import { useMemo, useEffect } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Sparkles, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -85,14 +85,6 @@ export function CartDrawer() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-            </div>
-
-            {/* VIP Perk Notice Bar */}
-            <div className="bg-secondary/50 border-b border-border/50 px-6 py-2.5 flex items-center gap-2 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-marigold flex-none animate-pulse" />
-              <span className="truncate">
-                <b>VIP Perk:</b> Free signature wool packaging & doorstep delivery.
-              </span>
             </div>
 
             {/* Scrollable Items Container */}
@@ -218,10 +210,6 @@ export function CartDrawer() {
                     <span>Subtotal ({totalQty} items)</span>
                     <span className="font-semibold text-foreground font-mono">₹{totalPrice.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-muted-foreground">
-                    <span>VIP Packaging & Shipping</span>
-                    <span className="font-semibold text-emerald-600">FREE</span>
-                  </div>
                   <div className="pt-2 border-t border-border/50 flex items-center justify-between text-sm">
                     <span className="font-bold text-foreground">Estimated Total</span>
                     <span className="font-bold text-lg text-foreground font-mono">₹{totalPrice.toFixed(2)}</span>
@@ -252,11 +240,6 @@ export function CartDrawer() {
                   >
                     Review Bag in Full Page
                   </button>
-                </div>
-
-                <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground pt-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>256-bit encrypted checkout & risk-free returns</span>
                 </div>
               </div>
             )}
