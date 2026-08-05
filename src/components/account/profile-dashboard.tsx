@@ -13,6 +13,8 @@ import {
   AlertCircle, ArrowRight, Minus, CreditCard, Award, RefreshCcw, ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LiveTrackMap } from "@/components/commerce/live-track-map";
+import { useSettings } from "@/hooks/use-settings";
 
 const ORDER_STAGES = ["placed", "confirmed", "shipped", "out_for_delivery", "delivered"];
 const STAGE_LABELS: Record<string, { label: string; icon: string; desc: string }> = {
@@ -31,6 +33,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
   const { user, token, isAuthenticated, logout, setLoginModalOpen, setUser } = useAuthStore();
   const { items: cartItems, updateQty, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();
+  const { shop } = useSettings();
 
   const [activeTab, setActiveTab] = useState<"overview" | "cart" | "orders" | "edit" | "addresses">(defaultTab);
   const [orders, setOrders] = useState<any[]>([]);
@@ -641,6 +644,26 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                     <span className="text-muted-foreground">{STAGE_LABELS[currentStage]?.desc || "Status updated."}</span>
                                   </div>
                                 </div>
+
+                                {/* Live courier map — only once the address carries coordinates. */}
+                                {order.address?.lat != null && order.address?.lng != null ? (
+                                  <LiveTrackMap
+                                    className="mt-4"
+                                    status={currentStage}
+                                    from={{
+                                      lat: shop?.lat ?? 22.5726,
+                                      lng: shop?.lng ?? 88.3639,
+                                      label: shop?.name ?? "Royal Wool studio",
+                                    }}
+                                    to={{
+                                      lat: order.address.lat,
+                                      lng: order.address.lng,
+                                      label: [order.address.city, order.address.pincode]
+                                        .filter(Boolean)
+                                        .join(" "),
+                                    }}
+                                  />
+                                ) : null}
                               </div>
                             ) : (
                               <div className="my-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 flex items-center gap-2 text-xs text-red-600">
