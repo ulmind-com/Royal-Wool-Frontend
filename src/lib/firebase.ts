@@ -4,6 +4,7 @@ import {
   initializeAuth,
   GoogleAuthProvider,
   browserLocalPersistence,
+  browserPopupRedirectResolver,
   browserSessionPersistence,
   inMemoryPersistence,
   type Auth,
@@ -39,9 +40,13 @@ export function getFirebaseAuth(): Auth {
   if (!_auth) {
     const app = ensureApp();
     try {
-      // Initialize Auth with graceful fallback for Incognito / restricted IndexedDB
+      // Initialize Auth with graceful fallback for Incognito / restricted IndexedDB.
+      // The resolver is not optional here: initializeAuth() skips the default one
+      // that getAuth() installs, and without it signInWithPopup / signInWithRedirect
+      // fail with auth/argument-error.
       _auth = initializeAuth(app, {
         persistence: [browserLocalPersistence, browserSessionPersistence, inMemoryPersistence],
+        popupRedirectResolver: browserPopupRedirectResolver,
       });
     } catch {
       // Fallback if auth instance already exists (e.g. HMR or fast refresh)
