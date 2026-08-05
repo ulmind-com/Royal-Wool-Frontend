@@ -233,7 +233,7 @@ export function MobileBottomNav() {
         })}
       </div>
 
-      {/* Separate Circular Liquid Glass Search Button - Perfectly sized (58px/62px) */}
+      {/* Separate Circular Liquid Glass Search Button - matches capsule height (62px/68px) */}
       <button
         type="button"
         onClick={() => {
@@ -242,8 +242,8 @@ export function MobileBottomNav() {
           navigate({ to: "/search" });
         }}
         className={cn(
-          "h-[58px] w-[58px] sm:h-[62px] sm:w-[62px] shrink-0 pointer-events-auto grid place-items-center rounded-full transition-all duration-[var(--dur-standard)] isolate relative outline-none active:scale-95 shadow-2xl group",
-          isSearchActive && "ring-1 ring-white shadow-[0_8px_25px_rgba(255,178,0,0.25)]"
+          "h-[62px] w-[62px] sm:h-[68px] sm:w-[68px] shrink-0 pointer-events-auto grid place-items-center rounded-full transition-all duration-[var(--dur-standard)] isolate relative outline-none active:scale-95 group",
+          isSearchActive && "ring-1 ring-white"
         )}
         style={LIQUID_GLASS_CONTAINER}
         aria-label="Search yarns"
@@ -251,14 +251,14 @@ export function MobileBottomNav() {
       >
         {isSearchActive && (
           <div
-            className="absolute h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] rounded-full z-0 pointer-events-none animate-in fade-in duration-300"
+            className="absolute h-[46px] w-[46px] xs:h-[48px] xs:w-[48px] sm:h-[52px] sm:w-[52px] rounded-full z-0 pointer-events-none animate-in fade-in duration-300"
             style={LIQUID_GLASS_INDICATOR}
           />
         )}
         <Search
           className={cn(
-            "relative z-10 h-[22px] w-[22px] sm:h-6 sm:w-6 transition-all duration-300",
-            isSearchActive ? "scale-110 text-ink stroke-[2.5px] drop-shadow-xs" : "text-ink/75 stroke-[1.8px] group-hover:text-ink"
+            "relative z-10 h-[23px] w-[23px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
+            isSearchActive ? "scale-110 text-ink stroke-[2.6px] drop-shadow-xs" : "text-ink/80 stroke-[2px] group-hover:text-ink"
           )}
         />
       </button>
