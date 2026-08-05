@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Copy, Loader2, MapPin, Package, Receipt } from "lucide-react";
+import { CheckCircle2, Copy, Loader2, Package, Receipt } from "lucide-react";
 import { toast } from "sonner";
 
-import { LiveTrackMap } from "@/components/commerce/live-track-map";
+import { OrderSupportChat } from "@/components/chat/support-chat";
 import { useSettings } from "@/hooks/use-settings";
 import { getOrder } from "@/lib/api/orders";
 
@@ -20,18 +20,16 @@ export const Route = createFileRoute("/order/$id/success")({
   component: OrderSuccess,
 });
 
-/** Studio coordinates fall back to Kolkata when settings haven't loaded. */
-const FALLBACK_ORIGIN = { lat: 22.5726, lng: 88.3639 };
-
 function OrderSuccess() {
   const { id } = Route.useParams();
-  const { formatMoney, shop } = useSettings();
+  const { formatMoney } = useSettings();
 
   const { data: order, isPending } = useQuery({
     queryKey: ["order", id],
     queryFn: () => getOrder(id),
     // Status moves on the admin side — keep the tracker honest without a reload.
-    refetchInterval: 60_000,
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
     retry: 1,
   });
 
@@ -39,20 +37,6 @@ function OrderSuccess() {
     navigator.clipboard?.writeText(id);
     toast.success("Order ID copied");
   };
-
-  const from = {
-    lat: shop?.lat ?? FALLBACK_ORIGIN.lat,
-    lng: shop?.lng ?? FALLBACK_ORIGIN.lng,
-    label: shop?.name ?? "Royal Wool studio",
-  };
-  const to =
-    order?.address?.lat != null
-      ? {
-          lat: order.address.lat,
-          lng: order.address.lng ?? from.lng,
-          label: [order.address.city, order.address.pincode].filter(Boolean).join(" "),
-        }
-      : null;
 
   return (
     <div className="mx-auto w-full max-w-[900px] px-4 pb-24 pt-10 sm:px-6">
@@ -83,17 +67,6 @@ function OrderSuccess() {
         </div>
       ) : order ? (
         <div className="mt-10 space-y-6">
-          {to ? (
-            <LiveTrackMap status={order.status} from={from} to={to} />
-          ) : (
-            <div className="rounded-2xl border border-border p-4">
-              <p className="inline-flex items-center gap-2 font-data text-2xs text-muted-foreground">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-marigold" />
-                Live map opens once your parcel is pinned to a delivery location.
-              </p>
-            </div>
-          )}
-
           <div className="grid gap-4 sm:grid-cols-2">
             <Card icon={<Package className="h-4 w-4" />} title="What's coming">
               <ul className="space-y-2.5">
@@ -145,7 +118,8 @@ function OrderSuccess() {
         </p>
       )}
 
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <OrderSupportChat orderId={id} orderLabel={`#${id.slice(-8).toUpperCase()}`} />
         <Link
           to="/account/orders"
           className="sheen inline-flex items-center gap-2 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground"

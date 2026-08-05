@@ -539,7 +539,7 @@ function CheckoutPage() {
                   value={coupon}
                   onChange={(e) => setCoupon(e.target.value.toUpperCase())}
                   placeholder="Coupon code"
-                  className="min-w-0 flex-1 rounded-full border border-border bg-transparent px-3.5 py-2 font-data text-2xs uppercase tracking-wider text-foreground outline-none focus:border-marigold"
+                  className="min-w-0 flex-1 rounded-full border border-border bg-transparent px-3.5 py-2 font-data text-base sm:text-2xs uppercase tracking-wider text-foreground outline-none focus:border-marigold"
                 />
                 <button
                   type="button"
@@ -674,7 +674,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         {...(inputMode ? { inputMode } : {})}
-        className="mt-1.5 w-full rounded-xl border border-border bg-transparent px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-marigold"
+        className="mt-1.5 w-full rounded-xl border border-border bg-transparent px-3.5 py-2.5 text-base sm:text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-marigold"
       />
     </label>
   );

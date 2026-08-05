@@ -111,9 +111,27 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-border pb-28 md:pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] pt-6 font-data text-2xs text-muted-foreground/70 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Royal Wool. All rights reserved.</p>
-          <p>Made in India</p>
+        <div className="mt-12 flex flex-col gap-6 border-t border-border pb-28 md:pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] pt-6 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 font-data text-2xs text-muted-foreground/70 sm:flex-row sm:items-center sm:gap-4">
+            <p>© {new Date().getFullYear()} Royal Wool. All rights reserved.</p>
+            <span className="hidden sm:inline">•</span>
+            <p>Made in India</p>
+          </div>
+          <a
+            href="https://www.ulmind.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 text-[13px] text-foreground/90 font-medium drop-shadow-md group cursor-pointer"
+          >
+            <span className="opacity-80 transition-opacity group-hover:opacity-100">
+              Designed and Developed by
+            </span>
+            <img
+              src="/assets/ulmind.png"
+              alt="Ulmind"
+              className="h-10 sm:h-12 w-auto object-contain drop-shadow-lg opacity-100 transition-all group-hover:scale-105"
+            />
+          </a>
         </div>
       </div>
     </footer>
