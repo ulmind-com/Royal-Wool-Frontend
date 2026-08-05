@@ -96,10 +96,10 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-2 sm:gap-2.5 max-w-[460px] mx-auto select-none">
-      {/* Main 5-Item Liquid Glass Capsule - Perfectly sized (58px/62px) to prevent squashing on any phone */}
+    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-2.5 xs:px-3 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 max-w-[470px] mx-auto select-none">
+      {/* Main 5-Item Liquid Glass Capsule - sized (62px/68px) to prevent squashing on any phone */}
       <div
-        className="flex-1 min-w-0 h-[58px] sm:h-[62px] pointer-events-auto grid grid-cols-5 items-center rounded-full px-1 sm:px-1.5 transition-all duration-[var(--dur-standard)] isolate relative shadow-2xl"
+        className="flex-1 min-w-0 h-[62px] sm:h-[68px] pointer-events-auto grid grid-cols-5 items-center rounded-full px-1 xs:px-1.5 sm:px-2 transition-all duration-[var(--dur-standard)] isolate relative"
         style={LIQUID_GLASS_CONTAINER}
       >
         {navItems.map((item) => {
