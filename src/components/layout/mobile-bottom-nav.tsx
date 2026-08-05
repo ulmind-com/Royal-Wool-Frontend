@@ -127,7 +127,7 @@ export function MobileBottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="liquid-glass-tab-indicator"
-                  className="absolute h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] rounded-full z-0 pointer-events-none"
+                  className="absolute h-[46px] w-[46px] xs:h-[48px] xs:w-[48px] sm:h-[52px] sm:w-[52px] rounded-full z-0 pointer-events-none"
                   style={LIQUID_GLASS_INDICATOR}
                   transition={{
                     type: "spring",
