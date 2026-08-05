@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 import { API_BASE_URL } from "@/lib/site";
@@ -13,8 +13,7 @@ import {
   AlertCircle, ArrowRight, Minus, CreditCard, Award, RefreshCcw, ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LiveTrackMap } from "@/components/commerce/live-track-map";
-import { useSettings } from "@/hooks/use-settings";
+import { OrderSupportChat } from "@/components/chat/support-chat";
 
 const ORDER_STAGES = ["placed", "confirmed", "shipped", "out_for_delivery", "delivered"];
 const STAGE_LABELS: Record<string, { label: string; icon: string; desc: string }> = {
@@ -33,11 +32,11 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
   const { user, token, isAuthenticated, logout, setLoginModalOpen, setUser } = useAuthStore();
   const { items: cartItems, updateQty, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const { shop } = useSettings();
 
   const [activeTab, setActiveTab] = useState<"overview" | "cart" | "orders" | "edit" | "addresses">(defaultTab);
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [lastSync, setLastSync] = useState<number | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
@@ -78,6 +77,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
       });
       if (ordRes.ok) {
         const ords = await ordRes.json();
+        rememberStatuses(ords || []);
         setOrders(ords || []);
       }
     } catch (err) {
@@ -91,6 +91,62 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
     if (isAuthenticated) {
       fetchDashboardData();
     }
+  }, [isAuthenticated, token]);
+
+  /**
+   * Live tracking. The admin moves an order's status server-side, so the page
+   * polls /orders quietly — no spinner, no /auth/me round-trip — and announces
+   * any status that actually changed. Polling pauses on a hidden tab and
+   * catches up the moment the window is focused again.
+   */
+  const statusRef = useRef<Record<string, string>>({});
+
+  const rememberStatuses = (list: any[]) => {
+    list.forEach((o) => {
+      const oid = strId(o._id ?? o.id);
+      if (oid) statusRef.current[oid] = o.status;
+    });
+  };
+
+  const pollOrders = async () => {
+    if (!token || (typeof document !== "undefined" && document.hidden)) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/orders`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const next: any[] = (await res.json()) || [];
+      next.forEach((o) => {
+        const oid = strId(o._id ?? o.id);
+        const was = statusRef.current[oid];
+        if (was && was !== o.status) {
+          const label = STAGE_LABELS[o.status]?.label || o.status;
+          toast.success(`Order #${oid.slice(-6).toUpperCase()} — ${label}`, {
+            description: STAGE_LABELS[o.status]?.desc,
+          });
+        }
+      });
+      rememberStatuses(next);
+      setOrders(next);
+      setLastSync(Date.now());
+    } catch {
+      /* transient — the next tick retries */
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) return;
+    const id = window.setInterval(pollOrders, 12_000);
+    const onWake = () => {
+      if (!document.hidden) pollOrders();
+    };
+    window.addEventListener("focus", onWake);
+    document.addEventListener("visibilitychange", onWake);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener("focus", onWake);
+      document.removeEventListener("visibilitychange", onWake);
+    };
   }, [isAuthenticated, token]);
 
   const cartTotalQty = useMemo(() => cartItems.reduce((acc, item) => acc + item.qty, 0), [cartItems]);
@@ -538,8 +594,20 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                 <div className="space-y-5">
                   <div className="flex items-center justify-between border-b border-border/60 pb-3">
                     <div>
-                      <h2 className="text-base font-semibold text-foreground">My Orders & Live Tracker</h2>
-                      <p className="text-xs text-muted-foreground">Real-time delivery progress and past invoice records.</p>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-base font-semibold text-foreground">My Orders & Live Tracker</h2>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/70" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          </span>
+                          Live
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Updates on their own as your parcel moves
+                        {lastSync ? ` · synced ${new Date(lastSync).toLocaleTimeString()}` : ""}.
+                      </p>
                     </div>
                     <button
                       onClick={() => fetchDashboardData()}
@@ -644,26 +712,6 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                     <span className="text-muted-foreground">{STAGE_LABELS[currentStage]?.desc || "Status updated."}</span>
                                   </div>
                                 </div>
-
-                                {/* Live courier map — only once the address carries coordinates. */}
-                                {order.address?.lat != null && order.address?.lng != null ? (
-                                  <LiveTrackMap
-                                    className="mt-4"
-                                    status={currentStage}
-                                    from={{
-                                      lat: shop?.lat ?? 22.5726,
-                                      lng: shop?.lng ?? 88.3639,
-                                      label: shop?.name ?? "Royal Wool studio",
-                                    }}
-                                    to={{
-                                      lat: order.address.lat,
-                                      lng: order.address.lng,
-                                      label: [order.address.city, order.address.pincode]
-                                        .filter(Boolean)
-                                        .join(" "),
-                                    }}
-                                  />
-                                ) : null}
                               </div>
                             ) : (
                               <div className="my-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 flex items-center gap-2 text-xs text-red-600">
@@ -695,6 +743,18 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                   </div>
                                 ))}
                               </div>
+                            </div>
+
+                            {/* Cleo answers about THIS order and can cancel or return it. */}
+                            <div className="mt-4 flex flex-col items-start gap-2.5 border-t border-border/40 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                              <span className="text-2xs text-muted-foreground">
+                                Question about this parcel? Ask our support assistant.
+                              </span>
+                              <OrderSupportChat
+                                orderId={oid}
+                                orderLabel={`#${oid.slice(-8).toUpperCase()}`}
+                                className="w-full justify-center sm:w-auto"
+                              />
                             </div>
                           </div>
                         );
