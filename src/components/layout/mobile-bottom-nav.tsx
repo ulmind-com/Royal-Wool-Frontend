@@ -125,10 +125,28 @@ export function MobileBottomNav() {
     <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 xs:px-4 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center max-w-[470px] mx-auto select-none">
       {/* Single 5-Item Liquid Glass Capsule */}
       <div
-        className="w-full pointer-events-auto grid grid-cols-5 items-center h-[64px] xs:h-[66px] sm:h-[72px] rounded-[36px] px-1.5 xs:px-2 sm:px-2.5 transition-all duration-[var(--dur-standard)] isolate relative"
+        className="w-full pointer-events-auto grid grid-cols-5 items-center h-[64px] xs:h-[66px] sm:h-[72px] rounded-[36px] px-1.5 xs:px-2 sm:px-2.5 transition-all duration-[var(--dur-standard)] isolate relative overflow-hidden"
         style={LIQUID_GLASS_CONTAINER}
       >
+        {/* Glass material layers */}
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
+          style={EDGE_REFRACTION}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
+          style={RIM_HIGHLIGHT}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
+          style={SPECULAR_SHEEN}
+        />
+
         {navItems.map((item) => {
+
           const isActive = activeId === item.id;
           return (
             <button
