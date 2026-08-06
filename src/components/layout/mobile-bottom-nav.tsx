@@ -15,11 +15,11 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(150deg, rgba(255, 255, 255, 0.78) 0%, rgba(250, 248, 245, 0.62) 100%)",
-  backdropFilter: "blur(44px) saturate(240%)",
-  border: "1px solid rgba(255, 255, 255, 0.85)",
+    "linear-gradient(150deg, rgba(255, 255, 255, 0.62) 0%, rgba(250, 248, 245, 0.48) 100%)",
+  backdropFilter: "blur(48px) saturate(260%)",
+  border: "1px solid rgba(255, 255, 255, 0.72)",
   boxShadow:
-    "0 30px 70px -16px rgba(15, 12, 20, 0.32), 0 14px 32px -10px rgba(15, 12, 20, 0.22), inset 0 2px 4px -1px rgba(255, 255, 255, 0.95), inset 0 -4px 10px -2px rgba(15, 12, 20, 0.10)",
+    "0 32px 80px -18px rgba(15, 12, 20, 0.34), 0 16px 36px -12px rgba(15, 12, 20, 0.24), inset 0 2px 5px -1px rgba(255, 255, 255, 0.98), inset 0 -5px 12px -3px rgba(15, 12, 20, 0.12)",
 };
 
 const LIQUID_GLASS_INDICATOR: MotionStyle = {
