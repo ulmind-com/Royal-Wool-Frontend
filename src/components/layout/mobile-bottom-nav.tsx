@@ -15,20 +15,21 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(150deg, rgba(255, 255, 255, 0.62) 0%, rgba(250, 248, 245, 0.48) 100%)",
-  backdropFilter: "blur(48px) saturate(260%)",
-  border: "1px solid rgba(255, 255, 255, 0.72)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.26) 100%)",
+  backdropFilter: "blur(24px) saturate(190%)",
+  border: "1px solid rgba(255, 255, 255, 0.45)",
   boxShadow:
-    "0 32px 80px -18px rgba(15, 12, 20, 0.34), 0 16px 36px -12px rgba(15, 12, 20, 0.24), inset 0 2px 5px -1px rgba(255, 255, 255, 0.98), inset 0 -5px 12px -3px rgba(15, 12, 20, 0.12)",
+    "0 8px 24px -8px rgba(15, 12, 20, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7)",
 };
 
 const LIQUID_GLASS_INDICATOR: MotionStyle = {
-  background:
-    "linear-gradient(135deg, rgba(235, 233, 230, 0.98) 0%, rgba(220, 217, 213, 0.95) 100%)",
+  background: "rgba(255, 255, 255, 0.55)",
+  backdropFilter: "blur(8px) saturate(160%)",
   boxShadow:
-    "inset 0 2.5px 5px rgba(15, 12, 20, 0.10), inset 0 -1.5px 2px rgba(255, 255, 255, 0.95), 0 1px 2px rgba(15, 12, 20, 0.05)",
-  border: "1px solid rgba(255, 255, 255, 0.9)",
+    "inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 3px rgba(15, 12, 20, 0.08)",
+  border: "1px solid rgba(255, 255, 255, 0.6)",
 };
+
 
 export function MobileBottomNav() {
   const navigate = useNavigate();
