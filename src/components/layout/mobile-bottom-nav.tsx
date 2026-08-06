@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { motion, type MotionStyle } from "framer-motion";
 import { Home, ShoppingBag, ShoppingCart, Search, User } from "lucide-react";
@@ -8,26 +8,25 @@ import { useAuthStore } from "@/store/auth-store";
 import { cn } from "@/lib/utils";
 
 /**
- * Reference-matched mobile bottom navigation.
- * Single 5-item liquid-glass pill: Home / Shop / Cart / Search / Profile.
- * Wide rounded active bubble, filled active icons, solid frosted capsule.
+ * App Store style liquid-glass bottom nav.
+ * 4-item frosted pill (Home / Shop / Cart / Profile) + separate circular Search button.
+ * Active state is a raised glass blob that bulges past the pill and smears icons it passes.
  */
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.14) 46%, rgba(255, 255, 255, 0.22) 100%)",
-  backdropFilter: "blur(28px) saturate(240%) brightness(1.06)",
-  border: "1px solid rgba(255, 255, 255, 0.34)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.62) 100%)",
+  backdropFilter: "blur(30px) saturate(180%)",
+  border: "1px solid rgba(255, 255, 255, 0.75)",
   boxShadow:
-    "0 18px 40px -14px rgba(15, 12, 20, 0.34), 0 6px 14px -8px rgba(15, 12, 20, 0.18), inset 0 1.5px 0 rgba(255, 255, 255, 0.9), inset 0 -1.5px 2px rgba(15, 12, 20, 0.12)",
+    "0 10px 30px -10px rgba(15, 12, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
 };
 
-/** Bright top rim fading out toward the bottom — makes the glass read as thick. */
+/** Bright top rim fading toward the bottom — reads as glass thickness. */
 const RIM_HIGHLIGHT: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.18) 24%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, 0.14) 100%)",
-  maskImage:
-    "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.16) 22%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.2) 100%)",
+  maskImage: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
   maskComposite: "exclude",
   WebkitMaskComposite: "xor",
   padding: "1.25px",
@@ -36,29 +35,26 @@ const RIM_HIGHLIGHT: React.CSSProperties = {
 /** Diagonal specular sheen across the upper half. */
 const SPECULAR_SHEEN: React.CSSProperties = {
   background:
-    "linear-gradient(112deg, rgba(255, 255, 255, 0) 8%, rgba(255, 255, 255, 0.42) 26%, rgba(255, 255, 255, 0.06) 44%, rgba(255, 255, 255, 0) 62%)",
+    "linear-gradient(112deg, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0.35) 26%, rgba(255, 255, 255, 0.04) 46%, rgba(255, 255, 255, 0) 64%)",
   mixBlendMode: "screen",
 };
 
-/** Blurred inner ring so content near the edge looks bent, not cleanly cut. */
-const EDGE_REFRACTION: React.CSSProperties = {
-  boxShadow:
-    "inset 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 0 10px 3px rgba(255, 255, 255, 0.28), inset 0 0 22px rgba(255, 255, 255, 0.12)",
-  backdropFilter: "blur(6px) saturate(150%)",
-  maskImage:
-    "radial-gradient(120% 160% at 50% 50%, transparent 56%, #000 82%)",
-};
-
-const LIQUID_GLASS_INDICATOR: MotionStyle = {
+/** Raised droplet sitting on the bar. */
+const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.4) 100%)",
-  backdropFilter: "blur(10px) saturate(180%) brightness(1.05)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.78) 100%)",
+  backdropFilter: "blur(14px) saturate(200%)",
+  border: "1px solid rgba(255, 255, 255, 0.9)",
   boxShadow:
-    "inset 0 1.5px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 1px rgba(15, 12, 20, 0.08), 0 3px 10px -4px rgba(15, 12, 20, 0.22), 0 0 14px rgba(255, 255, 255, 0.35)",
-  border: "1px solid rgba(255, 255, 255, 0.55)",
+    "inset 0 1.5px 0 rgba(255, 255, 255, 1), inset 0 -1px 2px rgba(15, 12, 20, 0.06), 0 6px 18px -6px rgba(15, 12, 20, 0.28), 0 0 20px rgba(255, 255, 255, 0.5)",
 };
 
-
+const NAV_ITEMS = [
+  { id: "home", label: "Home", path: "/" },
+  { id: "shop", label: "Shop", path: "/collections" },
+  { id: "cart", label: "Cart", isCart: true as const },
+  { id: "profile", label: "Profile", path: "/account" },
+];
 
 export function MobileBottomNav() {
   const navigate = useNavigate();
@@ -69,9 +65,14 @@ export function MobileBottomNav() {
   const toggleCart = useCartStore((s) => s.toggleCart);
   const { user, isAuthenticated } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [isSmearing, setIsSmearing] = useState(false);
+  const smearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    return () => {
+      if (smearTimer.current) clearTimeout(smearTimer.current);
+    };
   }, []);
 
   const rawCartCount = useMemo(() => items.reduce((acc, item) => acc + item.qty, 0), [items]);
@@ -80,15 +81,9 @@ export function MobileBottomNav() {
   const currentUser = mounted ? user : null;
 
   const activeId = useMemo(() => {
-    if (isCartOpen || pathname === "/cart" || pathname === "/checkout") {
-      return "cart";
-    }
-    if (pathname.startsWith("/account")) {
-      return "profile";
-    }
-    if (pathname.startsWith("/search")) {
-      return "search";
-    }
+    if (isCartOpen || pathname === "/cart" || pathname === "/checkout") return "cart";
+    if (pathname.startsWith("/account")) return "profile";
+    if (pathname.startsWith("/search")) return "search";
     if (
       pathname.startsWith("/collections") ||
       pathname.startsWith("/product") ||
@@ -97,15 +92,16 @@ export function MobileBottomNav() {
     ) {
       return "shop";
     }
-    if (pathname === "/" || pathname === "") {
-      return "home";
-    }
+    if (pathname === "/" || pathname === "") return "home";
     return null;
   }, [pathname, isCartOpen]);
 
+  const activeIndex = NAV_ITEMS.findIndex((i) => i.id === activeId);
+  const isSearchActive = activeId === "search";
+
   const triggerHaptic = () => {
     try {
-      if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
+      if (typeof window !== "undefined" && window.navigator?.vibrate) {
         window.navigator.vibrate(10);
       }
     } catch {
@@ -113,40 +109,56 @@ export function MobileBottomNav() {
     }
   };
 
-  const navItems = [
-    { id: "home", label: "Home", path: "/" },
-    { id: "shop", label: "Shop", path: "/collections" },
-    { id: "cart", label: "Cart", isCart: true },
-    { id: "search", label: "Search", path: "/search" },
-    { id: "profile", label: "Profile", path: "/account" },
-  ];
+  const startSmear = () => {
+    setIsSmearing(true);
+    if (smearTimer.current) clearTimeout(smearTimer.current);
+    smearTimer.current = setTimeout(() => setIsSmearing(false), 460);
+  };
+
+  const iconClass = (isActive: boolean) =>
+    cn(
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300",
+      isActive
+        ? "scale-[1.06] text-primary fill-primary/20 stroke-[2.4px]"
+        : "text-ink stroke-[2.1px] fill-transparent group-hover:text-ink"
+    );
+
+  const labelClass = (isActive: boolean) =>
+    cn(
+      "mt-0.5 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300",
+      isActive ? "text-primary" : "text-ink/70"
+    );
+
+  /** Distortion applied to items the travelling blob passes over. */
+  const smearStyle = (index: number): React.CSSProperties => {
+    if (!isSmearing || activeIndex < 0) return {};
+    const distance = Math.abs(index - activeIndex);
+    if (distance === 0 || distance > 2) return {};
+    const strength = distance === 1 ? 1 : 0.55;
+    return {
+      filter: `blur(${(0.6 * strength).toFixed(2)}px) hue-rotate(${(10 * strength).toFixed(1)}deg)`,
+      transform: `scaleX(${1 + 0.07 * strength}) scaleY(${1 - 0.02 * strength})`,
+      transition: "filter 220ms ease-out, transform 220ms ease-out",
+    };
+  };
 
   return (
-    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 xs:px-4 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center max-w-[470px] mx-auto select-none">
-      {/* Single 5-Item Liquid Glass Capsule */}
+    <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 xs:px-4 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center gap-2 xs:gap-2.5 max-w-[470px] mx-auto select-none">
+      {/* 4-item liquid glass pill */}
       <div
-        className="w-full pointer-events-auto grid grid-cols-5 items-center h-[64px] xs:h-[66px] sm:h-[72px] rounded-[36px] px-1.5 xs:px-2 sm:px-2.5 transition-all duration-[var(--dur-standard)] isolate relative overflow-hidden"
+        className="flex-1 min-w-0 pointer-events-auto grid grid-cols-4 items-center h-[62px] xs:h-[66px] sm:h-[70px] rounded-[34px] px-1 xs:px-1.5 transition-all duration-[var(--dur-standard)] isolate relative overflow-visible"
         style={LIQUID_GLASS_CONTAINER}
       >
-        {/* Glass material layers */}
+        {/* Clipped decorative glass layers */}
         <span
           aria-hidden
-          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
-          style={EDGE_REFRACTION}
-        />
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
-          style={RIM_HIGHLIGHT}
-        />
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
-          style={SPECULAR_SHEEN}
-        />
+          className="absolute inset-0 rounded-[34px] pointer-events-none z-0 overflow-hidden"
+        >
+          <span className="absolute inset-0 rounded-[34px]" style={RIM_HIGHLIGHT} />
+          <span className="absolute inset-0 rounded-[34px]" style={SPECULAR_SHEEN} />
+        </span>
 
-        {navItems.map((item) => {
-
+        {NAV_ITEMS.map((item, index) => {
           const isActive = activeId === item.id;
           return (
             <button
@@ -154,74 +166,42 @@ export function MobileBottomNav() {
               type="button"
               onClick={() => {
                 triggerHaptic();
+                startSmear();
                 if (item.isCart) {
                   toggleCart();
                 } else {
                   closeCart();
-                  if (item.path) {
-                    navigate({ to: item.path });
-                  }
+                  if (item.path) navigate({ to: item.path });
                 }
               }}
-              className="relative w-full h-full flex flex-col items-center justify-center rounded-full text-foreground/70 hover:text-foreground active:scale-95 transition-all duration-200 outline-none select-none group"
+              className="relative w-full h-full flex flex-col items-center justify-center rounded-full active:scale-95 transition-transform duration-200 outline-none select-none group"
               aria-label={item.label}
+              aria-current={isActive ? "page" : undefined}
               data-cursor="link"
             >
-              {/* Wide rounded active bubble */}
               {isActive && (
                 <motion.div
                   layoutId="mobile-bottom-nav-indicator"
-                  className="absolute h-[40px] w-[58px] xs:h-[42px] xs:w-[64px] sm:h-[46px] sm:w-[72px] rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] z-0 pointer-events-none"
-                  style={LIQUID_GLASS_INDICATOR}
-                  animate={{ scaleX: [1.14, 0.97, 1], scaleY: [0.88, 1.03, 1] }}
+                  className="absolute left-1/2 -translate-x-1/2 h-[64px] w-[70px] xs:h-[68px] xs:w-[76px] sm:h-[72px] sm:w-[80px] rounded-[26px] xs:rounded-[28px] z-0 pointer-events-none"
+                  style={LIQUID_GLASS_BLOB}
+                  animate={{ scaleX: [1.12, 0.98, 1], scaleY: [0.9, 1.02, 1] }}
                   transition={{
-                    layout: {
-                      type: "spring",
-                      stiffness: 420,
-                      damping: 30,
-                      mass: 0.85,
-                    },
+                    layout: { type: "spring", stiffness: 380, damping: 26, mass: 0.9 },
                     scaleX: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
                     scaleY: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
                   }}
                 />
               )}
 
-
-              {/* Icon / Profile Content */}
-              <div className="relative z-10 grid place-items-center">
-                {item.id === "home" && (
-                  <Home
-                    className={cn(
-                      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
-                      isActive
-                        ? "scale-110 text-ink fill-ink stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
-                    )}
-                  />
-                )}
-
-                {item.id === "shop" && (
-                  <ShoppingBag
-                    className={cn(
-                      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
-                      isActive
-                        ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
-                    )}
-                  />
-                )}
-
+              <div
+                className="relative z-10 flex flex-col items-center justify-center"
+                style={smearStyle(index)}
+              >
+                {item.id === "home" && <Home className={iconClass(isActive)} />}
+                {item.id === "shop" && <ShoppingBag className={iconClass(isActive)} />}
                 {item.id === "cart" && (
                   <div className="relative grid place-items-center">
-                    <ShoppingCart
-                      className={cn(
-                        "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
-                        isActive
-                          ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                          : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
-                      )}
-                    />
+                    <ShoppingCart className={iconClass(isActive)} />
                     {cartCount > 0 && (
                       <span className="absolute -top-1.5 -right-2.5 z-30 grid h-[18px] min-w-[18px] xs:h-5 xs:min-w-[20px] place-items-center rounded-full bg-red-500 px-1 font-data text-[10px] xs:text-[11px] font-extrabold text-white leading-none shadow-[0_2px_6px_rgba(239,68,68,0.45)] ring-2 ring-white animate-in zoom-in-75">
                         {cartCount}
@@ -229,59 +209,70 @@ export function MobileBottomNav() {
                     )}
                   </div>
                 )}
-
-                {item.id === "search" && (
-                  <Search
-                    className={cn(
-                      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
-                      isActive
-                        ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
-                    )}
-                  />
-                )}
-
-                {item.id === "profile" && (
-                  isUserAuthenticated ? (
+                {item.id === "profile" &&
+                  (isUserAuthenticated ? (
                     currentUser?.avatar ? (
                       <img
                         src={currentUser.avatar}
                         alt={currentUser.name || "User profile"}
                         className={cn(
-                          "h-6 w-6 xs:h-7 xs:w-7 sm:h-[26px] sm:w-[26px] rounded-full object-cover transition-all duration-300",
+                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300",
                           isActive
-                            ? "border-[2px] border-ink scale-110 shadow-[0_2px_8px_rgba(15,12,20,0.18)] ring-1 ring-white/90"
-                            : "border border-ink/30 opacity-90 group-hover:opacity-100"
+                            ? "border-[2px] border-primary scale-[1.06] ring-1 ring-white/90"
+                            : "border border-ink/30"
                         )}
                       />
                     ) : (
                       <div
                         className={cn(
-                          "grid h-6 w-6 xs:h-7 xs:w-7 sm:h-[26px] sm:w-[26px] place-items-center rounded-full border text-[11px] font-black uppercase tracking-tight transition-all duration-300",
+                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border text-[11px] font-black uppercase tracking-tight transition-all duration-300",
                           isActive
-                            ? "bg-ink text-cream border-white scale-110 shadow-[0_2px_8px_rgba(15,12,20,0.18)] ring-1 ring-white/80"
+                            ? "bg-primary text-primary-foreground border-white scale-[1.06] ring-1 ring-white/80"
                             : "bg-ink/10 text-ink/90 border-ink/25"
                         )}
                       >
-                        {currentUser?.name ? currentUser.name.charAt(0) : <User className="h-3.5 w-3.5 text-ink" />}
+                        {currentUser?.name ? (
+                          currentUser.name.charAt(0)
+                        ) : (
+                          <User className="h-3.5 w-3.5 text-ink" />
+                        )}
                       </div>
                     )
                   ) : (
-                    <User
-                      className={cn(
-                        "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
-                        isActive
-                          ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                          : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
-                      )}
-                    />
-                  )
-                )}
+                    <User className={iconClass(isActive)} />
+                  ))}
+                <span className={labelClass(isActive)}>{item.label}</span>
               </div>
             </button>
           );
         })}
       </div>
+
+      {/* Separate circular search button */}
+      <button
+        type="button"
+        onClick={() => {
+          triggerHaptic();
+          closeCart();
+          navigate({ to: "/search" });
+        }}
+        aria-label="Search"
+        aria-current={isSearchActive ? "page" : undefined}
+        data-cursor="link"
+        className="pointer-events-auto relative shrink-0 grid place-items-center h-[62px] w-[62px] xs:h-[66px] xs:w-[66px] sm:h-[70px] sm:w-[70px] rounded-full active:scale-95 transition-transform duration-200 outline-none isolate overflow-hidden"
+        style={LIQUID_GLASS_CONTAINER}
+      >
+        <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={RIM_HIGHLIGHT} />
+        <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={SPECULAR_SHEEN} />
+        <Search
+          className={cn(
+            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300",
+            isSearchActive
+              ? "text-primary fill-primary/20 stroke-[2.4px] scale-[1.06]"
+              : "text-ink stroke-[2.1px] fill-transparent"
+          )}
+        />
+      </button>
     </div>
   );
 }
