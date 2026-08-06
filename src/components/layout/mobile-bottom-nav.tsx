@@ -15,20 +15,49 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.26) 100%)",
-  backdropFilter: "blur(24px) saturate(190%)",
-  border: "1px solid rgba(255, 255, 255, 0.45)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.14) 46%, rgba(255, 255, 255, 0.22) 100%)",
+  backdropFilter: "blur(28px) saturate(240%) brightness(1.06)",
+  border: "1px solid rgba(255, 255, 255, 0.34)",
   boxShadow:
-    "0 8px 24px -8px rgba(15, 12, 20, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7)",
+    "0 18px 40px -14px rgba(15, 12, 20, 0.34), 0 6px 14px -8px rgba(15, 12, 20, 0.18), inset 0 1.5px 0 rgba(255, 255, 255, 0.9), inset 0 -1.5px 2px rgba(15, 12, 20, 0.12)",
+};
+
+/** Bright top rim fading out toward the bottom — makes the glass read as thick. */
+const RIM_HIGHLIGHT: React.CSSProperties = {
+  background:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.18) 24%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, 0.14) 100%)",
+  maskImage:
+    "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  maskComposite: "exclude",
+  WebkitMaskComposite: "xor",
+  padding: "1.25px",
+};
+
+/** Diagonal specular sheen across the upper half. */
+const SPECULAR_SHEEN: React.CSSProperties = {
+  background:
+    "linear-gradient(112deg, rgba(255, 255, 255, 0) 8%, rgba(255, 255, 255, 0.42) 26%, rgba(255, 255, 255, 0.06) 44%, rgba(255, 255, 255, 0) 62%)",
+  mixBlendMode: "screen",
+};
+
+/** Blurred inner ring so content near the edge looks bent, not cleanly cut. */
+const EDGE_REFRACTION: React.CSSProperties = {
+  boxShadow:
+    "inset 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 0 10px 3px rgba(255, 255, 255, 0.28), inset 0 0 22px rgba(255, 255, 255, 0.12)",
+  backdropFilter: "blur(6px) saturate(150%)",
+  maskImage:
+    "radial-gradient(120% 160% at 50% 50%, transparent 56%, #000 82%)",
 };
 
 const LIQUID_GLASS_INDICATOR: MotionStyle = {
-  background: "rgba(255, 255, 255, 0.55)",
-  backdropFilter: "blur(8px) saturate(160%)",
+  background:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.4) 100%)",
+  backdropFilter: "blur(10px) saturate(180%) brightness(1.05)",
   boxShadow:
-    "inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 3px rgba(15, 12, 20, 0.08)",
-  border: "1px solid rgba(255, 255, 255, 0.6)",
+    "inset 0 1.5px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 1px rgba(15, 12, 20, 0.08), 0 3px 10px -4px rgba(15, 12, 20, 0.22), 0 0 14px rgba(255, 255, 255, 0.35)",
+  border: "1px solid rgba(255, 255, 255, 0.55)",
 };
+
 
 
 export function MobileBottomNav() {
@@ -96,10 +125,28 @@ export function MobileBottomNav() {
     <div className="fixed bottom-3 sm:bottom-4 inset-x-0 z-[99990] px-3 xs:px-4 sm:px-5 md:hidden pointer-events-none pb-safe flex items-center justify-center max-w-[470px] mx-auto select-none">
       {/* Single 5-Item Liquid Glass Capsule */}
       <div
-        className="w-full pointer-events-auto grid grid-cols-5 items-center h-[64px] xs:h-[66px] sm:h-[72px] rounded-[36px] px-1.5 xs:px-2 sm:px-2.5 transition-all duration-[var(--dur-standard)] isolate relative"
+        className="w-full pointer-events-auto grid grid-cols-5 items-center h-[64px] xs:h-[66px] sm:h-[72px] rounded-[36px] px-1.5 xs:px-2 sm:px-2.5 transition-all duration-[var(--dur-standard)] isolate relative overflow-hidden"
         style={LIQUID_GLASS_CONTAINER}
       >
+        {/* Glass material layers */}
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
+          style={EDGE_REFRACTION}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
+          style={RIM_HIGHLIGHT}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-[36px] pointer-events-none z-0"
+          style={SPECULAR_SHEEN}
+        />
+
         {navItems.map((item) => {
+
           const isActive = activeId === item.id;
           return (
             <button
@@ -126,14 +173,20 @@ export function MobileBottomNav() {
                   layoutId="mobile-bottom-nav-indicator"
                   className="absolute h-[40px] w-[58px] xs:h-[42px] xs:w-[64px] sm:h-[46px] sm:w-[72px] rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] z-0 pointer-events-none"
                   style={LIQUID_GLASS_INDICATOR}
+                  animate={{ scaleX: [1.14, 0.97, 1], scaleY: [0.88, 1.03, 1] }}
                   transition={{
-                    type: "spring",
-                    stiffness: 420,
-                    damping: 30,
-                    mass: 0.85,
+                    layout: {
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 30,
+                      mass: 0.85,
+                    },
+                    scaleX: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
+                    scaleY: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
                   }}
                 />
               )}
+
 
               {/* Icon / Profile Content */}
               <div className="relative z-10 grid place-items-center">
@@ -143,7 +196,7 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -154,7 +207,7 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -166,7 +219,7 @@ export function MobileBottomNav() {
                         "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
                           ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                          : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                       )}
                     />
                     {cartCount > 0 && (
@@ -183,7 +236,7 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -219,7 +272,7 @@ export function MobileBottomNav() {
                         "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
                           ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                          : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                       )}
                     />
                   )
