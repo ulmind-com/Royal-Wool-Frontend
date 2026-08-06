@@ -173,14 +173,20 @@ export function MobileBottomNav() {
                   layoutId="mobile-bottom-nav-indicator"
                   className="absolute h-[40px] w-[58px] xs:h-[42px] xs:w-[64px] sm:h-[46px] sm:w-[72px] rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] z-0 pointer-events-none"
                   style={LIQUID_GLASS_INDICATOR}
+                  animate={{ scaleX: [1.14, 0.97, 1], scaleY: [0.88, 1.03, 1] }}
                   transition={{
-                    type: "spring",
-                    stiffness: 420,
-                    damping: 30,
-                    mass: 0.85,
+                    layout: {
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 30,
+                      mass: 0.85,
+                    },
+                    scaleX: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
+                    scaleY: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
                   }}
                 />
               )}
+
 
               {/* Icon / Profile Content */}
               <div className="relative z-10 grid place-items-center">
