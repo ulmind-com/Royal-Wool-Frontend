@@ -9,9 +9,13 @@ Make the white mobile bottom nav capsule in the live preview look like liquid gl
 - Keep the 1px white rim and soft drop shadow so the pill still floats above content.
 - Preserve the existing 5-item layout, active bubble, icons, cart badge, and behavior.
 
+## Also fix
+
+- `src/components/cart/cart-drawer.tsx` is missing the `ShieldCheck` import, causing a build error. Add it to the `lucide-react` import line.
+
 ## Out of scope
 
-No changes to nav items, routes, structure, icon states, or anything outside the capsule background.
+No changes to nav items, routes, structure, icon states, or anything outside the capsule background and the missing import fix.
 
 ## Technical notes
 
