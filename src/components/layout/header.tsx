@@ -23,15 +23,15 @@ function Wordmark() {
         src="/logo.jpeg"
         alt=""
         aria-hidden
-        width={40}
-        height={40}
-        className="h-9 w-9 shrink-0 rounded-full border border-marigold/40 object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10"
+        width={56}
+        height={56}
+        className="h-12 w-12 shrink-0 rounded-full border border-marigold/40 object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 sm:h-14 sm:w-14"
       />
       <span className="flex min-w-0 items-baseline gap-1.5">
-        <span className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground sm:text-2xl">
+        <span className="font-display text-lg font-semibold tracking-[-0.04em] text-foreground sm:text-xl">
           Royaall
         </span>
-        <span className="font-display text-xl font-light italic tracking-[-0.04em] text-marigold sm:text-2xl">
+        <span className="font-display text-lg font-light italic tracking-[-0.04em] text-marigold sm:text-xl">
           Wool
         </span>
       </span>
@@ -281,8 +281,8 @@ export function Header() {
           onMouseLeave={closeCategoriesSoon}
         >
           <Glass variant="panel" refract className="mx-auto max-w-[1200px]">
-            <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-              {groups.slice(0, 4).map((group) => (
+            <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+              {groups.map((group) => (
                 <div key={group.id}>
                   <Link
                     to="/collections/$slug"
@@ -293,6 +293,9 @@ export function Header() {
                   >
                     {group.name}
                   </Link>
+                  {group.blurb && !group.children?.length ? (
+                    <p className="mt-3 text-sm text-muted-foreground">{group.blurb}</p>
+                  ) : null}
                   <ul className="mt-3 space-y-2">
                     {(group.children ?? []).slice(0, 5).map((item) => (
                       <li key={item.id}>

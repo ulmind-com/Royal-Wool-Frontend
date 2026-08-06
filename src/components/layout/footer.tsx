@@ -1,50 +1,158 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { Facebook, Instagram, Twitter } from "lucide-react";
 
-import { useSettings } from "@/hooks/use-settings";
-import { BRAND, POLICY_LINKS } from "@/lib/site";
-import { WHATSAPP_DISPLAY, waGeneral } from "@/lib/whatsapp";
+import { categoryTreeQuery } from "@/lib/api/queries";
+import { BRAND, SOCIAL_LINKS } from "@/lib/site";
+
+interface YarnBall {
+  /** Centre of the ball, in viewBox units. */
+  cx: number;
+  cy: number;
+  /** Box the ball is drawn into (the cut-outs are square with the skein centred). */
+  size: number;
+  /** Tilt, so the balls do not read as a row of stamps. */
+  rotate: number;
+  src: string;
+}
+
+/** Outlined "Royaall Wool" wordmark with real yarn balls resting on the letters. */
+function Wordmark({
+  id,
+  className,
+  viewBox,
+  lines,
+  balls,
+}: {
+  id: string;
+  className: string;
+  viewBox: string;
+  lines: { text: string; x: number; y: number; size: number }[];
+  balls: YarnBall[];
+}) {
+  return (
+    <svg viewBox={viewBox} className={className} aria-label="Royaall Wool" role="img">
+      <defs>
+        <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="6" stdDeviation="8" floodOpacity="0.22" />
+        </filter>
+      </defs>
+      {lines.map((l) => (
+        <text
+          key={l.text + l.y}
+          x={l.x}
+          y={l.y}
+          fontSize={l.size}
+          textAnchor="middle"
+          className="font-display stroke-foreground"
+          fill="none"
+          strokeWidth="2"
+          letterSpacing="-4"
+        >
+          {l.text}
+        </text>
+      ))}
+      {balls.map((b) => (
+        <image
+          key={b.src + b.cx}
+          href={b.src}
+          x={b.cx - b.size / 2}
+          y={b.cy - b.size / 2}
+          width={b.size}
+          height={b.size}
+          preserveAspectRatio="xMidYMid meet"
+          filter={`url(#${id}-shadow)`}
+          transform={`rotate(${b.rotate} ${b.cx} ${b.cy})`}
+        />
+      ))}
+    </svg>
+  );
+}
+
+const YARN = (name: string) => `/assets/yarn-cutout/${name}.webp`;
+
+/** Mirrors the header nav, in the same order. */
+const NAV_LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/collections", label: "Shop" },
+  { to: "/about", label: "About Us" },
+  { to: "/blog", label: "Blog" },
+  { to: "/offers", label: "Offers" },
+  { to: "/contact", label: "Contact" },
+  { to: "/search", label: "Search" },
+];
+
+const LEGAL_LINKS = [
+  { to: "/privacy", label: "Privacy Policy" },
+  { to: "/terms", label: "Terms" },
+];
+
+const SOCIALS = [
+  { href: SOCIAL_LINKS.instagram, label: "Instagram", Icon: Instagram },
+  { href: SOCIAL_LINKS.facebook, label: "Facebook", Icon: Facebook },
+  { href: SOCIAL_LINKS.twitter, label: "Twitter", Icon: Twitter },
+];
 
 export function Footer() {
-  const { shop } = useSettings();
+  const { data: tree } = useQuery(categoryTreeQuery);
+  const categories = (tree ?? []).filter((c) => !c.parent_id);
 
   return (
-    <footer className="ink-section relative mt-24 border-t border-border">
+    <footer className="footer-wash relative mt-24 overflow-hidden">
       <div className="mx-auto w-full max-w-[1600px] px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
-        <div className="grid gap-10 sm:gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)]">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
+          {/* Brand + socials */}
           <div className="min-w-0">
-            <p className="font-display text-3xl font-light tracking-[-0.03em] text-foreground sm:text-4xl">
-              Royal <span className="italic text-marigold">Wool</span>
-            </p>
-            <p className="mt-4 max-w-sm text-muted-foreground">{BRAND.tagline}</p>
+            <Link to="/" data-cursor="link" className="flex items-center gap-3">
+              <img
+                src="/logo.jpeg"
+                alt=""
+                aria-hidden
+                width={56}
+                height={56}
+                className="h-14 w-14 shrink-0 rounded-full border border-marigold/40 object-cover shadow-sm"
+              />
+              <span className="flex items-baseline gap-1.5">
+                <span className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
+                  Royaall
+                </span>
+                <span className="font-display text-2xl font-light italic tracking-[-0.04em] text-marigold sm:text-3xl">
+                  Wool
+                </span>
+              </span>
+            </Link>
 
-            <a
-              href={waGeneral()}
-              target="_blank"
-              rel="noopener"
-              aria-label="Chat with Royal Wool on WhatsApp"
-              className="sheen mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-madder px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5 sm:mt-8 sm:w-auto"
-              data-cursor="link"
-            >
-              Chat on WhatsApp
-            </a>
+            <p className="mt-8 font-data text-2xs uppercase tracking-widest text-foreground">
+              Follow Us
+            </p>
+            <div className="mt-4 flex items-center gap-3">
+              {SOCIALS.map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${BRAND.name} on ${label}`}
+                  data-cursor="link"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-border text-foreground transition-colors duration-[var(--dur-micro)] hover:border-madder hover:text-madder"
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-10">
-            <nav aria-label="Shop">
-              <p className="font-data text-2xs text-marigold">Shop</p>
-              <ul className="mt-4 space-y-2">
-                {[
-                  { to: "/collections", label: "All yarns" },
-                  { to: "/upcoming", label: "Upcoming" },
-                  { to: "/offers", label: "Offers" },
-                  { to: "/search", label: "Search" },
-                ].map((l) => (
+          {/* Link columns — 2 across on mobile, 3 on desktop */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:gap-x-10 lg:grid-cols-3">
+            <nav aria-label="Menu">
+              <p className="font-data text-2xs uppercase tracking-widest text-foreground">Menu</p>
+              <ul className="mt-4 space-y-2.5">
+                {NAV_LINKS.map((l) => (
                   <li key={l.to}>
                     <Link
                       to={l.to}
                       data-cursor="link"
-                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      className="text-muted-foreground transition-colors hover:text-madder"
                     >
                       {l.label}
                     </Link>
@@ -53,15 +161,35 @@ export function Footer() {
               </ul>
             </nav>
 
-            <nav aria-label="Help">
-              <p className="font-data text-2xs text-marigold">Help</p>
-              <ul className="mt-4 space-y-2">
-                {POLICY_LINKS.map((l) => (
+            <nav aria-label="Categories">
+              <p className="font-data text-2xs uppercase tracking-widest text-foreground">
+                Categories
+              </p>
+              <ul className="mt-4 space-y-2.5">
+                {categories.map((c) => (
+                  <li key={c.id}>
+                    <Link
+                      to="/collections/$slug"
+                      params={{ slug: c.slug }}
+                      data-cursor="link"
+                      className="text-muted-foreground transition-colors hover:text-madder"
+                    >
+                      {c.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <nav aria-label="Legal">
+              <p className="font-data text-2xs uppercase tracking-widest text-foreground">Legal</p>
+              <ul className="mt-4 space-y-2.5">
+                {LEGAL_LINKS.map((l) => (
                   <li key={l.to}>
                     <Link
                       to={l.to}
                       data-cursor="link"
-                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      className="text-muted-foreground transition-colors hover:text-madder"
                     >
                       {l.label}
                     </Link>
@@ -69,59 +197,50 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
-
-            <div className="col-span-2 sm:col-span-1">
-              <p className="font-data text-2xs text-marigold">Reach us</p>
-              <ul className="mt-4 space-y-3 text-muted-foreground">
-                {shop?.address ? (
-                  <li className="flex items-start gap-3">
-                    <MapPin className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/70" />
-                    <span>{shop.address}</span>
-                  </li>
-                ) : null}
-                <li className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 shrink-0 text-muted-foreground/70" />
-                  <a
-                    href={waGeneral()}
-                    target="_blank"
-                    rel="noopener"
-                    aria-label="WhatsApp Royal Wool"
-                    className="font-data text-2xs transition-colors hover:text-foreground"
-                  >
-                    {shop?.phone ?? WHATSAPP_DISPLAY}
-                  </a>
-                </li>
-                {shop?.email ? (
-                  <li className="flex items-center gap-3">
-                    <Mail className="h-4 w-4 shrink-0 text-muted-foreground/70" />
-                    <a
-                      href={`mailto:${shop.email}`}
-                      className="font-data text-2xs transition-colors hover:text-foreground"
-                    >
-                      {shop.email}
-                    </a>
-                  </li>
-                ) : null}
-                <li className="flex items-center gap-3">
-                  <Instagram className="h-4 w-4 shrink-0 text-muted-foreground/70" />
-                  <span className="font-data text-2xs">@royalwool</span>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-6 border-t border-border pb-28 md:pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] pt-6 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2 font-data text-2xs text-muted-foreground/70 sm:flex-row sm:items-center sm:gap-4">
-            <p>© {new Date().getFullYear()} Royal Wool. All rights reserved.</p>
-            <span className="hidden sm:inline">•</span>
-            <p>Made in India</p>
-          </div>
+        {/* Oversized wordmark */}
+        <div className="mt-14 sm:mt-20">
+          <Wordmark
+            id="rw-mark-desktop"
+            className="hidden w-full sm:block"
+            viewBox="-40 -70 1280 370"
+            lines={[{ text: "Royaall Wool", x: 600, y: 178, size: 190 }]}
+            balls={[
+              { cx: 78, cy: 46, size: 168, rotate: -12, src: YARN("candy-blue") },
+              { cx: 300, cy: 210, size: 124, rotate: 9, src: YARN("hobby-yellow") },
+              { cx: 600, cy: 28, size: 112, rotate: -6, src: YARN("delight-coral") },
+              { cx: 880, cy: 214, size: 128, rotate: 12, src: YARN("candy-lilac") },
+              { cx: 1132, cy: 44, size: 160, rotate: -9, src: YARN("hobby-green") },
+            ]}
+          />
+          <Wordmark
+            id="rw-mark-mobile"
+            className="w-full sm:hidden"
+            viewBox="-40 -50 480 440"
+            lines={[
+              { text: "Royaall", x: 200, y: 150, size: 118 },
+              { text: "Wool", x: 200, y: 290, size: 118 },
+            ]}
+            balls={[
+              { cx: 40, cy: 34, size: 132, rotate: -12, src: YARN("candy-blue") },
+              { cx: 366, cy: 40, size: 104, rotate: 10, src: YARN("delight-coral") },
+              { cx: 34, cy: 200, size: 112, rotate: 8, src: YARN("hobby-yellow") },
+              { cx: 362, cy: 312, size: 124, rotate: -10, src: YARN("hobby-green") },
+            ]}
+          />
+        </div>
+
+        <div className="mt-10 flex flex-col gap-6 border-t border-border pb-28 pt-6 md:pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-data text-2xs text-muted-foreground">
+            © {new Date().getFullYear()} Royaall Wool. All rights reserved.
+          </p>
           <a
             href="https://www.ulmind.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 text-[13px] text-foreground/90 font-medium drop-shadow-md group cursor-pointer"
+            className="group flex items-center gap-2.5 text-[13px] font-medium text-foreground/90"
           >
             <span className="opacity-80 transition-opacity group-hover:opacity-100">
               Designed and Developed by
@@ -129,7 +248,7 @@ export function Footer() {
             <img
               src="/assets/ulmind.png"
               alt="Ulmind"
-              className="h-10 sm:h-12 w-auto object-contain drop-shadow-lg opacity-100 transition-all group-hover:scale-105"
+              className="h-10 w-auto object-contain transition-all group-hover:scale-105 sm:h-12"
             />
           </a>
         </div>
