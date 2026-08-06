@@ -190,6 +190,29 @@
   color: var(--foreground);
 }
 
+/* Soft dye-bath wash — light brand-tinted gradient behind the footer. */
+.footer-wash {
+  background:
+    /* top edge fades into the page so there is no visible seam */
+    linear-gradient(to bottom, var(--background) 0%, transparent 22%),
+    radial-gradient(
+      95% 75% at 12% 0%,
+      color-mix(in oklab, var(--madder) 12%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      85% 70% at 88% 12%,
+      color-mix(in oklab, var(--marigold) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      110% 85% at 50% 105%,
+      color-mix(in oklab, var(--indigo) 8%, transparent),
+      transparent 72%
+    ),
+    var(--background);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

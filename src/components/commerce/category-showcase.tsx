@@ -47,7 +47,7 @@ function apiTile(category: CategoryNode): Tile {
     key: category.id,
     name: category.name,
     image: category.image ?? WOOL_CATEGORIES[0]!.image,
-    note: childCount ? `${childCount} ranges` : "Explore range",
+    note: category.blurb ?? (childCount ? `${childCount} ranges` : "Explore range"),
     href: { to: "/collections/$slug", params: { slug: category.slug } },
     imageScale: category.image_scale ?? undefined,
   };

@@ -84,7 +84,7 @@ export function HeroSlider() {
               src={slide.url}
               alt={slide.title || "Royal Wool yarn"}
               loading={index === 0 ? "eager" : "lazy"}
-              className="absolute inset-0 h-full w-full object-cover object-[80%_center]"
+              className="absolute inset-0 h-full w-full object-cover object-[80%_15%]"
               initial={{ opacity: 0, scale: reduced ? 1 : 1.06 }}
               animate={{
                 opacity: 1,

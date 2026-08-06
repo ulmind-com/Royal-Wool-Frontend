@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { DEMO_REVIEWS } from "@/data/demo-reviews";
+import { GOOGLE_REVIEWS } from "@/data/google-reviews";
 import { ApiError, apiFetch } from "@/lib/api/client";
 import type { Product } from "@/lib/api/types";
 import { primaryImage } from "@/lib/api/types";
@@ -18,6 +18,8 @@ import { primaryImage } from "@/lib/api/types";
 
 const MINUTE = 60_000;
 const FALLBACK_PRODUCT_COUNT = 10;
+/** Google reviews pulled in one go — the section pages through them 6 at a time. */
+const GOOGLE_LIMIT = 200;
 
 /** Raw review as the API may shape it — every field defensively optional. */
 interface RawReview {
@@ -128,6 +130,45 @@ async function soft<T>(promise: Promise<T>): Promise<T | null> {
   }
 }
 
+/** Raw row from `/google-reviews`. */
+interface RawGoogleReview {
+  id?: string;
+  review_id?: string;
+  author?: string;
+  rating?: number;
+  text?: string;
+  photos?: string[];
+  created_at?: string;
+  owner_reply?: string | null;
+}
+
+/** Google Business Profile reviews, synced into the backend. */
+async function fetchGoogleReviews(signal: AbortSignal): Promise<Review[]> {
+  const res = await soft(
+    apiFetch<{ items: RawGoogleReview[]; total: number }>("/google-reviews", {
+      query: { limit: GOOGLE_LIMIT },
+      signal,
+    }),
+  );
+  const items = res?.items;
+  if (!Array.isArray(items)) return [];
+
+  return items
+    .filter((r) => (r.text ?? "").trim().length > 0)
+    .map((r) => ({
+      id: `google-${r.review_id ?? r.id}`,
+      rating: Math.round(r.rating ?? 0) || 5,
+      title: null,
+      text: (r.text ?? "").trim(),
+      photos: Array.isArray(r.photos) ? r.photos : [],
+      tags: ["Google review"],
+      verified: true,
+      createdAt: r.created_at ?? null,
+      author: r.author ?? "Google user",
+      product: { id: null, title: null, image: null },
+    }));
+}
+
 async function fetchFeed(signal: AbortSignal): Promise<ReviewFeed> {
   // 1. Preferred: a public site-wide feed.
   const highlights = await soft(
@@ -155,10 +196,14 @@ async function fetchFeed(signal: AbortSignal): Promise<ReviewFeed> {
 
   const merged = batches.flat();
 
-  // 3. Nothing published yet — show curated placeholders so the shelf isn't bare.
-  if (!merged.length) return summarise(DEMO_REVIEWS, true);
+  // 3. Every Google Business Profile review the backend has synced. These carry
+  //    the shop's public reputation, so they show alongside on-site reviews.
+  const google = await fetchGoogleReviews(signal);
 
-  return summarise(merged);
+  const all = [...merged, ...google];
+  if (!all.length) return summarise(GOOGLE_REVIEWS);
+
+  return summarise(all);
 }
 
 export const reviewFeedQuery = queryOptions({

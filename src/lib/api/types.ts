@@ -41,6 +41,8 @@ export interface CategoryNode {
   image: string | null;
   order?: number;
   image_scale?: number;
+  /** Short marketing line shown in the nav panel and category cards. */
+  blurb?: string | null;
   children?: CategoryNode[];
 }
 
