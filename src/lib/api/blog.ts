@@ -48,6 +48,9 @@ interface RawPost {
   date?: string;
   featured?: boolean;
   is_featured?: boolean;
+  link?: string;
+  url?: string;
+  link_label?: string;
   body?: unknown;
   content?: unknown;
   html?: unknown;
@@ -64,10 +67,18 @@ function parseBody(value: unknown): BlogBlock[] | null {
           return t ? { type: "p", text: t } : null;
         }
         if (item && typeof item === "object") {
-          const raw = item as { type?: unknown; text?: unknown; content?: unknown };
-          const t = text(raw.text) ?? text(raw.content);
-          if (!t) return null;
+          const raw = item as {
+            type?: unknown;
+            text?: unknown;
+            content?: unknown;
+            url?: unknown;
+            href?: unknown;
+          };
           const kind = text(raw.type);
+          const href = text(raw.url) ?? text(raw.href);
+          const t = text(raw.text) ?? text(raw.content);
+          if (kind === "link" && href) return { type: "link", text: t ?? href, url: href };
+          if (!t) return null;
           if (kind === "h2" || kind === "heading" || kind === "h3") return { type: "h2", text: t };
           if (kind === "quote" || kind === "blockquote") return { type: "quote", text: t };
           return { type: "p", text: t };
@@ -183,6 +194,8 @@ function normalize(raw: RawPost, index: number): BlogPost | null {
       (Array.isArray(raw.tags) ? text(raw.tags[0]) : null) ??
       "Journal",
     featured: Boolean(raw.featured ?? raw.is_featured),
+    ...(text(raw.link) ?? text(raw.url) ? { link: (text(raw.link) ?? text(raw.url))! } : {}),
+    ...(text(raw.link_label) ? { linkLabel: text(raw.link_label)! } : {}),
     ...(publishedAt ? { publishedAt } : {}),
     ...(body ? { body } : {}),
   };

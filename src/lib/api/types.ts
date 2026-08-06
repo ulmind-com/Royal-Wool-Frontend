@@ -13,6 +13,7 @@ export interface Settings {
   tax_rate: number;
   cancel_window_hours: number;
   return_window_days: number;
+  announcements?: string[];
   cod: { enabled: boolean; disabled_from: string | null; disabled_until: string | null };
   shop: {
     name: string;

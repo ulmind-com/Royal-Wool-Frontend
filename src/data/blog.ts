@@ -12,7 +12,10 @@ import p9 from "@/assets/blog/p9.jpg.asset.json";
 
 /** One block of long-form article copy. */
 export type BlogBlock =
-  { type: "h2"; text: string } | { type: "p"; text: string } | { type: "quote"; text: string };
+  | { type: "h2"; text: string }
+  | { type: "p"; text: string }
+  | { type: "quote"; text: string }
+  | { type: "link"; text: string; url: string };
 
 export interface BlogPost {
   id: string;
@@ -25,6 +28,9 @@ export interface BlogPost {
   /** Raw publish timestamp from the admin panel, when provided. */
   publishedAt?: string;
   tag: string;
+  /** Optional call-to-action link set in the admin panel. */
+  link?: string;
+  linkLabel?: string;
 
   featured?: boolean;
   /** Long-form article body, when the source provides one. */

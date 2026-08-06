@@ -8,11 +8,11 @@ import { activeCouponsQuery } from "@/lib/api/queries";
  * store's own settings/coupons, so the strip can never advertise a stale offer.
  */
 export function AnnouncementTicker() {
-  const { freeAbove, formatMoney } = useSettings();
+  const { settings, freeAbove, formatMoney } = useSettings();
   const { data: coupons } = useQuery(activeCouponsQuery);
   const coupon = coupons?.[0];
 
-  const items = [
+  const defaultItems = [
     freeAbove
       ? `Free delivery on orders above ${formatMoney(freeAbove)}`
       : "Tracked delivery across India",
@@ -22,6 +22,34 @@ export function AnnouncementTicker() {
     "Support 10am–7pm IST, all days",
     "Small-batch colour, wound for stitch definition",
   ];
+
+  // Try to use backend announcements, or fallback to the defaults.
+  let items = settings?.announcements?.length ? settings.announcements : defaultItems;
+
+  // Process smart placeholders in the strings
+  items = items.map(text => {
+    let out = text;
+    if (out.includes("{free_delivery}")) {
+      out = out.replace(/{free_delivery}/g, freeAbove ? formatMoney(freeAbove) : "");
+    }
+    if (out.includes("{coupon_code}")) {
+      out = out.replace(/{coupon_code}/g, coupon?.code || "");
+    }
+    if (out.includes("{coupon_desc}")) {
+      out = out.replace(/{coupon_desc}/g, coupon?.description || "special offer");
+    }
+    if (out === "{coupon}") {
+      if (!coupon) return "";
+      return `Use code ${coupon.code} — ${coupon.description ?? "live offer"}`;
+    }
+    return out;
+  }).filter(t => t.trim().length > 0);
+
+  // If after filtering we have no items left (e.g. only coupon item but no coupon),
+  // fallback to defaults without the coupon
+  if (items.length === 0) {
+    items = defaultItems.filter(t => t && !t.includes("Use code undefined"));
+  }
 
   const row = [...items, ...items];
 

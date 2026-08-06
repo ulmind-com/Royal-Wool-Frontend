@@ -139,7 +139,18 @@ function BlogPostPage() {
           </p>
         )}
 
-        <div className="mt-14 border-t border-border pt-8">
+        <div className="mt-14 flex flex-wrap items-center gap-3 border-t border-border pt-8">
+          {post.link ? (
+            <a
+              href={post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="link"
+              className="inline-flex min-h-[42px] items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm text-foreground transition-colors hover:border-marigold hover:text-marigold"
+            >
+              {post.linkLabel || "Read more"}
+            </a>
+          ) : null}
           <a
             href={whatsappLink(`Hi Royal Wool, I just read "${post.title}" on your journal.`)}
             target="_blank"

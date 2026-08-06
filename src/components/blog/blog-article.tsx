@@ -45,6 +45,22 @@ function Block({ block }: { block: BlogBlock }) {
     );
   }
 
+  if (block.type === "link") {
+    return (
+      <p className="mt-6">
+        <a
+          href={block.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cursor="link"
+          className="inline-flex min-h-[42px] items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm text-foreground transition-colors hover:border-marigold hover:text-marigold"
+        >
+          {block.text}
+        </a>
+      </p>
+    );
+  }
+
   return (
     <p className="mt-5 text-base leading-[1.85] text-muted-foreground sm:text-[1.0625rem]">
       {block.text}
