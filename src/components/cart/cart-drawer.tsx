@@ -2,7 +2,7 @@ import { useMemo, useEffect } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
+import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
