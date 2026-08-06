@@ -24,6 +24,19 @@ export interface Settings {
     lat?: number;
     lng?: number;
   };
+  /** Contact-page support card — every field is admin-editable. */
+  support?: {
+    title?: string;
+    note?: string;
+    hotline_label?: string;
+    email_label?: string;
+    address_label?: string;
+    whatsapp?: string;
+    whatsapp_label?: string;
+    whatsapp_message?: string;
+    hours?: string;
+    socials?: { label: string; href: string }[];
+  };
   delivery: {
     free_radius_km: number;
     per_km_rate: number;
@@ -57,6 +70,8 @@ export interface ProductSize {
 }
 
 export interface ProductColor {
+  /** Broad shade bucket set in the admin editor, e.g. "Blue", "Multi". */
+  color_family?: string | null;
   name: string;
   hex: string | null;
   images: string[];
@@ -78,6 +93,9 @@ export interface Product {
   price: number;
   sizes?: string[];
   colors?: ProductColor[];
+  primary_color_name?: string | null;
+  primary_color_hex?: string | null;
+  primary_color_family?: string | null;
   images?: string[];
   rating?: number;
   review_count?: number;

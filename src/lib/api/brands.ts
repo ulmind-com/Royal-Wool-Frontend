@@ -70,6 +70,63 @@ export function availableWeights(products: Product[]): YarnWeight[] {
   return YARN_WEIGHTS.filter((w) => ids.has(w.id));
 }
 
+/**
+ * Colour facet for the Shop rail. Nothing here is a fixed list — the buckets
+ * and their swatches come straight from what the admin saved on each product
+ * (`colors[].color_family`, falling back to the variant name, then to the
+ * product's primary colour). Add a shade in the admin and it shows up here.
+ */
+export interface ColorFacet {
+  /** Lowercased key used in the URL. */
+  id: string;
+  /** Label exactly as the admin wrote it. */
+  name: string;
+  /** Representative swatch; null when the admin never set a hex. */
+  hex: string | null;
+  count: number;
+}
+
+/** Distinct colour buckets a single product belongs to. */
+function familiesOf(p: Product): { name: string; hex: string | null }[] {
+  const out: { name: string; hex: string | null }[] = [];
+  const seen = new Set<string>();
+  const push = (name?: string | null, hex?: string | null) => {
+    const label = (name ?? "").trim();
+    if (!label) return;
+    const key = label.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ name: label, hex: hex?.trim() || null });
+  };
+
+  for (const c of p.colors ?? []) push(c.color_family || c.name, c.hex);
+  // Products without colour variants still carry a primary shade.
+  if (!out.length) push(p.primary_color_family || p.primary_color_name, p.primary_color_hex);
+  return out;
+}
+
+export function colorFacets(products: Product[]): ColorFacet[] {
+  const map = new Map<string, ColorFacet>();
+  for (const p of products) {
+    for (const fam of familiesOf(p)) {
+      const id = fam.name.toLowerCase();
+      const hit = map.get(id);
+      if (hit) {
+        hit.count += 1;
+        hit.hex ??= fam.hex;
+      } else {
+        map.set(id, { id, name: fam.name, hex: fam.hex, count: 1 });
+      }
+    }
+  }
+  // Busiest shades first so the rail leads with what the store actually stocks.
+  return [...map.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+export function matchesColor(p: Product, colorId: string): boolean {
+  return familiesOf(p).some((f) => f.name.toLowerCase() === colorId);
+}
+
 export function availableCategoryIds(products: Product[]): Set<string> {
   return new Set(products.map((p) => p.category_id).filter(Boolean) as string[]);
 }

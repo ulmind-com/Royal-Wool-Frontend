@@ -80,6 +80,14 @@ function autoHref(key: ChannelKey, value: string): string | null {
   return null;
 }
 
+/** wa.me link for the admin's number, falling back to the build-time default. */
+function waHref(display: string | null, message: string | null): string {
+  const digits = (display ?? "").replace(/\D/g, "");
+  const text = message || "Hi Royal Wool, I have a question about your yarns.";
+  if (!digits) return whatsappLink(text);
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+}
+
 function pick(bag: Record<string, unknown>, keys: string[]): string | null {
   for (const key of keys) {
     const found = text(bag[key]);
@@ -124,11 +132,16 @@ export function normalizeContact(
   const admin = readChannels(nested["channels"] ?? nested["items"] ?? nested["rows"]);
 
   const shop = settings?.shop;
+  const support = settings?.support;
+  // Once /settings has answered, it is the source of truth: a field the admin
+  // cleared must disappear from the card rather than fall back to demo copy.
+  const settingsLoaded = Boolean(settings);
+
   const fromSettings = new Map<ChannelKey, ContactChannel>();
   if (shop?.phone) {
     fromSettings.set("hotline", {
       key: "hotline",
-      label: "Hotline",
+      label: text(support?.hotline_label) ?? "Hotline",
       value: shop.phone,
       href: autoHref("hotline", shop.phone),
     });
@@ -136,7 +149,7 @@ export function normalizeContact(
   if (shop?.email) {
     fromSettings.set("email", {
       key: "email",
-      label: "Email",
+      label: text(support?.email_label) ?? "Email",
       value: shop.email,
       href: autoHref("email", shop.email),
     });
@@ -144,17 +157,21 @@ export function normalizeContact(
   if (shop?.address) {
     fromSettings.set("location", {
       key: "location",
-      label: "Studio",
+      label: text(support?.address_label) ?? "Studio",
       value: shop.address,
       href: null,
     });
   }
-  fromSettings.set("whatsapp", {
-    key: "whatsapp",
-    label: "SMS / WhatsApp",
-    value: text(nested["whatsapp"]) ?? WHATSAPP_DISPLAY,
-    href: autoHref("whatsapp", WHATSAPP_DISPLAY),
-  });
+  const waNumber = text(nested["whatsapp"]) ?? text(support?.whatsapp);
+  if (waNumber || !settingsLoaded) {
+    const display = waNumber ?? WHATSAPP_DISPLAY;
+    fromSettings.set("whatsapp", {
+      key: "whatsapp",
+      label: text(support?.whatsapp_label) ?? "SMS / WhatsApp",
+      value: display,
+      href: waHref(display, text(support?.whatsapp_message)),
+    });
+  }
 
   const demo = new Map<ChannelKey, ContactChannel>(
     CONTACT_DEMO.channels.map((c) => [
@@ -169,11 +186,11 @@ export function normalizeContact(
   );
 
   const channels = ORDER.flatMap((key) => {
-    const row = admin.get(key) ?? fromSettings.get(key) ?? demo.get(key);
+    const row = admin.get(key) ?? fromSettings.get(key) ?? (settingsLoaded ? null : demo.get(key));
     return row ? [row] : [];
   });
 
-  const socialsRaw = nested["socials"] ?? nested["social_links"];
+  const socialsRaw = nested["socials"] ?? nested["social_links"] ?? support?.socials;
   const socials = Array.isArray(socialsRaw)
     ? socialsRaw.flatMap((item) => {
         if (!item || typeof item !== "object") return [];
@@ -182,7 +199,9 @@ export function normalizeContact(
         const href = pick(row, ["href", "url", "link"]);
         return label && href ? [{ label, href }] : [];
       })
-    : [...CONTACT_DEMO.socials];
+    : settingsLoaded
+      ? []
+      : [...CONTACT_DEMO.socials];
 
   return {
     eyebrow: pick(nested, ["eyebrow", "kicker"]) ?? CONTACT_DEMO.eyebrow,
@@ -190,9 +209,18 @@ export function normalizeContact(
     intro: pick(nested, ["intro", "subtitle", "description"]) ?? CONTACT_DEMO.intro,
     formTitle: pick(nested, ["form_title", "formTitle"]) ?? CONTACT_DEMO.formTitle,
     formNote: pick(nested, ["form_note", "formNote"]) ?? CONTACT_DEMO.formNote,
-    cardTitle: pick(nested, ["card_title", "cardTitle", "support_title"]) ?? CONTACT_DEMO.cardTitle,
-    cardNote: pick(nested, ["card_note", "cardNote", "support_note"]) ?? CONTACT_DEMO.cardNote,
-    hours: pick(nested, ["hours", "timing", "opening_hours"]) ?? CONTACT_DEMO.hours,
+    cardTitle:
+      pick(nested, ["card_title", "cardTitle", "support_title"]) ??
+      text(support?.title) ??
+      CONTACT_DEMO.cardTitle,
+    cardNote:
+      pick(nested, ["card_note", "cardNote", "support_note"]) ??
+      text(support?.note) ??
+      CONTACT_DEMO.cardNote,
+    hours:
+      pick(nested, ["hours", "timing", "opening_hours"]) ??
+      text(support?.hours) ??
+      (settingsLoaded ? null : CONTACT_DEMO.hours),
     channels,
     socials,
     placeholder: admin.size === 0,

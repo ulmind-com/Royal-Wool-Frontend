@@ -11,7 +11,9 @@ import {
   availableCategoryIds,
   availableWeights,
   brandGroups,
+  colorFacets,
   matchesBrand,
+  matchesColor,
   sortProducts,
   weightOf,
 } from "@/lib/api/brands";
@@ -22,6 +24,7 @@ import { cn } from "@/lib/utils";
 type ShopSearch = {
   brand?: string | undefined;
   category?: string | undefined;
+  color?: string | undefined;
   weight?: string | undefined;
   sort?: string | undefined;
 };
@@ -37,6 +40,7 @@ export const Route = createFileRoute("/collections/")({
   validateSearch: (search: Record<string, unknown>): ShopSearch => ({
     brand: typeof search["brand"] === "string" ? search["brand"] : undefined,
     category: typeof search["category"] === "string" ? search["category"] : undefined,
+    color: typeof search["color"] === "string" ? search["color"] : undefined,
     weight: typeof search["weight"] === "string" ? search["weight"] : undefined,
     sort: typeof search["sort"] === "string" ? search["sort"] : undefined,
   }),
@@ -63,7 +67,7 @@ export const Route = createFileRoute("/collections/")({
 });
 
 function ShopPage() {
-  const { brand, category, weight, sort } = Route.useSearch();
+  const { brand, category, color, weight, sort } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -89,21 +93,24 @@ function ShopPage() {
   }, [tree.data, activeGroup, pool]);
 
   const weights = useMemo(() => availableWeights(pool), [pool]);
+  const colors = useMemo(() => colorFacets(pool), [pool]);
 
   const visible = useMemo(() => {
     const catId = catList.find((c) => c.slug === category)?.id;
     const filtered = pool.filter((p) => {
       if (catId && p.category_id !== catId) return false;
+      if (color && !matchesColor(p, color)) return false;
       if (weight && weightOf(p)?.id !== weight) return false;
       return true;
     });
     return sortProducts(filtered, sort || "featured");
-  }, [pool, catList, category, weight, sort]);
+  }, [pool, catList, category, color, weight, sort]);
 
   const set = (patch: Partial<ShopSearch>) =>
     void navigate({ search: (prev: ShopSearch) => ({ ...prev, ...patch }) });
 
-  const activeCount = (brand ? 1 : 0) + (category ? 1 : 0) + (weight ? 1 : 0);
+  const activeCount =
+    (brand ? 1 : 0) + (category ? 1 : 0) + (color ? 1 : 0) + (weight ? 1 : 0);
 
   const filterPanel = (
     <div className="space-y-6">
@@ -111,7 +118,7 @@ function ShopPage() {
         <button
           type="button"
           data-cursor="link"
-          onClick={() => set({ brand: "", category: "", weight: "" })}
+          onClick={() => set({ brand: "", category: "", color: "", weight: "" })}
           className="font-data text-2xs text-marigold transition-colors hover:text-foreground"
         >
           Clear all filters ({activeCount})
@@ -121,15 +128,18 @@ function ShopPage() {
       <BrandRail
         groups={groups}
         active={brand || ""}
-        onSelect={(key) => set({ brand: key, category: "", weight: "" })}
+        onSelect={(key) => set({ brand: key, category: "", color: "", weight: "" })}
       />
 
       <ShopFilters
         categories={catList}
+        colors={colors}
         weights={weights}
         category={category || ""}
+        color={color || ""}
         weight={weight || ""}
         onCategory={(slug) => set({ category: slug })}
+        onColor={(id) => set({ color: id })}
         onWeight={(id) => set({ weight: id })}
       />
     </div>
@@ -174,9 +184,9 @@ function ShopPage() {
             {filtersOpen ? <div className="mt-5">{filterPanel}</div> : null}
           </div>
 
-          <div className="hidden lg:sticky lg:top-14 lg:block lg:max-h-[calc(100svh-8rem)] lg:overflow-y-auto lg:pr-1">
-            {filterPanel}
-          </div>
+          {/* No nested scroll area: the rail moves with the page, so the wheel
+              works anywhere instead of only over the sidebar. */}
+          <div className="hidden lg:block lg:pr-1">{filterPanel}</div>
         </aside>
 
         <div className="min-w-0">

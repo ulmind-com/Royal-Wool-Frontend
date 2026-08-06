@@ -7,11 +7,10 @@ export const BRAND = {
   tagline: "Premium knitting & crochet yarn, dyed in small batches.",
 } as const;
 
-/** Social profiles shown in the footer. Swap in the real handles here. */
+/** Live social profiles shown in the footer. */
 export const SOCIAL_LINKS = {
-  instagram: "https://instagram.com/royaallwool",
-  facebook: "https://facebook.com/royaallwool",
-  twitter: "https://twitter.com/royaallwool",
+  instagram: "https://www.instagram.com/royaallwool",
+  facebook: "https://www.facebook.com/share/1SEBGxnKW6/",
 } as const;
 
 export const POLICY_LINKS = [

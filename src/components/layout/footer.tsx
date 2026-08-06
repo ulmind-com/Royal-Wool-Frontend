@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 
 import { categoryTreeQuery } from "@/lib/api/queries";
 import { BRAND, SOCIAL_LINKS } from "@/lib/site";
@@ -90,7 +90,6 @@ const LEGAL_LINKS = [
 const SOCIALS = [
   { href: SOCIAL_LINKS.instagram, label: "Instagram", Icon: Instagram },
   { href: SOCIAL_LINKS.facebook, label: "Facebook", Icon: Facebook },
-  { href: SOCIAL_LINKS.twitter, label: "Twitter", Icon: Twitter },
 ];
 
 export function Footer() {
