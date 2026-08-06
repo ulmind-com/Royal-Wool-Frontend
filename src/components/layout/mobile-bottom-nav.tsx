@@ -15,20 +15,49 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.26) 100%)",
-  backdropFilter: "blur(24px) saturate(190%)",
-  border: "1px solid rgba(255, 255, 255, 0.45)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.14) 46%, rgba(255, 255, 255, 0.22) 100%)",
+  backdropFilter: "blur(28px) saturate(240%) brightness(1.06)",
+  border: "1px solid rgba(255, 255, 255, 0.34)",
   boxShadow:
-    "0 8px 24px -8px rgba(15, 12, 20, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7)",
+    "0 18px 40px -14px rgba(15, 12, 20, 0.34), 0 6px 14px -8px rgba(15, 12, 20, 0.18), inset 0 1.5px 0 rgba(255, 255, 255, 0.9), inset 0 -1.5px 2px rgba(15, 12, 20, 0.12)",
+};
+
+/** Bright top rim fading out toward the bottom — makes the glass read as thick. */
+const RIM_HIGHLIGHT: React.CSSProperties = {
+  background:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.18) 24%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, 0.14) 100%)",
+  maskImage:
+    "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  maskComposite: "exclude",
+  WebkitMaskComposite: "xor",
+  padding: "1.25px",
+};
+
+/** Diagonal specular sheen across the upper half. */
+const SPECULAR_SHEEN: React.CSSProperties = {
+  background:
+    "linear-gradient(112deg, rgba(255, 255, 255, 0) 8%, rgba(255, 255, 255, 0.42) 26%, rgba(255, 255, 255, 0.06) 44%, rgba(255, 255, 255, 0) 62%)",
+  mixBlendMode: "screen",
+};
+
+/** Blurred inner ring so content near the edge looks bent, not cleanly cut. */
+const EDGE_REFRACTION: React.CSSProperties = {
+  boxShadow:
+    "inset 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 0 10px 3px rgba(255, 255, 255, 0.28), inset 0 0 22px rgba(255, 255, 255, 0.12)",
+  backdropFilter: "blur(6px) saturate(150%)",
+  maskImage:
+    "radial-gradient(120% 160% at 50% 50%, transparent 56%, #000 82%)",
 };
 
 const LIQUID_GLASS_INDICATOR: MotionStyle = {
-  background: "rgba(255, 255, 255, 0.55)",
-  backdropFilter: "blur(8px) saturate(160%)",
+  background:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.4) 100%)",
+  backdropFilter: "blur(10px) saturate(180%) brightness(1.05)",
   boxShadow:
-    "inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 3px rgba(15, 12, 20, 0.08)",
-  border: "1px solid rgba(255, 255, 255, 0.6)",
+    "inset 0 1.5px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 1px rgba(15, 12, 20, 0.08), 0 3px 10px -4px rgba(15, 12, 20, 0.22), 0 0 14px rgba(255, 255, 255, 0.35)",
+  border: "1px solid rgba(255, 255, 255, 0.55)",
 };
+
 
 
 export function MobileBottomNav() {
