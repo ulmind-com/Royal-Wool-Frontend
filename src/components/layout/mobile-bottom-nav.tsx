@@ -196,7 +196,7 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -207,7 +207,7 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -219,7 +219,7 @@ export function MobileBottomNav() {
                         "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
                           ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                          : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                       )}
                     />
                     {cartCount > 0 && (
@@ -236,7 +236,7 @@ export function MobileBottomNav() {
                       "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                       isActive
                         ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                        : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                        : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                     )}
                   />
                 )}
@@ -272,7 +272,7 @@ export function MobileBottomNav() {
                         "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] sm:h-[26px] sm:w-[26px] transition-all duration-300",
                         isActive
                           ? "scale-110 text-ink fill-ink/15 stroke-[2.4px] drop-shadow-xs"
-                          : "text-ink/75 stroke-[1.8px] fill-transparent group-hover:text-ink"
+                          : "text-ink/90 stroke-[2px] fill-transparent group-hover:text-ink"
                       )}
                     />
                   )
