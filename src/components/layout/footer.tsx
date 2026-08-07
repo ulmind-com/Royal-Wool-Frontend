@@ -121,10 +121,10 @@ export function Footer() {
                 className="h-14 w-14 shrink-0 rounded-full border border-marigold/40 object-cover shadow-sm"
               />
               <span className="flex items-baseline gap-1.5">
-                <span className="font-display text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
+                <span className="font-display text-2xl font-semibold tracking-[-0.04em] sm:text-3xl" style={{ color: "#800000" }}>
                   Royaall
                 </span>
-                <span className="font-display text-2xl font-light italic tracking-[-0.04em] text-marigold sm:text-3xl">
+                <span className="font-display text-2xl font-light italic tracking-[-0.04em] sm:text-3xl" style={{ color: "#D4AF37" }}>
                   Wool
                 </span>
               </span>
