@@ -1,5 +1,4 @@
 import { apiFetch } from "@/lib/api/client";
-import html2pdf from 'html2pdf.js';
 
 /**
  * Checkout + order tracking wire types. Every money field is server-computed —
@@ -124,32 +123,16 @@ export const downloadInvoice = async (id: string) => {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!res.ok) throw new Error("Could not download invoice");
-  
-  const htmlText = await res.text();
-  
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = htmlText;
-  
-  // html2canvas (used by html2pdf) often requires the element to be in the DOM
-  wrapper.style.position = 'absolute';
-  wrapper.style.left = '-9999px';
-  wrapper.style.top = '-9999px';
-  wrapper.style.visibility = 'hidden';
-  document.body.appendChild(wrapper);
-  
-  const opt = {
-    margin:       0,
-    filename:     `Invoice_Royal_Wool_${id.slice(-8).toUpperCase()}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, logging: false },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-  
-  try {
-    await html2pdf().set(opt).from(wrapper).save();
-  } finally {
-    document.body.removeChild(wrapper);
-  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Invoice_Royal_Wool_${id.slice(-8).toUpperCase()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /** Razorpay's own checkout widget — loaded once, only in the browser. */
