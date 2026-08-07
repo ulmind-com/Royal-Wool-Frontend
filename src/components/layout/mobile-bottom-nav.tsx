@@ -53,10 +53,10 @@ const SPECULAR_SHEEN: React.CSSProperties = {
 /** Smoked glass tile behind the active item. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.18) 100%)",
+    "linear-gradient(180deg, rgba(15, 12, 20, 0.16) 0%, rgba(15, 12, 20, 0.1) 100%)",
   backdropFilter: "blur(10px) saturate(130%)",
   border: "1px solid rgba(255, 255, 255, 0.28)",
-  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.35)",
 };
 
 
