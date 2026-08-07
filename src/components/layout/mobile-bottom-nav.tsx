@@ -13,41 +13,52 @@ import { cn } from "@/lib/utils";
  * Active state is a raised glass blob that bulges past the pill and smears icons it passes.
  */
 
+/** Near-clear lens: background reads straight through, only a faint tint. */
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%)",
-  backdropFilter: "blur(28px) saturate(180%) brightness(1.06)",
-  border: "1px solid rgba(255, 255, 255, 0.4)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.04) 100%)",
+  backdropFilter: "blur(18px) saturate(150%) brightness(1.04)",
   boxShadow:
-    "0 8px 24px -10px rgba(15, 12, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.3)",
+    "0 10px 30px -14px rgba(15, 12, 20, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45)",
 };
 
-/** Bright top rim fading toward the bottom — reads as glass thickness. */
+/** Outer bright hairline — the crisp glass edge. */
 const RIM_HIGHLIGHT: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.12) 24%, rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0.22) 100%)",
+    "linear-gradient(150deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.35) 26%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.45) 74%, rgba(255, 255, 255, 0.8) 100%)",
   maskImage: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
   maskComposite: "exclude",
   WebkitMaskComposite: "xor",
-  padding: "1.25px",
+  padding: "1.5px",
+};
+
+/** Inner ring with its own blur — reads as glass wall thickness at the ends. */
+const EDGE_REFRACTION: React.CSSProperties = {
+  background:
+    "linear-gradient(120deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.1) 78%, rgba(255, 255, 255, 0.4) 100%)",
+  backdropFilter: "blur(6px) brightness(1.08)",
+  maskImage: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  maskComposite: "exclude",
+  WebkitMaskComposite: "xor",
+  padding: "5px",
 };
 
 /** Narrow diagonal specular streak. */
 const SPECULAR_SHEEN: React.CSSProperties = {
   background:
-    "linear-gradient(112deg, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.16) 28%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 54%)",
+    "linear-gradient(112deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.2) 29%, rgba(255, 255, 255, 0.02) 39%, rgba(255, 255, 255, 0) 52%)",
   mixBlendMode: "screen",
 };
 
-/** Raised glass droplet sitting on the bar — iOS glass-on-glass. */
+/** Smoked glass tile behind the active item. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.16) 100%)",
-  backdropFilter: "blur(14px) saturate(190%) brightness(1.08)",
-  border: "1px solid rgba(255, 255, 255, 0.5)",
-  boxShadow:
-    "inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 4px 12px -6px rgba(15, 12, 20, 0.16)",
+    "linear-gradient(180deg, rgba(20, 16, 24, 0.18) 0%, rgba(20, 16, 24, 0.1) 100%)",
+  backdropFilter: "blur(10px) saturate(130%)",
+  border: "1px solid rgba(255, 255, 255, 0.28)",
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
 };
+
 
 
 
