@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 /** Elfsight app id for the Royaall Wool Google Reviews widget. */
 const APP_ID = "84ed925f-7516-418c-8ed9-0eb5878929f7";
@@ -8,21 +8,16 @@ const APP_ID = "84ed925f-7516-418c-8ed9-0eb5878929f7";
  * Profile, so new reviews show up without a deploy.
  *
  * `platform.js` is loaded from the document head (see routes/__root.tsx). It
- * scans for `.elfsight-app-<id>` on load; because Elfsight injects its own DOM
- * into that container, the container is only rendered after hydration so the
- * server and client markup stay identical.
+ * scans for `.elfsight-app-<id>` on load; because this route mounts client-side
+ * we nudge it to re-scan once the container exists.
  */
 export function ElfsightReviews() {
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
     const mount = () => window.eapps?.platform?.initialize?.();
     mount();
     const t = window.setTimeout(mount, 1200);
     return () => window.clearTimeout(t);
   }, []);
-
 
   return (
     <section
@@ -44,10 +39,9 @@ export function ElfsightReviews() {
           <br className="hidden sm:block" /> the first skein
         </h2>
 
-        <div className="mt-10 min-h-[320px]">
-          {mounted ? <div className={`elfsight-app-${APP_ID}`} data-elfsight-app-lazy /> : null}
+        <div className="mt-10">
+          <div className={`elfsight-app-${APP_ID}`} data-elfsight-app-lazy />
         </div>
-
       </div>
     </section>
   );
