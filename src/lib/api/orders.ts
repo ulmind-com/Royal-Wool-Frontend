@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api/client";
+import html2pdf from 'html2pdf.js';
 
 /**
  * Checkout + order tracking wire types. Every money field is server-computed —
@@ -125,10 +126,6 @@ export const downloadInvoice = async (id: string) => {
   if (!res.ok) throw new Error("Could not download invoice");
   
   const htmlText = await res.text();
-  
-  // Dynamically import html2pdf so it doesn't bloat the initial bundle
-  const m = await import('html2pdf.js');
-  const html2pdf = m.default || m;
   
   const wrapper = document.createElement('div');
   wrapper.innerHTML = htmlText;
