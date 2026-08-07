@@ -130,17 +130,16 @@ export function MobileBottomNav() {
 
   const iconClass = (isActive: boolean) =>
     cn(
-      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]",
-      isActive
-        ? "scale-[1.06] text-primary fill-primary/25 stroke-[2.5px]"
-        : "text-ink stroke-[2.2px] fill-transparent group-hover:text-ink"
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 text-white fill-white stroke-white drop-shadow-[0_1px_3px_rgba(15,12,20,0.55)]",
+      isActive ? "scale-[1.06] stroke-[1.6px]" : "stroke-[1.6px] opacity-95"
     );
 
   const labelClass = (isActive: boolean) =>
     cn(
-      "mt-0.5 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
-      isActive ? "text-primary" : "text-ink/90"
+      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight text-white transition-opacity duration-300 drop-shadow-[0_1px_3px_rgba(15,12,20,0.6)]",
+      isActive ? "opacity-100" : "opacity-90"
     );
+
 
 
   /** Distortion applied to items the travelling blob passes over. */
