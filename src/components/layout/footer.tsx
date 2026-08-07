@@ -46,6 +46,7 @@ function Wordmark({
           textAnchor="middle"
           className="font-display"
           letterSpacing="-4"
+          xmlSpace="preserve"
         >
           {l.text.split(" ").map((word, i) => (
             <tspan
@@ -53,8 +54,8 @@ function Wordmark({
               fill={word === "Royaall" ? "#800000" : "#D4AF37"}
               fontStyle={word === "Wool" ? "italic" : "normal"}
               fontWeight={word === "Royaall" ? "600" : "500"}
-              dx={i > 0 ? l.size * 0.25 : 0}
             >
+              {i > 0 ? " " : ""}
               {word}
             </tspan>
           ))}
