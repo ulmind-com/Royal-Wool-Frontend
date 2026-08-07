@@ -5,12 +5,12 @@ import { Facebook, Instagram } from "lucide-react";
 import { categoryTreeQuery } from "@/lib/api/queries";
 import { BRAND, SOCIAL_LINKS } from "@/lib/site";
 
-interface GraphicCircle {
+interface YarnBall {
   cx: number;
   cy: number;
   size: number;
-  color: string;
-  innerColor: string;
+  rotate: number;
+  src: string;
 }
 
 /** Outlined "Royaall Wool" wordmark with real yarn balls resting on the letters. */
@@ -19,13 +19,13 @@ function Wordmark({
   className,
   viewBox,
   lines,
-  circles,
+  balls,
 }: {
   id: string;
   className: string;
   viewBox: string;
   lines: { text: string; x: number; y: number; size: number }[];
-  circles: GraphicCircle[];
+  balls: YarnBall[];
 }) {
   return (
     <svg viewBox={viewBox} className={className} aria-label="Royaall Wool" role="img">
@@ -60,11 +60,18 @@ function Wordmark({
           ))}
         </text>
       ))}
-      {circles.map((c, idx) => (
-        <g key={idx} transform={`translate(${c.cx}, ${c.cy})`}>
-          <circle r={c.size / 2} fill={c.color} stroke="#1A1A1A" strokeWidth="4" />
-          <circle r={c.size / 6} fill={c.innerColor} />
-        </g>
+      {balls.map((b) => (
+        <image
+          key={b.src + b.cx}
+          href={b.src}
+          x={b.cx - b.size / 2}
+          y={b.cy - b.size / 2}
+          width={b.size}
+          height={b.size}
+          preserveAspectRatio="xMidYMid meet"
+          filter={`url(#${id}-shadow)`}
+          transform={`rotate(${b.rotate} ${b.cx} ${b.cy})`}
+        />
       ))}
     </svg>
   );
@@ -207,12 +214,12 @@ export function Footer() {
             className="hidden w-full sm:block"
             viewBox="-40 -70 1280 370"
             lines={[{ text: "Royaall Wool", x: 600, y: 178, size: 190 }]}
-            circles={[
-              { cx: 120, cy: 50, size: 80, color: "#3B82F6", innerColor: "#EF4444" },
-              { cx: 350, cy: 220, size: 60, color: "#8B5CF6", innerColor: "#FBBF24" },
-              { cx: 650, cy: 40, size: 70, color: "#EF4444", innerColor: "#3B82F6" },
-              { cx: 920, cy: 230, size: 65, color: "#10B981", innerColor: "#EC4899" },
-              { cx: 1150, cy: 60, size: 85, color: "#FBBF24", innerColor: "#8B5CF6" },
+            balls={[
+              { cx: 78, cy: 46, size: 168, rotate: -12, src: YARN("candy-blue") },
+              { cx: 300, cy: 210, size: 124, rotate: 9, src: YARN("hobby-yellow") },
+              { cx: 600, cy: 28, size: 112, rotate: -6, src: YARN("delight-coral") },
+              { cx: 880, cy: 214, size: 128, rotate: 12, src: YARN("candy-lilac") },
+              { cx: 1132, cy: 44, size: 160, rotate: -9, src: YARN("hobby-green") },
             ]}
           />
           <Wordmark
@@ -223,11 +230,11 @@ export function Footer() {
               { text: "Royaall", x: 200, y: 150, size: 118 },
               { text: "Wool", x: 200, y: 290, size: 118 },
             ]}
-            circles={[
-              { cx: 60, cy: 30, size: 50, color: "#3B82F6", innerColor: "#EF4444" },
-              { cx: 380, cy: 50, size: 40, color: "#EF4444", innerColor: "#3B82F6" },
-              { cx: 50, cy: 210, size: 45, color: "#FBBF24", innerColor: "#8B5CF6" },
-              { cx: 390, cy: 320, size: 55, color: "#10B981", innerColor: "#EC4899" },
+            balls={[
+              { cx: 40, cy: 34, size: 132, rotate: -12, src: YARN("candy-blue") },
+              { cx: 366, cy: 40, size: 104, rotate: 10, src: YARN("delight-coral") },
+              { cx: 34, cy: 200, size: 112, rotate: 8, src: YARN("hobby-yellow") },
+              { cx: 362, cy: 312, size: 124, rotate: -10, src: YARN("hobby-green") },
             ]}
           />
         </div>
