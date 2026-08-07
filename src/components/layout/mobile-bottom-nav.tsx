@@ -53,7 +53,7 @@ const SPECULAR_SHEEN: React.CSSProperties = {
 /** Smoked glass tile behind the active item. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(20, 16, 24, 0.18) 0%, rgba(20, 16, 24, 0.1) 100%)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.18) 100%)",
   backdropFilter: "blur(10px) saturate(130%)",
   border: "1px solid rgba(255, 255, 255, 0.28)",
   boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
@@ -130,14 +130,16 @@ export function MobileBottomNav() {
 
   const iconClass = (isActive: boolean) =>
     cn(
-      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 text-white fill-white stroke-white drop-shadow-[0_1px_3px_rgba(15,12,20,0.55)]",
-      isActive ? "scale-[1.06] stroke-[1.6px]" : "stroke-[1.6px] opacity-95"
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 fill-none drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
+      isActive
+        ? "text-primary stroke-primary scale-[1.06] stroke-[2px]"
+        : "text-ink stroke-ink stroke-[1.8px]"
     );
 
   const labelClass = (isActive: boolean) =>
     cn(
-      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight text-white transition-opacity duration-300 drop-shadow-[0_1px_3px_rgba(15,12,20,0.6)]",
-      isActive ? "opacity-100" : "opacity-90"
+      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
+      isActive ? "text-primary" : "text-ink/90"
     );
 
 
