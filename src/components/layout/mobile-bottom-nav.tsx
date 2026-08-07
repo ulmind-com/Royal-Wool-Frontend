@@ -130,16 +130,16 @@ export function MobileBottomNav() {
 
   const iconClass = (isActive: boolean) =>
     cn(
-      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 fill-none drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 fill-current stroke-current drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
       isActive
-        ? "text-primary stroke-primary scale-[1.06] stroke-[2px]"
-        : "text-ink stroke-ink stroke-[1.8px]"
+        ? "text-white scale-[1.06] stroke-[1.5px]"
+        : "text-white stroke-[1.5px]"
     );
 
   const labelClass = (isActive: boolean) =>
     cn(
-      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
-      isActive ? "text-primary" : "text-ink/90"
+      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
+      isActive ? "text-white" : "text-white"
     );
 
 
