@@ -249,15 +249,17 @@ export function MobileBottomNav() {
                         src={currentUser.avatar}
                         alt={currentUser.name || "User profile"}
                         className={cn(
-                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-white/70",
-                          isActive && "scale-[1.06] ring-1 ring-white/90"
+                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-ink/25",
+                          isActive && "scale-[1.06] ring-1 ring-primary/60"
                         )}
                       />
                     ) : (
                       <div
                         className={cn(
-                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-white/60 text-[11px] font-black uppercase tracking-tight text-white transition-all duration-300",
-                          isActive ? "bg-white/25 scale-[1.06]" : "bg-white/12"
+                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-ink/30 text-[11px] font-black uppercase tracking-tight transition-all duration-300",
+                          isActive
+                            ? "bg-primary/20 text-primary scale-[1.06]"
+                            : "bg-white/25 text-ink"
                         )}
                       >
 
@@ -297,8 +299,8 @@ export function MobileBottomNav() {
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={SPECULAR_SHEEN} />
         <Search
           className={cn(
-            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 text-white stroke-white stroke-[1.7px] drop-shadow-[0_1px_3px_rgba(15,12,20,0.55)]",
-            isSearchActive ? "fill-white/25 scale-[1.06]" : "fill-transparent opacity-95"
+            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 fill-none stroke-[1.9px] drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
+            isSearchActive ? "text-primary stroke-primary scale-[1.06]" : "text-ink stroke-ink"
           )}
         />
 
