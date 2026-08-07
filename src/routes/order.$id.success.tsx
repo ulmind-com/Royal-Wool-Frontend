@@ -41,6 +41,7 @@ function OrderSuccess() {
       await downloadInvoice(id);
       toast.success("Invoice downloaded!");
     } catch (err) {
+      console.error("Download invoice error:", err);
       toast.error("Couldn't download invoice");
     } finally {
       setDownloading(false);

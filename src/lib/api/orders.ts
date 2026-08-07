@@ -127,20 +127,32 @@ export const downloadInvoice = async (id: string) => {
   const htmlText = await res.text();
   
   // Dynamically import html2pdf so it doesn't bloat the initial bundle
-  const html2pdf = (await import('html2pdf.js')).default;
+  const m = await import('html2pdf.js');
+  const html2pdf = m.default || m;
   
   const wrapper = document.createElement('div');
   wrapper.innerHTML = htmlText;
+  
+  // html2canvas (used by html2pdf) often requires the element to be in the DOM
+  wrapper.style.position = 'absolute';
+  wrapper.style.left = '-9999px';
+  wrapper.style.top = '-9999px';
+  wrapper.style.visibility = 'hidden';
+  document.body.appendChild(wrapper);
   
   const opt = {
     margin:       0,
     filename:     `Invoice_Royal_Wool_${id.slice(-8).toUpperCase()}.pdf`,
     image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true },
+    html2canvas:  { scale: 2, useCORS: true, logging: false },
     jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
   };
   
-  await html2pdf().set(opt).from(wrapper).save();
+  try {
+    await html2pdf().set(opt).from(wrapper).save();
+  } finally {
+    document.body.removeChild(wrapper);
+  }
 }
 
 /** Razorpay's own checkout widget — loaded once, only in the browser. */
