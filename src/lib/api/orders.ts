@@ -123,13 +123,24 @@ export const downloadInvoice = async (id: string) => {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!res.ok) throw new Error("Could not download invoice");
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Invoice_Royal_Wool_${id.slice(-8).toUpperCase()}.html`;
-  a.click();
-  URL.revokeObjectURL(url);
+  
+  const htmlText = await res.text();
+  
+  // Dynamically import html2pdf so it doesn't bloat the initial bundle
+  const html2pdf = (await import('html2pdf.js')).default;
+  
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = htmlText;
+  
+  const opt = {
+    margin:       0,
+    filename:     `Invoice_Royal_Wool_${id.slice(-8).toUpperCase()}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  
+  await html2pdf().set(opt).from(wrapper).save();
 }
 
 /** Razorpay's own checkout widget — loaded once, only in the browser. */
