@@ -294,15 +294,15 @@ export function MobileBottomNav() {
         style={LIQUID_GLASS_CONTAINER}
       >
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={RIM_HIGHLIGHT} />
+        <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={EDGE_REFRACTION} />
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={SPECULAR_SHEEN} />
         <Search
           className={cn(
-            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300",
-            isSearchActive
-              ? "text-primary fill-primary/20 stroke-[2.4px] scale-[1.06]"
-              : "text-ink stroke-[2.1px] fill-transparent"
+            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 text-white stroke-white stroke-[1.7px] drop-shadow-[0_1px_3px_rgba(15,12,20,0.55)]",
+            isSearchActive ? "fill-white/25 scale-[1.06]" : "fill-transparent opacity-95"
           )}
         />
+
       </button>
     </div>
   );
