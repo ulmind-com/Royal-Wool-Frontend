@@ -299,8 +299,8 @@ export function MobileBottomNav() {
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={SPECULAR_SHEEN} />
         <Search
           className={cn(
-            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 fill-none stroke-[1.9px] drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
-            isSearchActive ? "text-primary stroke-primary scale-[1.06]" : "text-ink stroke-ink"
+            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 fill-current stroke-current stroke-[1.5px] drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
+            isSearchActive ? "text-white scale-[1.06]" : "text-white"
           )}
         />
 
