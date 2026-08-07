@@ -76,14 +76,14 @@ function text(value: unknown): string | null {
 function autoHref(key: ChannelKey, value: string): string | null {
   if (key === "hotline") return `tel:${value.replace(/[^\d+]/g, "")}`;
   if (key === "email") return `mailto:${value}`;
-  if (key === "whatsapp") return whatsappLink("Hi Royal Wool, I have a question about your yarns.");
+  if (key === "whatsapp") return whatsappLink("Hi Royaall Wool, I have a question about your yarns.");
   return null;
 }
 
 /** wa.me link for the admin's number, falling back to the build-time default. */
 function waHref(display: string | null, message: string | null): string {
   const digits = (display ?? "").replace(/\D/g, "");
-  const text = message || "Hi Royal Wool, I have a question about your yarns.";
+  const text = message || "Hi Royaall Wool, I have a question about your yarns.";
   if (!digits) return whatsappLink(text);
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }

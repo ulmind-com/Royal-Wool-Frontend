@@ -152,7 +152,7 @@ function BlogPostPage() {
             </a>
           ) : null}
           <a
-            href={whatsappLink(`Hi Royal Wool, I just read "${post.title}" on your journal.`)}
+            href={whatsappLink(`Hi Royaall Wool, I just read "${post.title}" on your journal.`)}
             target="_blank"
             rel="noopener noreferrer"
             data-cursor="link"

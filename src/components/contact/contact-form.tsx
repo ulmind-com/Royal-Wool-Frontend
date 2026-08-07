@@ -61,7 +61,7 @@ export function ContactForm({ title, note }: { title: string; note: string }) {
       setValues(EMPTY);
     } catch {
       const url = whatsappLink(
-        `Hi Royal Wool, I'm ${parsed.data.first_name}. ${parsed.data.message} (Reply: ${parsed.data.email} / ${parsed.data.phone})`,
+        `Hi Royaall Wool, I'm ${parsed.data.first_name}. ${parsed.data.message} (Reply: ${parsed.data.email} / ${parsed.data.phone})`,
       );
       window.open(url, "_blank", "noopener");
       toast("Opening WhatsApp instead", {

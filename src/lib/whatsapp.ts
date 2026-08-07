@@ -8,9 +8,9 @@ export function whatsappLink(message: string): string {
 }
 
 export const waAskAboutProduct = (title: string, url: string) =>
-  whatsappLink(`Hi Royal Wool, I'd like to know more about "${title}" — ${url}`);
+  whatsappLink(`Hi Royaall Wool, I'd like to know more about "${title}" — ${url}`);
 
 export const waNotifyMe = (name: string) =>
-  whatsappLink(`Hi Royal Wool, please notify me when "${name}" is available.`);
+  whatsappLink(`Hi Royaall Wool, please notify me when "${name}" is available.`);
 
-export const waGeneral = () => whatsappLink("Hi Royal Wool, I have a question about your yarns.");
+export const waGeneral = () => whatsappLink("Hi Royaall Wool, I have a question about your yarns.");
