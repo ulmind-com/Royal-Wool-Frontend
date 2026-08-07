@@ -197,7 +197,7 @@ export function MobileBottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="mobile-bottom-nav-indicator"
-                  className="absolute left-1/2 -translate-x-1/2 h-[64px] w-[70px] xs:h-[68px] xs:w-[76px] sm:h-[72px] sm:w-[80px] rounded-[26px] xs:rounded-[28px] z-0 pointer-events-none overflow-hidden"
+                  className="absolute left-1/2 -translate-x-1/2 h-[52px] w-[68px] xs:h-[56px] xs:w-[74px] sm:h-[60px] sm:w-[78px] rounded-[22px] xs:rounded-[24px] z-0 pointer-events-none overflow-hidden"
                   style={LIQUID_GLASS_BLOB}
                   animate={{ scaleX: [1.08, 0.99, 1], scaleY: [0.94, 1.01, 1] }}
                   transition={{
@@ -208,10 +208,10 @@ export function MobileBottomNav() {
                 >
                   <span
                     aria-hidden
-                    className="absolute inset-0 rounded-[26px] xs:rounded-[28px]"
+                    className="absolute inset-0 rounded-[22px] xs:rounded-[24px]"
                     style={{
                       background:
-                        "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.12) 26%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.18) 100%)",
+                        "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0) 62%, rgba(255,255,255,0.14) 100%)",
                       maskImage:
                         "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
                       maskComposite: "exclude",
@@ -221,6 +221,7 @@ export function MobileBottomNav() {
                   />
                 </motion.div>
               )}
+
 
 
               <div
