@@ -44,9 +44,10 @@ export function ElfsightReviews() {
           <br className="hidden sm:block" /> the first skein
         </h2>
 
-        <div className="mt-10">
-          <div className={`elfsight-app-${APP_ID}`} data-elfsight-app-lazy />
+        <div className="mt-10 min-h-[320px]">
+          {mounted ? <div className={`elfsight-app-${APP_ID}`} data-elfsight-app-lazy /> : null}
         </div>
+
       </div>
     </section>
   );
