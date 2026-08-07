@@ -105,7 +105,7 @@ export function Footer() {
           <div className="min-w-0">
             <Link to="/" data-cursor="link" className="flex items-center gap-3">
               <img
-                src="/logo.png"
+                src="/logo.jpeg"
                 alt=""
                 aria-hidden
                 width={56}

@@ -19,7 +19,7 @@ function Wordmark() {
       aria-label={`${BRAND.name} home`}
     >
       <img
-        src="/logo.png"
+        src="/logo.jpeg"
         alt=""
         aria-hidden
         width={56}
