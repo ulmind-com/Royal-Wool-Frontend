@@ -168,8 +168,10 @@ export function MobileBottomNav() {
           className="absolute inset-0 rounded-[34px] pointer-events-none z-0 overflow-hidden"
         >
           <span className="absolute inset-0 rounded-[34px]" style={RIM_HIGHLIGHT} />
+          <span className="absolute inset-0 rounded-[34px]" style={EDGE_REFRACTION} />
           <span className="absolute inset-0 rounded-[34px]" style={SPECULAR_SHEEN} />
         </span>
+
 
         {NAV_ITEMS.map((item, index) => {
           const isActive = activeId === item.id;
