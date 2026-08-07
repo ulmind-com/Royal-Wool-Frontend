@@ -36,11 +36,6 @@ function Wordmark({
         <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="160%">
           <feDropShadow dx="0" dy="6" stdDeviation="8" floodOpacity="0.22" />
         </filter>
-        <linearGradient id={`${id}-goldGradient`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#D4AF37" />
-          <stop offset="50%" stopColor="#F3E5AB" />
-          <stop offset="100%" stopColor="#D4AF37" />
-        </linearGradient>
       </defs>
       {lines.map((l) => (
         <text
@@ -49,12 +44,20 @@ function Wordmark({
           y={l.y}
           fontSize={l.size}
           textAnchor="middle"
-          className="font-display stroke-[#800000]"
-          fill={`url(#${id}-goldGradient)`}
-          strokeWidth="2"
+          className="font-display"
           letterSpacing="-4"
         >
-          {l.text}
+          {l.text.split(" ").map((word, i) => (
+            <tspan
+              key={word + i}
+              fill={word === "Royaall" ? "#800000" : "#D4AF37"}
+              fontStyle={word === "Wool" ? "italic" : "normal"}
+              fontWeight={word === "Royaall" ? "600" : "500"}
+              dx={i > 0 ? l.size * 0.25 : 0}
+            >
+              {word}
+            </tspan>
+          ))}
         </text>
       ))}
       {balls.map((b) => (
