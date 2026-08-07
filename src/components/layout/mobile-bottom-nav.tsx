@@ -249,24 +249,24 @@ export function MobileBottomNav() {
                         src={currentUser.avatar}
                         alt={currentUser.name || "User profile"}
                         className={cn(
-                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-ink/25",
-                          isActive && "scale-[1.06] ring-1 ring-primary/60"
+                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-white/40 drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
+                          isActive && "scale-[1.06] ring-1 ring-white/70"
                         )}
                       />
                     ) : (
                       <div
                         className={cn(
-                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-ink/30 text-[11px] font-black uppercase tracking-tight transition-all duration-300",
+                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-white/40 text-[11px] font-black uppercase tracking-tight transition-all duration-300 drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
                           isActive
-                            ? "bg-primary/20 text-primary scale-[1.06]"
-                            : "bg-white/25 text-ink"
+                            ? "bg-white/20 text-white scale-[1.06]"
+                            : "bg-white/10 text-white"
                         )}
                       >
 
                         {currentUser?.name ? (
                           currentUser.name.charAt(0)
                         ) : (
-                          <User className="h-3.5 w-3.5 text-ink" />
+                          <User className="h-3.5 w-3.5 text-white" />
                         )}
                       </div>
                     )
