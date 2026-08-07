@@ -132,6 +132,7 @@ function CheckoutPage() {
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
   const [couponNote, setCouponNote] = useState<{ ok: boolean; text: string } | null>(null);
+  const [couponInput, setCouponInput] = useState("");
   const [offers, setOffers] = useState<CouponOffer[]>([]);
   const [couponTouched, setCouponTouched] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -257,6 +258,15 @@ function CheckoutPage() {
           if (seq !== quoteSeq.current) return;
           setBill(b);
           setQuoteError(b.deliverable ? null : "We don't deliver to this pincode yet.");
+          
+          if (couponTouched && appliedCoupon) {
+            if (b.coupon_applied) {
+              setCouponNote({ ok: true, text: `Coupon ${appliedCoupon} applied. You save ${formatMoney(b.discount)}.` });
+            } else {
+              setCouponNote({ ok: false, text: `Coupon ${appliedCoupon} is invalid or not applicable.` });
+              setAppliedCoupon(null);
+            }
+          }
         })
         .catch((err: unknown) => {
           if (seq !== quoteSeq.current) return;
@@ -692,6 +702,34 @@ function CheckoutPage() {
             </ul>
 
             <div className="border-t border-border p-4">
+              <div className="mb-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!couponInput.trim()) return;
+                    setCouponTouched(true);
+                    setAppliedCoupon(couponInput.trim().toUpperCase());
+                    setCouponNote(null);
+                  }}
+                  className="flex gap-2"
+                >
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    placeholder="Have a coupon code?"
+                    className="w-full rounded-full border border-border bg-transparent px-4 py-2 font-data text-xs outline-none transition-colors focus:border-marigold placeholder:text-muted-foreground/60"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!couponInput.trim()}
+                    className="shrink-0 rounded-full bg-foreground px-4 py-2 font-data text-xs text-background disabled:opacity-50"
+                  >
+                    Apply
+                  </button>
+                </form>
+              </div>
+
               {couponNote ? (
                 <div className="flex items-start justify-between gap-2">
                   <p
