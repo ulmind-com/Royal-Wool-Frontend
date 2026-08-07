@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /** Elfsight app id for the Royaall Wool Google Reviews widget. */
 const APP_ID = "84ed925f-7516-418c-8ed9-0eb5878929f7";
@@ -8,16 +8,21 @@ const APP_ID = "84ed925f-7516-418c-8ed9-0eb5878929f7";
  * Profile, so new reviews show up without a deploy.
  *
  * `platform.js` is loaded from the document head (see routes/__root.tsx). It
- * scans for `.elfsight-app-<id>` on load; because this route mounts client-side
- * we nudge it to re-scan once the container exists.
+ * scans for `.elfsight-app-<id>` on load; because Elfsight injects its own DOM
+ * into that container, the container is only rendered after hydration so the
+ * server and client markup stay identical.
  */
 export function ElfsightReviews() {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     const mount = () => window.eapps?.platform?.initialize?.();
     mount();
     const t = window.setTimeout(mount, 1200);
     return () => window.clearTimeout(t);
   }, []);
+
 
   return (
     <section
