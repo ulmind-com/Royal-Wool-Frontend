@@ -120,8 +120,8 @@ export function CartDrawer() {
                           className="h-20 w-20 rounded-xl object-cover border border-border shadow-2xs"
                         />
                       ) : (
-                        <div className="h-20 w-20 rounded-xl bg-secondary flex items-center justify-center text-2xl border border-border">
-                          🧶
+                        <div className="h-20 w-20 rounded-xl bg-secondary flex items-center justify-center border border-border">
+                          <ShoppingBag className="w-8 h-8 opacity-40 text-muted-foreground" />
                         </div>
                       )}
                     </div>

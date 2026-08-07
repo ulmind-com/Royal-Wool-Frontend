@@ -32,7 +32,7 @@ export function RestockNotify({
       toast.success(
         res.message === "Already on waitlist"
           ? "You're already on the list for this shade."
-          : "We'll message you the moment it's back 🔔",
+          : "We'll message you the moment it's back",
       );
     } catch (err) {
       setState("idle");

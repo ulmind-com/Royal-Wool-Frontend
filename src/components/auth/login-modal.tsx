@@ -37,7 +37,7 @@ export function LoginModal() {
     }
     const data = await res.json();
     loginSuccess(data.user, data.access_token);
-    toast.success(`Welcome, ${data.user.name}! 🎉`);
+    toast.success(`Welcome, ${data.user.name}!`);
     handleClose(false);
   };
 
@@ -125,7 +125,7 @@ export function LoginModal() {
 
         const data = await res.json();
         loginSuccess(data.user, data.access_token);
-        toast.success(`Welcome back, ${data.user.name}! 🎉`);
+        toast.success(`Welcome back, ${data.user.name}!`);
         handleClose(false);
       } else {
         // Sign Up -> Step 1: Send OTP verification code
@@ -192,7 +192,7 @@ export function LoginModal() {
 
       const regData = await regRes.json();
       loginSuccess(regData.user, regData.access_token);
-      toast.success(`Welcome to Royal Wool, ${regData.user.name}! 🎉`);
+      toast.success(`Welcome to Royal Wool, ${regData.user.name}!`);
       handleClose(false);
     } catch (error: unknown) {
       const err = error as Error;

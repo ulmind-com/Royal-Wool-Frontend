@@ -10,19 +10,19 @@ import {
   User, ShoppingBag, Package, Settings, MapPin, LogOut,
   Camera, CheckCircle2, Truck, Box, Clock, Plus, Trash2,
   Edit3, Loader2, Sparkles, TrendingUp, ExternalLink, ShieldCheck,
-  AlertCircle, ArrowRight, Minus, CreditCard, Award, RefreshCcw, ChevronRight
+  AlertCircle, ArrowRight, Minus, CreditCard, Award, RefreshCcw, ChevronRight, Phone
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrderSupportChat } from "@/components/chat/support-chat";
 
 
 const ORDER_STAGES = ["placed", "confirmed", "shipped", "out_for_delivery", "delivered"];
-const STAGE_LABELS: Record<string, { label: string; icon: string; desc: string }> = {
-  placed: { label: "Order Placed", icon: "📝", desc: "Received and awaiting confirmation" },
-  confirmed: { label: "Confirmed & Packing", icon: "📦", desc: "Our craftspeople are preparing your yarn" },
-  shipped: { label: "Dispatched", icon: "🚚", desc: "Handed over to courier partner" },
-  out_for_delivery: { label: "Out for Delivery", icon: "🛵", desc: "Arriving at your doorstep today" },
-  delivered: { label: "Delivered", icon: "✨", desc: "Delivered safely. Enjoy your luxury wool!" },
+const STAGE_LABELS: Record<string, { label: string; icon: React.ReactNode; desc: string }> = {
+  placed: { label: "Order Placed", icon: <CheckCircle2 className="w-5 h-5" />, desc: "Received and awaiting confirmation" },
+  confirmed: { label: "Confirmed & Packing", icon: <Package className="w-5 h-5" />, desc: "Our craftspeople are preparing your yarn" },
+  shipped: { label: "Dispatched", icon: <Truck className="w-5 h-5" />, desc: "Handed over to courier partner" },
+  out_for_delivery: { label: "Out for Delivery", icon: <Truck className="w-5 h-5" />, desc: "Arriving at your doorstep today" },
+  delivered: { label: "Delivered", icon: <Sparkles className="w-5 h-5" />, desc: "Delivered safely. Enjoy your luxury wool!" },
 };
 
 interface ProfileDashboardProps {
@@ -552,7 +552,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                         </div>
                         
                         <div className="text-xs text-muted-foreground flex items-center gap-2 py-1">
-                          <span>{STAGE_LABELS[orders[0].status]?.icon || "📦"}</span>
+                          <span>{STAGE_LABELS[orders[0].status]?.icon || <Package className="w-5 h-5" />}</span>
                           <span className="text-foreground font-medium">{STAGE_LABELS[orders[0].status]?.label || "Processing"}:</span>
                           <span>{STAGE_LABELS[orders[0].status]?.desc || "Your order is progressing."}</span>
                         </div>
@@ -707,7 +707,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                 </div>
 
                                 <div className="mt-5 rounded-lg bg-secondary/30 border border-border/40 p-3 flex items-center gap-2.5 text-xs">
-                                  <span className="text-sm">{STAGE_LABELS[currentStage]?.icon || "📦"}</span>
+                                  <span className="text-sm">{STAGE_LABELS[currentStage]?.icon || <Package className="w-4 h-4" />}</span>
                                   <div>
                                     <span className="font-semibold text-foreground">{STAGE_LABELS[currentStage]?.label}: </span>
                                     <span className="text-muted-foreground">{STAGE_LABELS[currentStage]?.desc || "Status updated."}</span>
@@ -730,7 +730,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                     {it.image ? (
                                       <img src={it.image} className="h-10 w-10 rounded-md object-cover border border-border flex-none" alt="" />
                                     ) : (
-                                      <div className="h-10 w-10 rounded-md bg-secondary flex items-center justify-center flex-none">🧶</div>
+                                      <div className="h-10 w-10 rounded-md bg-secondary flex items-center justify-center flex-none"><ShoppingBag className="w-5 h-5 opacity-50" /></div>
                                     )}
                                     <div className="min-w-0 flex-1">
                                       <div className="font-medium text-foreground truncate">{it.title || "Yarn Item"}</div>
@@ -804,7 +804,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                             {item.image ? (
                               <img src={item.image} className="h-14 w-14 rounded-lg object-cover border border-border flex-none shadow-2xs" alt={item.title} />
                             ) : (
-                              <div className="h-14 w-14 rounded-lg bg-secondary flex items-center justify-center text-xl flex-none">🧶</div>
+                              <div className="h-14 w-14 rounded-lg bg-secondary flex items-center justify-center text-xl flex-none"><ShoppingBag className="w-6 h-6 opacity-50" /></div>
                             )}
                             <div className="min-w-0">
                               <Link to="/product/$id" params={{ id: item.productId }} className="font-semibold text-sm text-foreground hover:text-marigold transition-colors block truncate">
@@ -1142,7 +1142,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                           </p>
                           {addr.phone && (
                             <div className="mt-2 pt-2 border-t border-border/30 text-2xs text-muted-foreground">
-                              📞 Phone: <strong className="text-foreground">{addr.phone}</strong>
+                              <Phone className="w-3 h-3 mr-1 inline-block" /> Phone: <strong className="text-foreground">{addr.phone}</strong>
                             </div>
                           )}
                         </div>

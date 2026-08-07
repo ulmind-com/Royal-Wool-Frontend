@@ -41,7 +41,7 @@ export function WriteReview({ productId, title }: { productId: string; title: st
         title: heading.trim(),
         text: text.trim(),
       });
-      toast.success("Thanks — your review is live 🧶");
+      toast.success("Thanks — your review is live");
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       queryClient.invalidateQueries({ queryKey: ["product", productId] });

@@ -57,7 +57,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
 
   const handleAddToCart = () => {
     if (!pushToCart()) return;
-    toast.success(`${product.title} added to your cart! 🛍️`);
+    toast.success(`${product.title} added to your cart!`);
   };
 
   const handleWishlist = async () => {
@@ -67,7 +67,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
     }
     try {
       const added = await toggleWishlist(product.id);
-      toast.success(added ? "Saved to your wishlist ♥" : "Removed from your wishlist");
+      toast.success(added ? "Saved to your wishlist" : "Removed from your wishlist");
     } catch {
       toast.error("Couldn't update your wishlist — try again.");
     }

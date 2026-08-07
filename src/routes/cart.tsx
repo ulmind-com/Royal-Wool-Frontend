@@ -89,8 +89,8 @@ function CartPage() {
                     {item.image ? (
                       <img src={item.image} className="h-20 w-20 rounded-xl object-cover border border-border shadow-xs flex-none" alt={item.title} />
                     ) : (
-                      <div className="h-20 w-20 rounded-xl bg-secondary flex items-center justify-center text-2xl border border-border flex-none">
-                        🧶
+                      <div className="h-20 w-20 rounded-xl bg-secondary flex items-center justify-center border border-border flex-none">
+                        <ShoppingBag className="w-8 h-8 opacity-40 text-muted-foreground" />
                       </div>
                     )}
                     <div className="min-w-0">

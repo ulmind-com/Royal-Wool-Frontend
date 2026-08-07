@@ -110,7 +110,7 @@ function ProductPage() {
         image: gallery[0] || product.images?.[0],
       });
     }
-    toast.success(`${qty} item(s) of ${product?.title || "Yarn"} added to your cart! 🛍️`);
+    toast.success(`${qty} item(s) of ${product?.title || "Yarn"} added to your cart!`);
   };
 
   const specs = product ? productSpecs(product) : [];

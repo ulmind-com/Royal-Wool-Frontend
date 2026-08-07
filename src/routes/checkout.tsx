@@ -337,7 +337,7 @@ function CheckoutPage() {
             lat: coords.latitude,
             lng: coords.longitude,
           }));
-          if (!silent) toast.success("Address filled from your location 📍");
+          if (!silent) toast.success("Address filled from your location");
         } catch {
           if (!silent) toast.error("Couldn't read an address from that location.");
         } finally {
@@ -410,7 +410,7 @@ function CheckoutPage() {
               razorpay_signature: response.razorpay_signature,
             });
             clearCart();
-            toast.success("Payment successful — order confirmed 🎉");
+            toast.success("Payment successful — order confirmed");
             navigate({ to: "/order/$id/success", params: { id: created.order_id } });
           } catch (err) {
             toast.error(err instanceof ApiError ? err.message : "We couldn't verify that payment.");
