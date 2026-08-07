@@ -13,41 +13,52 @@ import { cn } from "@/lib/utils";
  * Active state is a raised glass blob that bulges past the pill and smears icons it passes.
  */
 
+/** Near-clear lens: background reads straight through, only a faint tint. */
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%)",
-  backdropFilter: "blur(28px) saturate(180%) brightness(1.06)",
-  border: "1px solid rgba(255, 255, 255, 0.4)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.04) 100%)",
+  backdropFilter: "blur(18px) saturate(150%) brightness(1.04)",
   boxShadow:
-    "0 8px 24px -10px rgba(15, 12, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.3)",
+    "0 10px 30px -14px rgba(15, 12, 20, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45)",
 };
 
-/** Bright top rim fading toward the bottom — reads as glass thickness. */
+/** Outer bright hairline — the crisp glass edge. */
 const RIM_HIGHLIGHT: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.12) 24%, rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0.22) 100%)",
+    "linear-gradient(150deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.35) 26%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.45) 74%, rgba(255, 255, 255, 0.8) 100%)",
   maskImage: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
   maskComposite: "exclude",
   WebkitMaskComposite: "xor",
-  padding: "1.25px",
+  padding: "1.5px",
+};
+
+/** Inner ring with its own blur — reads as glass wall thickness at the ends. */
+const EDGE_REFRACTION: React.CSSProperties = {
+  background:
+    "linear-gradient(120deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.1) 78%, rgba(255, 255, 255, 0.4) 100%)",
+  backdropFilter: "blur(6px) brightness(1.08)",
+  maskImage: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  maskComposite: "exclude",
+  WebkitMaskComposite: "xor",
+  padding: "5px",
 };
 
 /** Narrow diagonal specular streak. */
 const SPECULAR_SHEEN: React.CSSProperties = {
   background:
-    "linear-gradient(112deg, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.16) 28%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 54%)",
+    "linear-gradient(112deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.2) 29%, rgba(255, 255, 255, 0.02) 39%, rgba(255, 255, 255, 0) 52%)",
   mixBlendMode: "screen",
 };
 
-/** Raised glass droplet sitting on the bar — iOS glass-on-glass. */
+/** Smoked glass tile behind the active item. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.16) 100%)",
-  backdropFilter: "blur(14px) saturate(190%) brightness(1.08)",
-  border: "1px solid rgba(255, 255, 255, 0.5)",
-  boxShadow:
-    "inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 4px 12px -6px rgba(15, 12, 20, 0.16)",
+    "linear-gradient(180deg, rgba(20, 16, 24, 0.18) 0%, rgba(20, 16, 24, 0.1) 100%)",
+  backdropFilter: "blur(10px) saturate(130%)",
+  border: "1px solid rgba(255, 255, 255, 0.28)",
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
 };
+
 
 
 
@@ -119,17 +130,16 @@ export function MobileBottomNav() {
 
   const iconClass = (isActive: boolean) =>
     cn(
-      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]",
-      isActive
-        ? "scale-[1.06] text-primary fill-primary/25 stroke-[2.5px]"
-        : "text-ink stroke-[2.2px] fill-transparent group-hover:text-ink"
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 text-white fill-white stroke-white drop-shadow-[0_1px_3px_rgba(15,12,20,0.55)]",
+      isActive ? "scale-[1.06] stroke-[1.6px]" : "stroke-[1.6px] opacity-95"
     );
 
   const labelClass = (isActive: boolean) =>
     cn(
-      "mt-0.5 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
-      isActive ? "text-primary" : "text-ink/90"
+      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight text-white transition-opacity duration-300 drop-shadow-[0_1px_3px_rgba(15,12,20,0.6)]",
+      isActive ? "opacity-100" : "opacity-90"
     );
+
 
 
   /** Distortion applied to items the travelling blob passes over. */
@@ -158,8 +168,10 @@ export function MobileBottomNav() {
           className="absolute inset-0 rounded-[34px] pointer-events-none z-0 overflow-hidden"
         >
           <span className="absolute inset-0 rounded-[34px]" style={RIM_HIGHLIGHT} />
+          <span className="absolute inset-0 rounded-[34px]" style={EDGE_REFRACTION} />
           <span className="absolute inset-0 rounded-[34px]" style={SPECULAR_SHEEN} />
         </span>
+
 
         {NAV_ITEMS.map((item, index) => {
           const isActive = activeId === item.id;
@@ -185,7 +197,7 @@ export function MobileBottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="mobile-bottom-nav-indicator"
-                  className="absolute left-1/2 -translate-x-1/2 h-[64px] w-[70px] xs:h-[68px] xs:w-[76px] sm:h-[72px] sm:w-[80px] rounded-[26px] xs:rounded-[28px] z-0 pointer-events-none overflow-hidden"
+                  className="absolute left-1/2 -translate-x-1/2 h-[52px] w-[68px] xs:h-[56px] xs:w-[74px] sm:h-[60px] sm:w-[78px] rounded-[22px] xs:rounded-[24px] z-0 pointer-events-none overflow-hidden"
                   style={LIQUID_GLASS_BLOB}
                   animate={{ scaleX: [1.08, 0.99, 1], scaleY: [0.94, 1.01, 1] }}
                   transition={{
@@ -196,10 +208,10 @@ export function MobileBottomNav() {
                 >
                   <span
                     aria-hidden
-                    className="absolute inset-0 rounded-[26px] xs:rounded-[28px]"
+                    className="absolute inset-0 rounded-[22px] xs:rounded-[24px]"
                     style={{
                       background:
-                        "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.12) 26%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.18) 100%)",
+                        "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0) 62%, rgba(255,255,255,0.14) 100%)",
                       maskImage:
                         "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
                       maskComposite: "exclude",
@@ -209,6 +221,7 @@ export function MobileBottomNav() {
                   />
                 </motion.div>
               )}
+
 
 
               <div
@@ -234,21 +247,18 @@ export function MobileBottomNav() {
                         src={currentUser.avatar}
                         alt={currentUser.name || "User profile"}
                         className={cn(
-                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300",
-                          isActive
-                            ? "border-[2px] border-primary scale-[1.06] ring-1 ring-white/90"
-                            : "border border-ink/30"
+                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-white/70",
+                          isActive && "scale-[1.06] ring-1 ring-white/90"
                         )}
                       />
                     ) : (
                       <div
                         className={cn(
-                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border text-[11px] font-black uppercase tracking-tight transition-all duration-300",
-                          isActive
-                            ? "bg-primary text-primary-foreground border-white scale-[1.06] ring-1 ring-white/80"
-                            : "bg-ink/10 text-ink/90 border-ink/25"
+                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-white/60 text-[11px] font-black uppercase tracking-tight text-white transition-all duration-300",
+                          isActive ? "bg-white/25 scale-[1.06]" : "bg-white/12"
                         )}
                       >
+
                         {currentUser?.name ? (
                           currentUser.name.charAt(0)
                         ) : (
@@ -281,15 +291,15 @@ export function MobileBottomNav() {
         style={LIQUID_GLASS_CONTAINER}
       >
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={RIM_HIGHLIGHT} />
+        <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={EDGE_REFRACTION} />
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={SPECULAR_SHEEN} />
         <Search
           className={cn(
-            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300",
-            isSearchActive
-              ? "text-primary fill-primary/20 stroke-[2.4px] scale-[1.06]"
-              : "text-ink stroke-[2.1px] fill-transparent"
+            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 text-white stroke-white stroke-[1.7px] drop-shadow-[0_1px_3px_rgba(15,12,20,0.55)]",
+            isSearchActive ? "fill-white/25 scale-[1.06]" : "fill-transparent opacity-95"
           )}
         />
+
       </button>
     </div>
   );
