@@ -39,15 +39,16 @@ const SPECULAR_SHEEN: React.CSSProperties = {
   mixBlendMode: "screen",
 };
 
-/** Raised droplet sitting on the bar. */
+/** Raised glass droplet sitting on the bar — iOS glass-on-glass. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.78) 100%)",
-  backdropFilter: "blur(14px) saturate(200%)",
-  border: "1px solid rgba(255, 255, 255, 0.9)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.34) 100%)",
+  backdropFilter: "blur(18px) saturate(200%)",
+  border: "1px solid rgba(255, 255, 255, 0.6)",
   boxShadow:
-    "inset 0 1.5px 0 rgba(255, 255, 255, 1), inset 0 -1px 2px rgba(15, 12, 20, 0.06), 0 6px 18px -6px rgba(15, 12, 20, 0.28), 0 0 20px rgba(255, 255, 255, 0.5)",
+    "inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 4px 12px -6px rgba(15, 12, 20, 0.18)",
 };
+
 
 const NAV_ITEMS = [
   { id: "home", label: "Home", path: "/" },
@@ -182,16 +183,31 @@ export function MobileBottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="mobile-bottom-nav-indicator"
-                  className="absolute left-1/2 -translate-x-1/2 h-[64px] w-[70px] xs:h-[68px] xs:w-[76px] sm:h-[72px] sm:w-[80px] rounded-[26px] xs:rounded-[28px] z-0 pointer-events-none"
+                  className="absolute left-1/2 -translate-x-1/2 h-[64px] w-[70px] xs:h-[68px] xs:w-[76px] sm:h-[72px] sm:w-[80px] rounded-[26px] xs:rounded-[28px] z-0 pointer-events-none overflow-hidden"
                   style={LIQUID_GLASS_BLOB}
-                  animate={{ scaleX: [1.12, 0.98, 1], scaleY: [0.9, 1.02, 1] }}
+                  animate={{ scaleX: [1.08, 0.99, 1], scaleY: [0.94, 1.01, 1] }}
                   transition={{
-                    layout: { type: "spring", stiffness: 380, damping: 26, mass: 0.9 },
-                    scaleX: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
-                    scaleY: { duration: 0.44, ease: [0.22, 1, 0.36, 1] },
+                    layout: { type: "spring", stiffness: 320, damping: 30, mass: 0.85 },
+                    scaleX: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+                    scaleY: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
                   }}
-                />
+                >
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-[26px] xs:rounded-[28px]"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.12) 26%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.18) 100%)",
+                      maskImage:
+                        "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                      maskComposite: "exclude",
+                      WebkitMaskComposite: "xor",
+                      padding: "1px",
+                    }}
+                  />
+                </motion.div>
               )}
+
 
               <div
                 className="relative z-10 flex flex-col items-center justify-center"
