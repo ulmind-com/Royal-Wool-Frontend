@@ -321,7 +321,7 @@ export function Header() {
       {/* mobile drawer */}
       {menuOpen ? (
         <div
-          className="max-h-[calc(100dvh-3.75rem)] overflow-y-auto overscroll-contain border-t border-border px-4 pb-safe pt-4 backdrop-blur-[22px] lg:hidden"
+          className="max-h-[calc(100dvh-3.75rem)] overflow-y-auto overscroll-contain border-t border-border px-4 pb-28 pt-4 backdrop-blur-[22px] lg:hidden"
           style={{
             backgroundImage:
               "linear-gradient(180deg, color-mix(in oklab, var(--background) 96%, transparent), color-mix(in oklab, var(--background) 92%, transparent))",
