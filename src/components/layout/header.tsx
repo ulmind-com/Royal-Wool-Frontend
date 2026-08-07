@@ -20,7 +20,7 @@ function Wordmark() {
       aria-label={`${BRAND.name} home`}
     >
       <img
-        src="/logo.png"
+        src="/logo.jpeg"
         alt=""
         aria-hidden
         width={56}
@@ -28,10 +28,10 @@ function Wordmark() {
         className="h-12 w-12 shrink-0 rounded-full border border-marigold/40 object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 sm:h-14 sm:w-14"
       />
       <span className="flex min-w-0 items-baseline gap-1.5">
-        <span className="font-display text-lg font-semibold tracking-[-0.04em] text-foreground sm:text-xl">
+        <span className="font-display text-lg font-semibold tracking-[-0.04em] text-[#800000] drop-shadow-sm sm:text-xl">
           Royaall
         </span>
-        <span className="font-display text-lg font-light italic tracking-[-0.04em] text-marigold sm:text-xl">
+        <span className="font-display text-lg font-medium italic tracking-[-0.04em] text-[#D4AF37] drop-shadow-sm sm:text-xl">
           Wool
         </span>
       </span>
