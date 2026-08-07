@@ -19,7 +19,7 @@ function Wordmark({
   className,
   viewBox,
   lines,
-  balls,
+  circles,
 }: {
   id: string;
   className: string;
