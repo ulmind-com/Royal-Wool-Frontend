@@ -15,39 +15,40 @@ import { cn } from "@/lib/utils";
 
 const LIQUID_GLASS_CONTAINER: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.62) 100%)",
-  backdropFilter: "blur(30px) saturate(180%)",
-  border: "1px solid rgba(255, 255, 255, 0.75)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%)",
+  backdropFilter: "blur(28px) saturate(180%) brightness(1.06)",
+  border: "1px solid rgba(255, 255, 255, 0.4)",
   boxShadow:
-    "0 10px 30px -10px rgba(15, 12, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
+    "0 8px 24px -10px rgba(15, 12, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.3)",
 };
 
 /** Bright top rim fading toward the bottom — reads as glass thickness. */
 const RIM_HIGHLIGHT: React.CSSProperties = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.16) 22%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.2) 100%)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.12) 24%, rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0.22) 100%)",
   maskImage: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
   maskComposite: "exclude",
   WebkitMaskComposite: "xor",
   padding: "1.25px",
 };
 
-/** Diagonal specular sheen across the upper half. */
+/** Narrow diagonal specular streak. */
 const SPECULAR_SHEEN: React.CSSProperties = {
   background:
-    "linear-gradient(112deg, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0.35) 26%, rgba(255, 255, 255, 0.04) 46%, rgba(255, 255, 255, 0) 64%)",
+    "linear-gradient(112deg, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.16) 28%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 54%)",
   mixBlendMode: "screen",
 };
 
 /** Raised glass droplet sitting on the bar — iOS glass-on-glass. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.34) 100%)",
-  backdropFilter: "blur(18px) saturate(200%)",
-  border: "1px solid rgba(255, 255, 255, 0.6)",
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.16) 100%)",
+  backdropFilter: "blur(14px) saturate(190%) brightness(1.08)",
+  border: "1px solid rgba(255, 255, 255, 0.5)",
   boxShadow:
-    "inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 4px 12px -6px rgba(15, 12, 20, 0.18)",
+    "inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 4px 12px -6px rgba(15, 12, 20, 0.16)",
 };
+
 
 
 const NAV_ITEMS = [
@@ -118,17 +119,18 @@ export function MobileBottomNav() {
 
   const iconClass = (isActive: boolean) =>
     cn(
-      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300",
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]",
       isActive
-        ? "scale-[1.06] text-primary fill-primary/20 stroke-[2.4px]"
-        : "text-ink stroke-[2.1px] fill-transparent group-hover:text-ink"
+        ? "scale-[1.06] text-primary fill-primary/25 stroke-[2.5px]"
+        : "text-ink stroke-[2.2px] fill-transparent group-hover:text-ink"
     );
 
   const labelClass = (isActive: boolean) =>
     cn(
-      "mt-0.5 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300",
-      isActive ? "text-primary" : "text-ink/70"
+      "mt-0.5 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
+      isActive ? "text-primary" : "text-ink/90"
     );
+
 
   /** Distortion applied to items the travelling blob passes over. */
   const smearStyle = (index: number): React.CSSProperties => {
