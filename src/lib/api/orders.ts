@@ -116,6 +116,22 @@ export const codAvailability = () => apiFetch<CodAvailability>("/orders/cod-avai
 export const myOrders = () => apiFetch<OrderRecord[]>("/orders");
 export const getOrder = (id: string) => apiFetch<OrderRecord>(`/orders/${id}`);
 
+export const downloadInvoice = async (id: string) => {
+  const token = localStorage.getItem("rw_token");
+  const base = import.meta.env.VITE_API_URL || "https://royal-wool-backend.onrender.com";
+  const res = await fetch(`${base}/orders/${id}/invoice`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error("Could not download invoice");
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Invoice_Royal_Wool_${id.slice(-8).toUpperCase()}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 /** Razorpay's own checkout widget — loaded once, only in the browser. */
 let rzpPromise: Promise<boolean> | null = null;
 

@@ -1,11 +1,12 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Copy, Loader2, Package, Receipt } from "lucide-react";
+import { CheckCircle2, Copy, Download, Loader2, Package, Receipt } from "lucide-react";
 import { toast } from "sonner";
 
 import { OrderSupportChat } from "@/components/chat/support-chat";
 import { useSettings } from "@/hooks/use-settings";
-import { getOrder } from "@/lib/api/orders";
+import { getOrder, downloadInvoice } from "@/lib/api/orders";
 
 export const Route = createFileRoute("/order/$id/success")({
   head: () => ({
@@ -32,6 +33,19 @@ function OrderSuccess() {
     refetchOnWindowFocus: true,
     retry: 1,
   });
+
+  const [downloading, setDownloading] = useState(false);
+  const handleDownloadInvoice = async () => {
+    try {
+      setDownloading(true);
+      await downloadInvoice(id);
+      toast.success("Invoice downloaded!");
+    } catch (err) {
+      toast.error("Couldn't download invoice");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const copyId = () => {
     navigator.clipboard?.writeText(id);
@@ -119,6 +133,17 @@ function OrderSuccess() {
       )}
 
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        {order && (
+          <button
+            type="button"
+            onClick={handleDownloadInvoice}
+            disabled={downloading}
+            className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 font-data text-2xs text-foreground transition-colors hover:border-marigold disabled:opacity-50"
+          >
+            {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            Download Invoice
+          </button>
+        )}
         <OrderSupportChat orderId={id} orderLabel={`#${id.slice(-8).toUpperCase()}`} />
         <Link
           to="/account/orders"
