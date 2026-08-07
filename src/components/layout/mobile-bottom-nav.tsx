@@ -53,10 +53,10 @@ const SPECULAR_SHEEN: React.CSSProperties = {
 /** Smoked glass tile behind the active item. */
 const LIQUID_GLASS_BLOB: MotionStyle = {
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.18) 100%)",
+    "linear-gradient(180deg, rgba(15, 12, 20, 0.16) 0%, rgba(15, 12, 20, 0.1) 100%)",
   backdropFilter: "blur(10px) saturate(130%)",
   border: "1px solid rgba(255, 255, 255, 0.28)",
-  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.35)",
 };
 
 
@@ -130,16 +130,16 @@ export function MobileBottomNav() {
 
   const iconClass = (isActive: boolean) =>
     cn(
-      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 fill-none drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
+      "h-[22px] w-[22px] xs:h-[24px] xs:w-[24px] transition-all duration-300 fill-current stroke-current drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
       isActive
-        ? "text-primary stroke-primary scale-[1.06] stroke-[2px]"
-        : "text-ink stroke-ink stroke-[1.8px]"
+        ? "text-white scale-[1.06] stroke-[1.5px]"
+        : "text-white stroke-[1.5px]"
     );
 
   const labelClass = (isActive: boolean) =>
     cn(
-      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
-      isActive ? "text-primary" : "text-ink/90"
+      "mt-1 text-[9.5px] xs:text-[10px] font-semibold leading-none tracking-tight transition-colors duration-300 drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
+      isActive ? "text-white" : "text-white"
     );
 
 
@@ -249,24 +249,24 @@ export function MobileBottomNav() {
                         src={currentUser.avatar}
                         alt={currentUser.name || "User profile"}
                         className={cn(
-                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-ink/25",
-                          isActive && "scale-[1.06] ring-1 ring-primary/60"
+                          "h-6 w-6 xs:h-[26px] xs:w-[26px] rounded-full object-cover transition-all duration-300 border border-white/40 drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
+                          isActive && "scale-[1.06] ring-1 ring-white/70"
                         )}
                       />
                     ) : (
                       <div
                         className={cn(
-                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-ink/30 text-[11px] font-black uppercase tracking-tight transition-all duration-300",
+                          "grid h-6 w-6 xs:h-[26px] xs:w-[26px] place-items-center rounded-full border border-white/40 text-[11px] font-black uppercase tracking-tight transition-all duration-300 drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
                           isActive
-                            ? "bg-primary/20 text-primary scale-[1.06]"
-                            : "bg-white/25 text-ink"
+                            ? "bg-white/20 text-white scale-[1.06]"
+                            : "bg-white/10 text-white"
                         )}
                       >
 
                         {currentUser?.name ? (
                           currentUser.name.charAt(0)
                         ) : (
-                          <User className="h-3.5 w-3.5 text-ink" />
+                          <User className="h-3.5 w-3.5 text-white" />
                         )}
                       </div>
                     )
@@ -299,8 +299,8 @@ export function MobileBottomNav() {
         <span aria-hidden className="absolute inset-0 rounded-full pointer-events-none" style={SPECULAR_SHEEN} />
         <Search
           className={cn(
-            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 fill-none stroke-[1.9px] drop-shadow-[0_1px_1px_rgba(255,255,255,0.65)]",
-            isSearchActive ? "text-primary stroke-primary scale-[1.06]" : "text-ink stroke-ink"
+            "relative z-10 h-[24px] w-[24px] xs:h-[26px] xs:w-[26px] transition-all duration-300 fill-current stroke-current stroke-[1.5px] drop-shadow-[0_1px_2px_rgba(15,12,20,0.45)]",
+            isSearchActive ? "text-white scale-[1.06]" : "text-white"
           )}
         />
 
