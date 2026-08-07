@@ -388,7 +388,7 @@ function CheckoutPage() {
         modal: {
           ondismiss: () => {
             setPaying(false);
-            toast.info("Payment cancelled — your order is still waiting.");
+            toast.info("Payment cancelled — complete payment to place your order.");
           },
         },
         handler: async (response: RazorpayResponse) => {
