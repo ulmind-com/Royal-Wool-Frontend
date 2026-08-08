@@ -10,7 +10,7 @@ export function BrandBanner() {
   return (
     <section
       data-thread-anchor="banner"
-      aria-label="Royal Wool — feel the softness, create with love"
+      aria-label="Royal Wool — Every Stech have a story"
       className="mt-16 w-full sm:mt-20"
     >
       <motion.div
@@ -22,7 +22,7 @@ export function BrandBanner() {
       >
         <img
           src={banner.url}
-          alt="Royal Wool — baskets of soft wool skeins with knitting needles, and a knitter holding a green yarn ball"
+          alt="Royal Wool — Every Stech have a story"
           width={1656}
           height={931}
           loading="lazy"
