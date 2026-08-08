@@ -611,6 +611,13 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Hide on tablet and desktop — mobile only */
+@media (min-width: 768px) {
+  .lg-bottom-wrapper {
+    display: none !important;
+  }
+}
+
 
 /* ── MAIN GLASS PILL ── */
 
