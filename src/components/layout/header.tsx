@@ -110,16 +110,18 @@ export function Header() {
           <Wordmark />
         </div>
 
-        <div className="flex w-10 sm:w-11 shrink-0 justify-end">
+        <div className="flex shrink-0 justify-end">
           <button
             type="button"
-            className={ICON_BTN}
+            className={`liquid-glass-btn ${menuOpen ? "open" : ""}`}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
             data-cursor="link"
           >
-            {menuOpen ? <X className="h-6 w-6 stroke-[2px]" /> : <Menu className="h-6 w-6 stroke-[2px]" />}
+            <span />
+            <span />
+            <span />
           </button>
         </div>
       </div>

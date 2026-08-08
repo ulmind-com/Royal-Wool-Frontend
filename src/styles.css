@@ -456,3 +456,93 @@
     transform: none;
   }
 }
+
+/* ─── Liquid Glass Hamburger Button ─── */
+.liquid-glass-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, #bbbbbc 18%, transparent);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    inset 2px 3px 0 -2px rgba(255, 255, 255, 0.85),
+    inset -2px -3px 0 -2px rgba(255, 255, 255, 0.35),
+    inset -3px -8px 1px -6px rgba(255, 255, 255, 0.5),
+    inset -1px 2px 3px -1px rgba(0, 0, 0, 0.12),
+    inset 0 3px 4px -2px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.5, 0, 0, 1),
+    background-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+/* Liquid glass highlight */
+.liquid-glass-btn::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.08) 45%,
+    transparent 70%
+  );
+}
+
+/* Hamburger lines */
+.liquid-glass-btn span {
+  position: relative;
+  z-index: 2;
+  width: 19px;
+  height: 2px;
+  border-radius: 999px;
+  background: #222244;
+  transition:
+    transform 0.3s cubic-bezier(0.5, 0, 0, 1),
+    opacity 0.2s ease,
+    width 0.3s ease;
+}
+
+/* Hover */
+.liquid-glass-btn:hover {
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    inset 2px 3px 0 -2px rgba(255, 255, 255, 0.9),
+    0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+/* Click */
+.liquid-glass-btn:active {
+  transform: scale(0.94);
+}
+
+/* Open animation — X shape */
+.liquid-glass-btn.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.liquid-glass-btn.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.liquid-glass-btn.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
