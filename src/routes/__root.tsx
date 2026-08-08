@@ -138,6 +138,27 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        {/* Hidden SVG filter for liquid glass refraction */}
+        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+          <defs>
+            <filter id="liquid-glass-filter" x="0%" y="0%" width="100%" height="100%" primitiveUnits="objectBoundingBox">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.012"
+                numOctaves="3"
+                seed="5"
+                result="noise"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="noise"
+                scale="14"
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+          </defs>
+        </svg>
         {children}
         <Scripts />
       </body>

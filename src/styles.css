@@ -457,7 +457,46 @@
   }
 }
 
-/* ─── Liquid Glass Hamburger Button ─── */
+
+/* ═══════════════════════════════════════════════════════════
+   LIQUID GLASS MATERIAL — shared CSS custom properties
+   Used by: hamburger button, bottom nav, search button
+   Requires: SVG #liquid-glass-filter in the DOM
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --lg-color: #c0c0c4;
+  --lg-bg: color-mix(in srgb, var(--lg-color) 12%, transparent);
+  --lg-bg-active: color-mix(in srgb, var(--lg-color) 32%, transparent);
+
+  --lg-blur:
+    blur(8px) url(#liquid-glass-filter) saturate(150%);
+  --lg-blur-webkit:
+    blur(8px) saturate(150%);
+
+  --lg-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 2px 1px 0 -1px rgba(255, 255, 255, 0.7),
+    inset -2px -2px 0 -2px rgba(255, 255, 255, 0.5),
+    inset -3px -8px 1px -6px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 4px rgba(0, 0, 0, 0.12),
+    0 6px 20px rgba(0, 0, 0, 0.10);
+
+  --lg-shadow-active:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 2px 1px 0 -1px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 0 -1px rgba(255, 255, 255, 0.5),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.08),
+    0 3px 8px rgba(0, 0, 0, 0.08);
+
+  --lg-transition-slide: transform 400ms cubic-bezier(1, 0, 0.4, 1);
+}
+
+
+/* ═══════════════════════════════════════════
+   LIQUID GLASS HAMBURGER BUTTON
+   ═══════════════════════════════════════════ */
+
 .liquid-glass-btn {
   position: relative;
   width: 44px;
@@ -470,18 +509,15 @@
   padding: 0;
   border: none;
   border-radius: 999px;
-  background: color-mix(in srgb, #bbbbbc 18%, transparent);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
-    inset 2px 3px 0 -2px rgba(255, 255, 255, 0.85),
-    inset -2px -3px 0 -2px rgba(255, 255, 255, 0.35),
-    inset -3px -8px 1px -6px rgba(255, 255, 255, 0.5),
-    inset -1px 2px 3px -1px rgba(0, 0, 0, 0.12),
-    inset 0 3px 4px -2px rgba(0, 0, 0, 0.12),
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    0 8px 20px rgba(0, 0, 0, 0.08);
+
+  /* TRUE liquid glass — color-mix + SVG refraction */
+  background-color: var(--lg-bg);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur-webkit);
+
+  /* Multi-layer physical glass depth */
+  box-shadow: var(--lg-shadow);
+
   cursor: pointer;
   transition:
     transform 0.3s cubic-bezier(0.5, 0, 0, 1),
@@ -489,7 +525,7 @@
     box-shadow 0.4s ease;
 }
 
-/* Liquid glass highlight */
+/* Glass thickness — top-left specular highlight */
 .liquid-glass-btn::before {
   content: "";
   position: absolute;
@@ -498,9 +534,9 @@
   pointer-events: none;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.4),
-    rgba(255, 255, 255, 0.08) 45%,
-    transparent 70%
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.12) 35%,
+    transparent 60%
   );
 }
 
@@ -518,30 +554,27 @@
     width 0.3s ease;
 }
 
-/* Hover */
 .liquid-glass-btn:hover {
   transform: scale(1.05);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
-    inset 2px 3px 0 -2px rgba(255, 255, 255, 0.9),
-    0 6px 18px rgba(0, 0, 0, 0.14);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 2px 1px 0 -1px rgba(255, 255, 255, 0.85),
+    inset -2px -2px 0 -2px rgba(255, 255, 255, 0.6),
+    0 8px 24px rgba(0, 0, 0, 0.14);
 }
 
-/* Click */
 .liquid-glass-btn:active {
   transform: scale(0.94);
 }
 
-/* Open animation — X shape */
+/* Open → X animation */
 .liquid-glass-btn.open span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-
 .liquid-glass-btn.open span:nth-child(2) {
   opacity: 0;
   transform: scaleX(0);
 }
-
 .liquid-glass-btn.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
@@ -549,10 +582,20 @@
 
 /* ═══════════════════════════════════════════
    LIQUID GLASS BOTTOM NAVIGATION
-   Exact implementation from the reference —
-   color-mix, layered inset shadows, glass
-   reflection gradient, elevated active capsule.
+   TRUE liquid glass with SVG refraction,
+   color-mix, layered inset highlights/shadows,
+   glass reflection, sliding active capsule
+   with liquidStretch animation.
    ═══════════════════════════════════════════ */
+
+/* Stretch keyframe for capsule movement */
+@keyframes liquidStretch {
+  0%   { transform: scaleX(1); }
+  50%  { transform: scaleX(1.08); }
+  100% { transform: scaleX(1); }
+}
+
+/* ── WRAPPER ── */
 
 .lg-bottom-wrapper {
   position: fixed;
@@ -568,6 +611,7 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+
 /* ── MAIN GLASS PILL ── */
 
 .lg-bottom-nav {
@@ -575,31 +619,22 @@
   display: flex;
   align-items: center;
   width: 340px;
-  height: 76px;
+  height: 72px;
   padding: 5px;
   border-radius: 999px;
   pointer-events: auto;
-
-  /* Liquid glass background — NOT a simple rgba white */
-  background: color-mix(in srgb, rgba(255, 255, 255, 0.72) 100%, transparent);
-
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-
-  /* Multi-layered inset highlights + shadows — the key liquid glass look */
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.75),
-    inset 2px 3px 0 -2px rgba(255, 255, 255, 0.9),
-    inset -2px -3px 0 -2px rgba(255, 255, 255, 0.45),
-    inset 0 -7px 8px -6px rgba(255, 255, 255, 0.65),
-    inset 0 3px 5px -2px rgba(0, 0, 0, 0.08),
-    0 4px 10px rgba(0, 0, 0, 0.08),
-    0 12px 28px rgba(0, 0, 0, 0.1);
-
   overflow: visible;
+
+  /* TRUE liquid glass surface — color-mix + SVG refraction */
+  background-color: var(--lg-bg);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur-webkit);
+
+  /* Physical glass depth — multi-layer inset */
+  box-shadow: var(--lg-shadow);
 }
 
-/* Glass reflection — diagonal specular gradient */
+/* Glass reflection — diagonal specular sheen across glass surface */
 .lg-bottom-nav-reflection {
   position: absolute;
   inset: 1px;
@@ -608,9 +643,9 @@
   z-index: 0;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.45),
-    rgba(255, 255, 255, 0.08) 45%,
-    transparent 70%
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.12) 35%,
+    transparent 60%
   );
 }
 
@@ -618,8 +653,9 @@
   border-radius: 50%;
 }
 
+
 /* ── ACTIVE GLASS CAPSULE ── */
-/* This is the elevated liquid glass blob that slides to the active item */
+/* Elevated liquid glass blob that physically slides between items */
 
 .lg-bottom-active-capsule {
   position: absolute;
@@ -631,20 +667,20 @@
   border-radius: 999px;
   pointer-events: none;
 
-  /* Elevated liquid glass — brighter than container */
-  background: color-mix(in srgb, rgba(255, 255, 255, 0.82) 100%, transparent);
+  /* Brighter elevated glass — higher color-mix tint */
+  background-color: var(--lg-bg-active);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur-webkit);
 
-  /* Layered inset shadows for depth — strong white top-left, dark bottom-right */
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.95),
-    inset 2px 3px 0 -2px rgba(255, 255, 255, 1),
-    inset -2px -3px 0 -2px rgba(255, 255, 255, 0.5),
-    inset -3px -8px 1px -6px rgba(255, 255, 255, 0.65),
-    inset -1px 2px 3px -1px rgba(0, 0, 0, 0.08),
-    0 3px 8px rgba(0, 0, 0, 0.08);
+  /* Layered depth — strong white top-left edge, dark bottom inner */
+  box-shadow: var(--lg-shadow-active);
 
-  /* Smooth spring-like slide */
-  transition: transform 0.45s cubic-bezier(1, 0, 0.4, 1);
+  /* Smooth spring-like slide + stretch animation */
+  transition:
+    var(--lg-transition-slide),
+    width 300ms ease,
+    box-shadow 400ms ease;
+  animation: liquidStretch 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 
@@ -654,25 +690,26 @@
   position: relative;
   z-index: 2;
   flex: 1;
-  height: 66px;
+  height: 62px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   border: none;
   background: transparent;
   border-radius: 999px;
-  color: #111;
+  color: #222;
   cursor: pointer;
   font-family: inherit;
   transition:
     transform 0.25s ease,
     color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lg-bottom-item:active {
-  transform: scale(0.93);
+  transform: scale(0.92);
 }
 
 
@@ -683,40 +720,44 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.25s ease, color 0.25s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .lg-bottom-icon svg {
-  width: 23px;
-  height: 23px;
-  stroke-width: 2.1px;
-  color: #222;
-  transition: color 0.25s ease, transform 0.25s ease;
+  width: 22px;
+  height: 22px;
+  stroke-width: 2px;
+  color: #2a2a3a;
+  fill: transparent;
+  transition: color 0.3s ease, transform 0.3s ease, fill 0.3s ease;
 }
 
 .lg-bottom-icon.active svg {
   color: #a83224;
-  transform: translateY(-1px);
+  fill: rgba(168, 50, 36, 0.08);
+  stroke-width: 2.3px;
+  transform: translateY(-1px) scale(1.05);
 }
 
-/* Hover: scale non-active icons */
 .lg-bottom-item:not(.active):hover .lg-bottom-icon svg {
-  transform: scale(1.12);
+  transform: scale(1.1);
 }
 
 
 /* ── LABEL ── */
 
 .lg-bottom-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.1;
-  color: #333;
-  transition: color 0.25s ease;
+  line-height: 1;
+  color: #444;
+  letter-spacing: -0.01em;
+  transition: color 0.3s ease;
 }
 
 .lg-bottom-label.active {
   color: #a83224;
+  font-weight: 700;
 }
 
 
@@ -725,7 +766,7 @@
 .lg-bottom-badge {
   position: absolute;
   top: -6px;
-  right: -8px;
+  right: -9px;
   z-index: 30;
   display: grid;
   place-items: center;
@@ -746,41 +787,41 @@
 /* ── USER AVATAR ── */
 
 .lg-bottom-avatar {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  transition: all 0.25s ease;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
 }
 
 .lg-bottom-avatar.active {
   border-color: #a83224;
   border-width: 2px;
-  transform: scale(1.06);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9);
+  transform: scale(1.08);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
 .lg-bottom-initials {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  font-size: 11px;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
-  background: rgba(0, 0, 0, 0.06);
-  color: #333;
-  transition: all 0.25s ease;
+  background: rgba(0, 0, 0, 0.05);
+  color: #444;
+  transition: all 0.3s ease;
 }
 
 .lg-bottom-initials.active {
   background: #a83224;
   color: white;
   border-color: white;
-  transform: scale(1.06);
+  transform: scale(1.08);
 }
 
 
@@ -788,8 +829,8 @@
 
 .lg-bottom-search {
   position: relative;
-  width: 76px;
-  height: 76px;
+  width: 72px;
+  height: 72px;
   flex-shrink: 0;
   border: none;
   border-radius: 50%;
@@ -797,33 +838,31 @@
   place-items: center;
   pointer-events: auto;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
-  /* Same liquid glass as the nav pill */
-  background: color-mix(in srgb, rgba(255, 255, 255, 0.72) 100%, transparent);
+  /* TRUE liquid glass — same material as dock */
+  background-color: var(--lg-bg);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur-webkit);
 
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  /* Physical glass depth */
+  box-shadow: var(--lg-shadow);
 
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
-    inset 2px 3px 0 -2px rgba(255, 255, 255, 0.9),
-    inset -2px -3px 0 -2px rgba(255, 255, 255, 0.4),
-    inset 0 -7px 8px -6px rgba(255, 255, 255, 0.6),
-    inset 0 3px 5px -2px rgba(0, 0, 0, 0.08),
-    0 5px 12px rgba(0, 0, 0, 0.08),
-    0 12px 28px rgba(0, 0, 0, 0.1);
-
-  transition: transform 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
 }
 
 .lg-bottom-search svg {
   position: relative;
   z-index: 2;
-  width: 26px;
-  height: 26px;
-  color: #222;
+  width: 24px;
+  height: 24px;
+  color: #2a2a3a;
   stroke-width: 2.2px;
-  transition: color 0.25s ease;
+  transition: color 0.3s ease;
+}
+
+.lg-bottom-search.active {
+  box-shadow: var(--lg-shadow-active);
 }
 
 .lg-bottom-search.active svg {
@@ -831,7 +870,11 @@
 }
 
 .lg-bottom-search:hover {
-  transform: scale(1.05);
+  transform: scale(1.06);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 2px 1px 0 -1px rgba(255, 255, 255, 0.85),
+    0 8px 24px rgba(0, 0, 0, 0.14);
 }
 
 .lg-bottom-search:active {
@@ -849,29 +892,30 @@
   }
 
   .lg-bottom-nav {
-    width: calc(100% - 86px);
-    height: 72px;
+    width: calc(100% - 82px);
+    height: 68px;
   }
 
   .lg-bottom-item {
-    height: 62px;
-  }
-
-  .lg-bottom-active-capsule {
-    height: calc(100% - 10px);
+    height: 58px;
   }
 
   .lg-bottom-search {
-    width: 72px;
-    height: 72px;
+    width: 68px;
+    height: 68px;
   }
 
   .lg-bottom-label {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .lg-bottom-icon svg {
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .lg-bottom-search svg {
+    width: 22px;
+    height: 22px;
   }
 }
