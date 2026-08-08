@@ -24,16 +24,13 @@ export function YarnStackCards() {
     target: containerRef,
     offset: ["start start", "end start"],
   });
-  const smooth = useSpring(scrollYProgress, {
-    stiffness: 30,
-    damping: 40,
-    restDelta: 0.001,
-  });
 
-  const opacity1 = useTransform(smooth, [0, 0.33], [1, 0]);
-  const scale1 = useTransform(smooth, [0, 0.33], [1, 0.9]);
-  const opacity2 = useTransform(smooth, [0.33, 0.66], [1, 0]);
-  const scale2 = useTransform(smooth, [0.33, 0.66], [1, 0.9]);
+  // Use direct scroll progress instead of spring to prevent lag when scrolling up.
+  // This ensures the outgoing cards scale back and fade perfectly in sync with the sticky scroll.
+  const opacity1 = useTransform(scrollYProgress, [0, 0.33], [1, 0]);
+  const scale1 = useTransform(scrollYProgress, [0, 0.33], [1, 0.9]);
+  const opacity2 = useTransform(scrollYProgress, [0.33, 0.66], [1, 0]);
+  const scale2 = useTransform(scrollYProgress, [0.33, 0.66], [1, 0.9]);
 
   const stackStyles: MotionStyle[] = [
     { opacity: opacity1, scale: scale1 },
