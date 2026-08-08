@@ -71,11 +71,25 @@ export function MobileBottomNav() {
 
   return (
     <div className="lg-bottom-wrapper md:hidden">
+      {/* 
+        SVG Filters for Liquid Refraction 
+        Used by the CSS url(#liquid-glass) and url(#liquid-toggler) 
+      */}
+      <svg width="0" height="0" className="hidden absolute pointer-events-none">
+        <defs>
+          <filter id="liquid-glass" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="liquid-toggler" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+
       {/* 4-item liquid glass pill */}
       <nav className="lg-bottom-nav">
-        {/* Glass reflection layer */}
-        <span className="lg-bottom-nav-reflection" aria-hidden />
-
         {/* Active glass capsule — slides to active item */}
         {activeIndex >= 0 && (
           <span
@@ -87,13 +101,14 @@ export function MobileBottomNav() {
           />
         )}
 
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.map((item, index) => {
           const isActive = activeId === item.id;
           return (
             <button
               key={item.id}
               type="button"
               className={cn("lg-bottom-item", isActive && "active")}
+              data-index={index}
               onClick={() => {
                 triggerHaptic();
                 if (item.isCart) {
@@ -164,7 +179,6 @@ export function MobileBottomNav() {
         aria-current={isSearchActive ? "page" : undefined}
         data-cursor="link"
       >
-        <span className="lg-bottom-nav-reflection round" aria-hidden />
         <Search />
       </button>
     </div>

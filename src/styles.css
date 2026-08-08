@@ -582,18 +582,7 @@
 
 /* ═══════════════════════════════════════════
    LIQUID GLASS BOTTOM NAVIGATION
-   TRUE liquid glass with SVG refraction,
-   color-mix, layered inset highlights/shadows,
-   glass reflection, sliding active capsule
-   with liquidStretch animation.
    ═══════════════════════════════════════════ */
-
-/* Stretch keyframe for capsule movement */
-@keyframes liquidStretch {
-  0%   { transform: scaleX(1); }
-  50%  { transform: scaleX(1.08); }
-  100% { transform: scaleX(1); }
-}
 
 /* ── WRAPPER ── */
 
@@ -602,94 +591,155 @@
   left: 50%;
   bottom: 18px;
   transform: translateX(-50%);
-  z-index: 99990;
+
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: max-content;
+  gap: 14px;
+
+  z-index: 99990;
   pointer-events: none;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Hide on tablet and desktop — mobile only */
 @media (min-width: 768px) {
   .lg-bottom-wrapper {
     display: none !important;
   }
 }
 
-
 /* ── MAIN GLASS PILL ── */
 
 .lg-bottom-nav {
+  --glass: #bbbbbc;
+  --light: #fff;
+  --dark: #000;
+
   position: relative;
+  width: 460px;
+  height: 86px;
+  max-width: calc(100vw - 110px); /* responsive fallback */
+
   display: flex;
   align-items: center;
-  width: 340px;
-  height: 72px;
   padding: 5px;
   border-radius: 999px;
+
+  background: color-mix(in srgb, var(--glass) 12%, transparent);
+
+  backdrop-filter: blur(8px) url(#liquid-glass) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+
+  border: none;
   pointer-events: auto;
+
+  box-shadow:
+    /* outer glass rim */
+    inset 0 0 0 1px rgba(255,255,255,.45),
+    /* top-left highlight */
+    inset 2px 3px 0 -2px rgba(255,255,255,.95),
+    /* upper glass reflection */
+    inset -2px -2px 0 -2px rgba(255,255,255,.75),
+    inset -3px -8px 1px -6px rgba(255,255,255,.55),
+    /* dark glass refraction */
+    inset -.3px -1px 4px rgba(0,0,0,.10),
+    inset -1.5px 2.5px 0 -2px rgba(0,0,0,.12),
+    inset 0 3px 4px -2px rgba(0,0,0,.12),
+    inset 2px -6.5px 1px -4px rgba(0,0,0,.08),
+    /* external depth */
+    0 1px 5px rgba(0,0,0,.08),
+    0 8px 20px rgba(0,0,0,.08);
+
   overflow: visible;
-
-  /* TRUE liquid glass surface — color-mix + SVG refraction */
-  background-color: var(--lg-bg);
-  backdrop-filter: var(--lg-blur);
-  -webkit-backdrop-filter: var(--lg-blur-webkit);
-
-  /* Physical glass depth — multi-layer inset */
-  box-shadow: var(--lg-shadow);
 }
 
-/* Glass reflection — diagonal specular sheen across glass surface */
-.lg-bottom-nav-reflection {
+/* ── ACTIVE GLASS CAPSULE ── */
+
+.lg-bottom-active-capsule {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+
+  width: calc((100% - 8px) / 4);
+  height: calc(100% - 8px);
+
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+
+  background: color-mix(in srgb, #bbbbbc 36%, transparent);
+
+  backdrop-filter: blur(8px) url(#liquid-toggler) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+
+  box-shadow:
+    /* glass outer edge */
+    inset 0 0 0 1px rgba(255,255,255,.55),
+    /* top reflection */
+    inset 2px 1px 0 -1px rgba(255,255,255,.95),
+    /* side reflection */
+    inset -1.5px -1px 0 -1px rgba(255,255,255,.80),
+    /* lower glass highlight */
+    inset -2px -6px 1px -5px rgba(255,255,255,.55),
+    /* dark refraction */
+    inset -1px 2px 3px -1px rgba(0,0,0,.18),
+    inset 0 -4px 1px -2px rgba(0,0,0,.10),
+    /* floating depth */
+    0 3px 6px rgba(0,0,0,.08);
+
+  transition:
+    transform 400ms cubic-bezier(1,0,.4,1),
+    background 400ms cubic-bezier(1,0,.4,1),
+    box-shadow 400ms cubic-bezier(1,0,.4,1);
+
+  animation: liquidAppear 440ms ease;
+}
+
+/* EXTRA GLASS REFLECTION */
+.lg-bottom-active-capsule::before {
+  content: "";
   position: absolute;
   inset: 1px;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 0;
+
   background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.12) 35%,
-    transparent 60%
+    145deg,
+    rgba(255,255,255,.48) 0%,
+    rgba(255,255,255,.16) 22%,
+    transparent 48%,
+    transparent 70%,
+    rgba(0,0,0,.06) 100%
   );
+
+  opacity: .85;
+  mix-blend-mode: screen;
 }
 
-.lg-bottom-nav-reflection.round {
-  border-radius: 50%;
-}
-
-
-/* ── ACTIVE GLASS CAPSULE ── */
-/* Elevated liquid glass blob that physically slides between items */
-
-.lg-bottom-active-capsule {
+/* LOWER DARK REFRACTION */
+.lg-bottom-active-capsule::after {
+  content: "";
   position: absolute;
-  z-index: 1;
-  top: 5px;
-  left: 5px;
-  width: calc(25% - 2.5px);
-  height: calc(100% - 10px);
+  left: 8%;
+  right: 8%;
+  bottom: 3px;
+  height: 18px;
   border-radius: 999px;
+
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0,0,0,.08)
+  );
+
+  filter: blur(5px);
   pointer-events: none;
-
-  /* Brighter elevated glass — higher color-mix tint */
-  background-color: var(--lg-bg-active);
-  backdrop-filter: var(--lg-blur);
-  -webkit-backdrop-filter: var(--lg-blur-webkit);
-
-  /* Layered depth — strong white top-left edge, dark bottom inner */
-  box-shadow: var(--lg-shadow-active);
-
-  /* Smooth spring-like slide + stretch animation */
-  transition:
-    var(--lg-transition-slide),
-    width 300ms ease,
-    box-shadow 400ms ease;
-  animation: liquidStretch 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes liquidAppear {
+  0% { transform: scaleX(1); }
+  50% { transform: scaleX(1.08); }
+  100% { transform: scaleX(1); }
+}
 
 /* ── NAV ITEM ── */
 
@@ -697,76 +747,63 @@
   position: relative;
   z-index: 2;
   flex: 1;
-  height: 62px;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border: none;
-  background: transparent;
-  border-radius: 999px;
-  color: #222;
+  gap: 3px;
   cursor: pointer;
-  font-family: inherit;
-  transition:
-    transform 0.25s ease,
-    color 0.25s ease;
+
+  color: #17172b;
+  font-size: 15px;
+  font-weight: 500;
   -webkit-tap-highlight-color: transparent;
 }
-
-.lg-bottom-item:active {
-  transform: scale(0.92);
-}
-
-
-/* ── ICON ── */
 
 .lg-bottom-icon {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .lg-bottom-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 27px;
+  height: 27px;
+  stroke: currentColor;
   stroke-width: 2px;
-  color: #2a2a3a;
-  fill: transparent;
-  transition: color 0.3s ease, transform 0.3s ease, fill 0.3s ease;
+  transition:
+    transform 200ms cubic-bezier(.5,0,0,1),
+    color 160ms;
 }
-
-.lg-bottom-icon.active svg {
-  color: #a83224;
-  fill: rgba(168, 50, 36, 0.08);
-  stroke-width: 2.3px;
-  transform: translateY(-1px) scale(1.05);
-}
-
-.lg-bottom-item:not(.active):hover .lg-bottom-icon svg {
-  transform: scale(1.1);
-}
-
-
-/* ── LABEL ── */
 
 .lg-bottom-label {
   font-size: 11px;
-  font-weight: 600;
   line-height: 1;
-  color: #444;
-  letter-spacing: -0.01em;
-  transition: color 0.3s ease;
+  transition:
+    color 160ms,
+    transform 160ms;
 }
 
-.lg-bottom-label.active {
-  color: #a83224;
-  font-weight: 700;
+/* ACTIVE */
+
+.lg-bottom-item.active {
+  color: #b72e21;
+  font-weight: 600;
 }
 
+.lg-bottom-icon.active svg {
+  transform: scale(1);
+}
+
+.lg-bottom-item:hover .lg-bottom-icon svg {
+  transform: scale(1.12);
+}
 
 /* ── CART BADGE ── */
 
@@ -781,21 +818,20 @@
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: #ef4444;
+  background: #b72e21;
   color: #fff;
   font-size: 10px;
   font-weight: 800;
   line-height: 1;
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
+  box-shadow: 0 2px 6px rgba(183, 46, 33, 0.45);
   border: 2px solid white;
 }
-
 
 /* ── USER AVATAR ── */
 
 .lg-bottom-avatar {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   object-fit: cover;
   border: 1.5px solid rgba(0, 0, 0, 0.12);
@@ -803,126 +839,115 @@
 }
 
 .lg-bottom-avatar.active {
-  border-color: #a83224;
+  border-color: #b72e21;
   border-width: 2px;
-  transform: scale(1.08);
+  transform: scale(1.08) translateY(-2px);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
 .lg-bottom-initials {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 1.5px solid rgba(0, 0, 0, 0.12);
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
   background: rgba(0, 0, 0, 0.05);
-  color: #444;
+  color: currentColor;
   transition: all 0.3s ease;
 }
 
 .lg-bottom-initials.active {
-  background: #a83224;
+  background: #b72e21;
   color: white;
   border-color: white;
-  transform: scale(1.08);
+  transform: scale(1.08) translateY(-2px);
 }
-
 
 /* ── SEARCH BUTTON ── */
 
 .lg-bottom-search {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 86px;
+  height: 86px;
   flex-shrink: 0;
+
   border: none;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  pointer-events: auto;
+
+  background: color-mix(in srgb, #bbbbbc 16%, transparent);
+  backdrop-filter: blur(8px) url(#liquid-glass) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.55),
+    inset 2px 3px 0 -2px rgba(255,255,255,.95),
+    inset -2px -2px 0 -2px rgba(255,255,255,.75),
+    inset -2px -7px 1px -5px rgba(255,255,255,.50),
+    inset -1px 2px 3px -1px rgba(0,0,0,.14),
+    inset 0 -4px 1px -2px rgba(0,0,0,.08),
+    0 3px 6px rgba(0,0,0,.08),
+    0 8px 20px rgba(0,0,0,.08);
+
+  color: #17172b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
-
-  /* TRUE liquid glass — same material as dock */
-  background-color: var(--lg-bg);
-  backdrop-filter: var(--lg-blur);
-  -webkit-backdrop-filter: var(--lg-blur-webkit);
-
-  /* Physical glass depth */
-  box-shadow: var(--lg-shadow);
-
-  transition: transform 0.25s ease, box-shadow 0.3s ease;
 }
 
 .lg-bottom-search svg {
-  position: relative;
-  z-index: 2;
-  width: 24px;
-  height: 24px;
-  color: #2a2a3a;
-  stroke-width: 2.2px;
-  transition: color 0.3s ease;
+  width: 31px;
+  height: 31px;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: transform 0.2s ease;
 }
 
 .lg-bottom-search.active {
-  box-shadow: var(--lg-shadow-active);
+  color: #b72e21;
 }
 
-.lg-bottom-search.active svg {
-  color: #a83224;
-}
-
-.lg-bottom-search:hover {
-  transform: scale(1.06);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
-    inset 2px 1px 0 -1px rgba(255, 255, 255, 0.85),
-    0 8px 24px rgba(0, 0, 0, 0.14);
+.lg-bottom-search:hover svg {
+  transform: scale(1.1);
 }
 
 .lg-bottom-search:active {
   transform: scale(0.94);
 }
 
-
 /* ── RESPONSIVE ── */
 
 @media (max-width: 480px) {
   .lg-bottom-wrapper {
-    bottom: 14px;
     gap: 10px;
-    width: calc(100% - 28px);
+    width: 100%;
+    padding: 0 10px;
   }
 
   .lg-bottom-nav {
-    width: calc(100% - 82px);
-    height: 68px;
-  }
-
-  .lg-bottom-item {
-    height: 58px;
+    width: auto;
+    flex: 1;
+    height: 76px;
   }
 
   .lg-bottom-search {
-    width: 68px;
-    height: 68px;
-  }
-
-  .lg-bottom-label {
-    font-size: 10px;
+    width: 76px;
+    height: 76px;
   }
 
   .lg-bottom-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
   }
 
   .lg-bottom-search svg {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
   }
 }
