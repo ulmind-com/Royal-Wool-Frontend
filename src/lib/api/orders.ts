@@ -207,6 +207,52 @@ export async function reverseGeocode(lat: number, lng: number) {
   };
 }
 
+/**
+ * IP-based geolocation fallback — when the browser denies GPS access we can
+ * still get an approximate location from the user's public IP. Uses ipapi.co
+ * (free, no key needed, HTTPS) and then reverse-geocodes to fill the address.
+ */
+export async function ipGeolocate() {
+  const res = await fetch("https://ipapi.co/json/", {
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) throw new Error("IP geolocation failed");
+  const data = (await res.json()) as {
+    latitude?: number;
+    longitude?: number;
+    city?: string;
+    region?: string;
+    postal?: string;
+  };
+  if (!data.latitude || !data.longitude) throw new Error("No coordinates from IP");
+
+  // Use the IP coordinates with Nominatim for a richer address breakdown,
+  // but pre-fill from the IP data as a safety net.
+  try {
+    const found = await reverseGeocode(data.latitude, data.longitude);
+    return {
+      ...found,
+      city: found.city || data.city || "",
+      state: found.state || data.region || "",
+      pincode: found.pincode || (data.postal || "").replace(/\s/g, ""),
+      lat: data.latitude,
+      lng: data.longitude,
+    };
+  } catch {
+    // Nominatim failed — return IP-only data
+    return {
+      house: "",
+      area: "",
+      city: data.city || "",
+      state: data.region || "",
+      pincode: (data.postal || "").replace(/\s/g, ""),
+      label: "",
+      lat: data.latitude,
+      lng: data.longitude,
+    };
+  }
+}
+
 /** Self-service cancellation — the server enforces the admin's time window. */
 export const cancelOrder = (orderId: string) =>
   apiFetch<{ status: string; refund: boolean }>(`/orders/${orderId}/cancel`, { method: "POST" });

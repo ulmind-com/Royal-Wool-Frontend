@@ -23,6 +23,7 @@ import {
   type Bill,
   type OrderAddress,
   type OrderItemIn,
+  ipGeolocate,
   loadRazorpay,
   placeOrder,
   quoteOrder,
@@ -313,12 +314,49 @@ function CheckoutPage() {
     setAddress((prev) => ({ ...prev, ...patch }));
   };
 
+  /** Fill address from coordinates (shared by GPS and IP fallback). */
+  const fillFromCoords = async (
+    found: Awaited<ReturnType<typeof reverseGeocode>> & { lat?: number; lng?: number },
+    lat: number,
+    lng: number,
+    silent: boolean,
+    label?: string,
+  ) => {
+    setSavedIndex(null);
+    setAddress((prev) => ({
+      ...prev,
+      house: found.house || prev.house,
+      area: found.area || prev.area,
+      city: found.city || prev.city,
+      state: found.state || prev.state,
+      pincode: found.pincode || prev.pincode,
+      lat,
+      lng,
+    }));
+    if (!silent) toast.success(label ?? "Address filled from your location");
+  };
+
+  /** Try IP-based geolocation as a fallback when GPS is unavailable. */
+  const ipFallback = async (silent: boolean) => {
+    try {
+      const found = await ipGeolocate();
+      await fillFromCoords(found, found.lat, found.lng, silent, "Address filled from approximate location");
+    } catch {
+      if (!silent) toast.error("Couldn't detect your location. Please fill the address manually.");
+    } finally {
+      setLocating(false);
+    }
+  };
+
   /** Pin the shopper by GPS and fill the address from those coordinates.
    *  `silent` is used by the automatic detection on load — it must never
-   *  scold someone who simply dismissed the browser prompt. */
+   *  scold someone who simply dismissed the browser prompt.
+   *  Falls back to IP-based geolocation when GPS is denied or unavailable. */
   const locate = (silent = false) => {
     if (!navigator.geolocation) {
-      if (!silent) toast.error("Your browser can't share a location.");
+      // No GPS support at all — try IP fallback
+      setLocating(true);
+      ipFallback(silent);
       return;
     }
     setLocating(true);
@@ -326,27 +364,22 @@ function CheckoutPage() {
       async ({ coords }) => {
         try {
           const found = await reverseGeocode(coords.latitude, coords.longitude);
-          setSavedIndex(null);
-          setAddress((prev) => ({
-            ...prev,
-            house: found.house || prev.house,
-            area: found.area || prev.area,
-            city: found.city || prev.city,
-            state: found.state || prev.state,
-            pincode: found.pincode || prev.pincode,
-            lat: coords.latitude,
-            lng: coords.longitude,
-          }));
-          if (!silent) toast.success("Address filled from your location");
+          await fillFromCoords(found, coords.latitude, coords.longitude, silent);
         } catch {
           if (!silent) toast.error("Couldn't read an address from that location.");
         } finally {
           setLocating(false);
         }
       },
-      () => {
-        setLocating(false);
-        if (!silent) toast.error("Location permission denied.");
+      (err) => {
+        // GPS failed — fall back to IP-based geolocation
+        if (err.code === GeolocationPositionError.PERMISSION_DENIED && silent) {
+          // Silent auto-locate on page load — don't bother the user
+          setLocating(false);
+          return;
+        }
+        // For manual clicks or non-permission errors, try IP fallback
+        ipFallback(silent);
       },
       { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 },
     );
