@@ -6,17 +6,30 @@ const APP_ID = "84ed925f-7516-418c-8ed9-0eb5878929f7";
 /**
  * Google reviews, served by Elfsight — it reads the live Google Business
  * Profile, so new reviews show up without a deploy.
- *
- * `platform.js` is loaded from the document head (see routes/__root.tsx). It
- * scans for `.elfsight-app-<id>` on load; because this route mounts client-side
- * we nudge it to re-scan once the container exists.
  */
 export function ElfsightReviews() {
   useEffect(() => {
-    const mount = () => window.eapps?.platform?.initialize?.();
+    // Inject the script if not already present
+    const scriptUrl = "https://static.elfsight.com/platform/platform.js";
+    if (!document.querySelector(`script[src="${scriptUrl}"]`)) {
+      const script = document.createElement("script");
+      script.src = scriptUrl;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    const mount = () => {
+      // @ts-ignore
+      window.eapps?.platform?.initialize?.();
+    };
+
     mount();
-    const t = window.setTimeout(mount, 1200);
-    return () => window.clearTimeout(t);
+    const t1 = window.setTimeout(mount, 1000);
+    const t2 = window.setTimeout(mount, 3000);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, []);
 
   return (
