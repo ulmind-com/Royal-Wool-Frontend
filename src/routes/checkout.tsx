@@ -423,11 +423,9 @@ function CheckoutPage() {
         amount: created.amount,
         currency: created.currency,
         order_id: created.razorpay_order_id,
-        name: "Royal Wool",
         description: `${cartCount} item(s) · order ${created.order_id.slice(-8)}`,
         prefill: created.prefill,
         notes: { order_id: created.order_id },
-        theme: { color: "#C6402E" },
         modal: {
           ondismiss: () => {
             setPaying(false);
