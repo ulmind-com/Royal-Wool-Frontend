@@ -3,7 +3,7 @@ import { BadgeCheck, Baby, Heart, Truck } from "lucide-react";
 
 import { BrandBanner } from "@/components/commerce/brand-banner";
 import { CategoryShowcase } from "@/components/commerce/category-showcase";
-import { ElfsightReviews } from "@/components/commerce/elfsight-reviews";
+import { SociableKitReviews } from "@/components/commerce/sociablekit-reviews";
 
 import { FeaturedYarn } from "@/components/commerce/featured-yarn";
 import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
@@ -101,7 +101,7 @@ function Home() {
 
       <BrandBanner />
 
-      <ElfsightReviews />
+      <SociableKitReviews />
     </>
   );
 }

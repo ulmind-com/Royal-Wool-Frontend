@@ -1,35 +1,23 @@
 import { useEffect } from "react";
 
-/** Elfsight app id for the Royaall Wool Google Reviews widget. */
-const APP_ID = "84ed925f-7516-418c-8ed9-0eb5878929f7";
+/** SociableKIT app id for the Royaall Wool Google Reviews widget. */
+const APP_ID = "25704433";
 
 /**
- * Google reviews, served by Elfsight — it reads the live Google Business
+ * Google reviews, served by SociableKIT — it reads the live Google Business
  * Profile, so new reviews show up without a deploy.
  */
-export function ElfsightReviews() {
+export function SociableKitReviews() {
   useEffect(() => {
     // Inject the script if not already present
-    const scriptUrl = "https://static.elfsight.com/platform/platform.js";
+    const scriptUrl = "https://widgets.sociablekit.com/google-reviews/widget.js";
     if (!document.querySelector(`script[src="${scriptUrl}"]`)) {
       const script = document.createElement("script");
       script.src = scriptUrl;
       script.async = true;
+      script.defer = true;
       document.body.appendChild(script);
     }
-
-    const mount = () => {
-      // @ts-ignore
-      window.eapps?.platform?.initialize?.();
-    };
-
-    mount();
-    const t1 = window.setTimeout(mount, 1000);
-    const t2 = window.setTimeout(mount, 3000);
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
   }, []);
 
   return (
@@ -53,7 +41,7 @@ export function ElfsightReviews() {
         </h2>
 
         <div className="mt-10">
-          <div className={`elfsight-app-${APP_ID}`} data-elfsight-app-lazy />
+          <div className="sk-ww-google-reviews" data-embed-id={APP_ID} />
         </div>
       </div>
     </section>
