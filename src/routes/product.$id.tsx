@@ -28,6 +28,7 @@ import { productSpecs, washCare } from "@/lib/api/specs";
 
 import {
   type Product,
+  type ProductColor,
   discountPct,
   displayPrice,
   isInStock,
@@ -78,27 +79,42 @@ function ProductPage() {
 
   const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(1);
+  const [colorIdx, setColorIdx] = useState(0);
 
   const addItem = useCartStore((s) => s.addItem);
 
-  // A new product id means a clean slate for the gallery and quantity.
+  // A new product id means a clean slate for the gallery, quantity and colour.
   useEffect(() => {
     setActiveImage(0);
     setQty(1);
+    setColorIdx(0);
   }, [id]);
 
-  // Every shade is its own product, so the "variant matrix" is just this
-  // product's own server-computed pricing/stock — nothing to resolve locally.
-  const price = product ? displayPrice(product) : 0;
-  const stock = product?.total_stock ?? 0;
-  const mrp = product ? struckPrice(product) : null;
-  const off = product ? discountPct(product) : 0;
-  const soldOut = product ? !isInStock(product) : true;
-
-  const gallery = useMemo(
-    () => Array.from(new Set((product?.images ?? []).filter(Boolean))),
+  // Colour variants (one product, many shades). When present, the selected
+  // colour drives the price, gallery, stock and shade label.
+  const colors = useMemo(
+    () => (product?.colors ?? []).filter((c) => c && c.name),
     [product],
   );
+  const hasColors = colors.length > 0;
+  const activeColor = hasColors ? colors[Math.min(colorIdx, colors.length - 1)] : null;
+
+  // Server pricing (whole product) is the fallback; a selected colour resolves
+  // its own price locally with the same rules the backend uses.
+  const colorPricing = activeColor ? resolveColorPricing(product!, activeColor) : null;
+  const price = colorPricing ? colorPricing.price : product ? displayPrice(product) : 0;
+  const mrp = colorPricing ? colorPricing.mrp : product ? struckPrice(product) : null;
+  const off = colorPricing ? colorPricing.off : product ? discountPct(product) : 0;
+  const stock = activeColor ? activeColor.stock ?? 0 : product?.total_stock ?? 0;
+  const soldOut = hasColors ? stock <= 0 : product ? !isInStock(product) : true;
+
+  const gallery = useMemo(() => {
+    const imgs = activeColor?.images?.length ? activeColor.images : product?.images ?? [];
+    return Array.from(new Set(imgs.filter(Boolean)));
+  }, [activeColor, product]);
+
+  // Reset the visible image whenever the shopper switches colour.
+  useEffect(() => { setActiveImage(0); }, [colorIdx]);
 
   // Sibling shades: same brand + product line + ball weight, so switching
   // shade never silently changes pack size. Only fetched once we know both.
@@ -133,16 +149,19 @@ function ProductPage() {
       return;
     }
     if (product) {
+      // The backend matches a colour by its exact name to resolve price & stock,
+      // so send activeColor.name verbatim (never the shade code).
       addItem({
         productId: product.id,
         title: product.title,
-        color: product.primary_color_name ?? undefined,
+        color: activeColor ? activeColor.name : product.primary_color_name ?? undefined,
         price,
         qty,
         image: gallery[0] || product.images?.[0],
       });
     }
-    toast.success(`${qty} item(s) of ${product?.title || "Yarn"} added to your cart!`);
+    const shadeNote = activeColor ? ` — ${activeColor.name}` : "";
+    toast.success(`${qty} item(s) of ${product?.title || "Yarn"}${shadeNote} added to your cart!`);
   };
 
   const specs = product ? productSpecs(product) : [];
@@ -297,7 +316,23 @@ function ProductPage() {
             </span>
           </div>
 
-          {selfShade && (selfShade.name || selfShade.code) ? (
+          {hasColors ? (
+            <div className="mt-6 border-t border-border pt-6">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                  Colour
+                </p>
+                <p className="font-data text-2xs text-foreground">
+                  {activeColor?.name}
+                  {activeColor?.shade_code ? ` · ${activeColor.shade_code}` : ""}
+                </p>
+                <p className="font-data text-2xs text-muted-foreground/70">
+                  {colors.length} shade{colors.length > 1 ? "s" : ""}
+                </p>
+              </div>
+              <ColorSwatches colors={colors} activeIdx={colorIdx} onSelect={setColorIdx} />
+            </div>
+          ) : selfShade && (selfShade.name || selfShade.code) ? (
             <div className="mt-6 border-t border-border pt-6">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
@@ -315,7 +350,7 @@ function ProductPage() {
           ) : null}
 
           {soldOut ? (
-            <RestockNotify productId={product.id} colorName={product.primary_color_name ?? null} />
+            <RestockNotify productId={product.id} colorName={activeColor?.name ?? product.primary_color_name ?? null} />
           ) : (
             <p className="mt-6 font-data text-2xs text-muted-foreground">
               {stock <= (product.low_stock_threshold ?? 5) ? `Only ${stock} left` : "In stock"}
@@ -549,6 +584,63 @@ function ProductActions({
         </a>
       </div>
     </Glass>
+  );
+}
+
+/** Resolve a single colour's display price with the same rules as the backend
+ * (colour value falls back to the product's base value for every field). */
+function resolveColorPricing(product: Product, color: ProductColor): { price: number; mrp: number | null; off: number } {
+  const price = color.price ?? product.price ?? 0;
+  const mrp = color.mrp ?? product.mrp ?? 0;
+  const disc = color.discount_pct ?? product.discount_pct ?? 0;
+  const on = color.discount_on ?? product.discount_on ?? "price";
+  let final = price;
+  if (disc && disc > 0) {
+    const base = on === "mrp" && mrp ? mrp : price;
+    final = Math.round(base * (1 - disc / 100) * 100) / 100;
+  }
+  const struck = mrp && mrp > final ? mrp : null;
+  const off = struck ? Math.round(((struck - final) / struck) * 100) : 0;
+  return { price: final, mrp: struck, off };
+}
+
+/** Swatch grid for a product's colours — click to select a shade. */
+function ColorSwatches({
+  colors,
+  activeIdx,
+  onSelect,
+}: {
+  colors: ProductColor[];
+  activeIdx: number;
+  onSelect: (i: number) => void;
+}) {
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {colors.map((c, i) => {
+        const active = i === activeIdx;
+        const out = (c.stock ?? 0) <= 0;
+        return (
+          <button
+            key={(c.shade_code || c.name) + i}
+            type="button"
+            onClick={() => onSelect(i)}
+            title={c.shade_code ? `${c.name} · ${c.shade_code}` : c.name}
+            data-cursor="link"
+            aria-pressed={active}
+            className={cn(
+              "relative h-9 w-9 overflow-hidden rounded-full border transition-transform",
+              active ? "border-madder ring-2 ring-madder ring-offset-2 ring-offset-background" : "border-border hover:scale-105",
+            )}
+            style={c.swatch_image ? undefined : { backgroundColor: c.hex || "#ccc" }}
+          >
+            {c.swatch_image ? (
+              <img src={c.swatch_image} alt={c.name} className="h-full w-full object-cover" />
+            ) : null}
+            {out ? <span className="absolute inset-0 grid place-items-center bg-fleece/60 text-[9px] text-foreground">✕</span> : null}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

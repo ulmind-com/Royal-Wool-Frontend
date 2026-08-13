@@ -76,6 +76,7 @@ export interface ProductColor {
   /** Admin-assigned wool shade code, e.g. "OLV001". */
   shade_code?: string | null;
   hex: string | null;
+  swatch_image?: string | null;
   images: string[];
   price: number | null;
   mrp: number | null;
@@ -96,6 +97,8 @@ export interface Product {
   short_description?: string | null;
   mrp?: number | null;
   price: number;
+  discount_pct?: number | null;
+  discount_on?: string | null;
   sizes?: string[];
   colors?: ProductColor[];
   primary_color_name?: string | null;
