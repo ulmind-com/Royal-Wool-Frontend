@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronDown, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
+import { ChevronDown, Grid3x3, Minus, Plus, ShoppingBag, TableProperties, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AssuranceBand } from "@/components/commerce/assurance-band";
@@ -11,6 +11,7 @@ import { ProductGallery } from "@/components/commerce/product-gallery";
 import { RatingStars } from "@/components/commerce/rating-stars";
 import { ReviewCard } from "@/components/commerce/review-card";
 import { ShadeGrid, shadeOptionLabel, type ShadeOption } from "@/components/commerce/shade-grid";
+import { ShadeTable } from "@/components/commerce/shade-table";
 import { SpecTiles } from "@/components/commerce/spec-tiles";
 import { DataError } from "@/components/data-state";
 import { Glass } from "@/components/ui/glass";
@@ -80,6 +81,7 @@ function ProductPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(1);
   const [colorIdx, setColorIdx] = useState(0);
+  const [shadeView, setShadeView] = useState<"swatch" | "table">("swatch");
 
   const addItem = useCartStore((s) => s.addItem);
 
@@ -98,6 +100,12 @@ function ProductPage() {
   );
   const hasColors = colors.length > 0;
   const activeColor = hasColors ? colors[Math.min(colorIdx, colors.length - 1)] : null;
+
+  // Auto-suggest table view for large palettes
+  useEffect(() => {
+    if (colors.length >= 10) setShadeView("table");
+    else setShadeView("swatch");
+  }, [colors.length]);
 
   // Server pricing (whole product) is the fallback; a selected colour resolves
   // its own price locally with the same rules the backend uses.
@@ -162,6 +170,28 @@ function ProductPage() {
     }
     const shadeNote = activeColor ? ` — ${activeColor.name}` : "";
     toast.success(`${qty} item(s) of ${product?.title || "Yarn"}${shadeNote} added to your cart!`);
+  };
+
+  /** Bulk add from the Shade Table — one cart item per selected shade. */
+  const handleBulkAddShades = (items: { color: ProductColor; qty: number }[]) => {
+    if (!isAuthenticated) {
+      setLoginModalOpen(true);
+      return;
+    }
+    if (!product) return;
+    for (const { color: c, qty: q } of items) {
+      const cPrice = c.price ?? product.price;
+      addItem({
+        productId: product.id,
+        title: product.title,
+        color: c.name,
+        price: cPrice,
+        qty: q,
+        image: c.swatch_image || c.images?.[0] || gallery[0] || product.images?.[0],
+      });
+    }
+    const totalBalls = items.reduce((s, i) => s + i.qty, 0);
+    toast.success(`${items.length} shade(s) · ${totalBalls} ball(s) added to your cart!`);
   };
 
   const specs = product ? productSpecs(product) : [];
@@ -318,34 +348,122 @@ function ProductPage() {
 
           {hasColors ? (
             <div className="mt-6 border-t border-border pt-6">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
-                  Colour
-                </p>
-                <p className="font-data text-2xs text-foreground">
-                  {activeColor?.name}
-                  {activeColor?.shade_code ? ` · ${activeColor.shade_code}` : ""}
-                </p>
-                <p className="font-data text-2xs text-muted-foreground/70">
-                  {colors.length} shade{colors.length > 1 ? "s" : ""}
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                    Colour
+                  </p>
+                  {shadeView === "swatch" ? (
+                    <p className="font-data text-2xs text-foreground">
+                      {activeColor?.name}
+                      {activeColor?.shade_code ? ` · ${activeColor.shade_code}` : ""}
+                    </p>
+                  ) : null}
+                  <p className="font-data text-2xs text-muted-foreground/70">
+                    {colors.length} shade{colors.length > 1 ? "s" : ""}
+                  </p>
+                </div>
+
+                {/* View toggle */}
+                <div className="inline-flex rounded-lg border border-border p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setShadeView("swatch")}
+                    data-cursor="link"
+                    title="Swatch view"
+                    className={cn(
+                      "grid h-7 w-7 place-items-center rounded-md transition-colors",
+                      shadeView === "swatch"
+                        ? "bg-madder text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <Grid3x3 className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShadeView("table")}
+                    data-cursor="link"
+                    title="Shade card — select many shades at once"
+                    className={cn(
+                      "grid h-7 w-7 place-items-center rounded-md transition-colors",
+                      shadeView === "table"
+                        ? "bg-madder text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <TableProperties className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
-              <ColorSwatches colors={colors} activeIdx={colorIdx} onSelect={setColorIdx} />
+
+              {shadeView === "swatch" ? (
+                <ColorSwatches colors={colors} activeIdx={colorIdx} onSelect={setColorIdx} />
+              ) : (
+                <ShadeTable
+                  colors={colors}
+                  onBulkAdd={handleBulkAddShades}
+                  formatMoney={formatMoney}
+                  basePrice={product.price}
+                  baseMrp={product.mrp ?? null}
+                />
+              )}
             </div>
           ) : selfShade && (selfShade.name || selfShade.code) ? (
             <div className="mt-6 border-t border-border pt-6">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
-                  Shade
-                </p>
-                <p className="font-data text-2xs text-foreground">{shadeOptionLabel(selfShade)}</p>
-                {shades.length > 1 ? (
-                  <p className="font-data text-2xs text-muted-foreground/70">
-                    {shades.length} shades
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                    Shade
                   </p>
+                  <p className="font-data text-2xs text-foreground">{shadeOptionLabel(selfShade)}</p>
+                  {shades.length > 1 ? (
+                    <p className="font-data text-2xs text-muted-foreground/70">
+                      {shades.length} shades
+                    </p>
+                  ) : null}
+                </div>
+
+                {shades.length > 1 ? (
+                  <div className="inline-flex rounded-lg border border-border p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setShadeView("swatch")}
+                      data-cursor="link"
+                      title="Swatch view"
+                      className={cn(
+                        "grid h-7 w-7 place-items-center rounded-md transition-colors",
+                        shadeView === "swatch"
+                          ? "bg-madder text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Grid3x3 className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShadeView("table")}
+                      data-cursor="link"
+                      title="Table view"
+                      className={cn(
+                        "grid h-7 w-7 place-items-center rounded-md transition-colors",
+                        shadeView === "table"
+                          ? "bg-madder text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <TableProperties className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 ) : null}
               </div>
-              {shades.length > 1 ? <ShadeGrid shades={shades} activeId={product.id} /> : null}
+              {shades.length > 1 ? (
+                <ShadeGrid
+                  shades={shades}
+                  activeId={product.id}
+                  viewMode={shadeView === "table" ? "table" : "grid"}
+                />
+              ) : null}
             </div>
           ) : null}
 
