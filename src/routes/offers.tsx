@@ -627,7 +627,7 @@ function CouponCard({ coupon }: { coupon: Coupon }) {
     coupon.min_order ? `Min ${formatMoney(coupon.min_order)}` : null,
     coupon.max_discount ? `Up to ${formatMoney(coupon.max_discount)} off` : null,
     coupon.first_order_only ? "First order only" : null,
-    coupon.valid_until ? `Till ${new Date(coupon.valid_until).toLocaleDateString("en-IN")}` : null,
+    coupon.valid_until ? `Till ${new Date(coupon.valid_until).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}` : null,
   ]
     .filter(Boolean)
     .join(" · ");

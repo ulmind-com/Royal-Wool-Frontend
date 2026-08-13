@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartStore } from "@/store/cart-store";
 import { API_BASE_URL } from "@/lib/site";
+import { fmtDate, fmtDateTime, fmtTime } from "@/lib/date";
 import { Glass } from "@/components/ui/glass";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -391,7 +392,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
 
             <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between gap-2 text-2xs">
               <span className="text-muted-foreground/80 truncate">
-                {user.created_at ? `Patron since ${new Date(user.created_at).toLocaleDateString()}` : "Active account"}
+                {user.created_at ? `Patron since ${fmtDate(user.created_at)}` : "Active account"}
               </span>
               <div className="flex items-center gap-1.5 flex-none">
                 <button
@@ -541,7 +542,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/40 pb-2.5 mb-3 text-xs">
                           <div>
                             <span className="font-bold text-foreground font-mono">#{orders[0]._id ? strId(orders[0]._id).slice(-8) : strId(orders[0].id).slice(-8)}</span>
-                            <span className="text-muted-foreground ml-2">Placed {new Date(orders[0].created_at || Date.now()).toLocaleDateString()}</span>
+                            <span className="text-muted-foreground ml-2">Placed {fmtDate(orders[0].created_at || Date.now())}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="rounded-md bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 px-2 py-0.5 text-[11px] font-semibold capitalize">
@@ -607,7 +608,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                       </div>
                       <p className="text-xs text-muted-foreground">
                         Updates on their own as your parcel moves
-                        {lastSync ? ` · synced ${new Date(lastSync).toLocaleTimeString()}` : ""}.
+                        {lastSync ? ` · synced ${fmtTime(lastSync)}` : ""}.
                       </p>
                     </div>
                     <button
@@ -659,7 +660,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
                                   )}
                                 </div>
                                 <div className="text-2xs text-muted-foreground mt-0.5">
-                                  Placed {new Date(order.created_at || Date.now()).toLocaleString()} • {order.items?.length || 1} item(s)
+                                  Placed {fmtDateTime(order.created_at || Date.now())} • {order.items?.length || 1} item(s)
                                 </div>
                               </div>
                               <div className="text-left sm:text-right">

@@ -5,6 +5,7 @@ import { Package2 } from "lucide-react";
 import { useSettings } from "@/hooks/use-settings";
 import { type Combo, comboIsLive, combosQuery } from "@/lib/api/catalog-extras";
 import { productsQuery } from "@/lib/api/queries";
+import { fmtDate } from "@/lib/date";
 
 /**
  * Bundle offers from the admin's Combos screen: buy N of the listed yarns for
@@ -85,7 +86,7 @@ function Endsline({ combo }: { combo: Combo }) {
   if (!combo.end_date) return null;
   return (
     <p className="mt-3 font-data text-2xs text-madder">
-      Ends {new Date(combo.end_date).toLocaleDateString()}
+      Ends {fmtDate(combo.end_date)}
     </p>
   );
 }
