@@ -31,7 +31,6 @@ export function ProductCard({ product, className }: { product: Product; classNam
   const struck = struckPrice(product);
   const off = discountPct(product);
   const stocked = isInStock(product);
-  const swatches = (product.colors ?? []).slice(0, 5);
 
   // Cards buy the default variant — the first colour/size the server resolved.
   const color = product.colors?.[0];
@@ -150,22 +149,10 @@ export function ProductCard({ product, className }: { product: Product; classNam
             ) : null}
           </div>
 
-          {swatches.length ? (
-            <ul className="mt-3 flex items-center gap-1.5" aria-label="Available colours">
-              {swatches.map((c) => (
-                <li
-                  key={c.name}
-                  title={c.name}
-                  className="h-3.5 w-3.5 rounded-full border border-border"
-                  style={{ backgroundColor: c.hex ?? "transparent" }}
-                />
-              ))}
-              {(product.colors?.length ?? 0) > swatches.length ? (
-                <li className="font-data text-[10px] text-muted-foreground/70">
-                  +{(product.colors?.length ?? 0) - swatches.length}
-                </li>
-              ) : null}
-            </ul>
+          {(product.colors?.length ?? 0) > 1 ? (
+            <p className="mt-2 font-data text-[10px] text-muted-foreground/70">
+              {product.colors!.length} shades — tap to view
+            </p>
           ) : null}
         </div>
       </Link>
