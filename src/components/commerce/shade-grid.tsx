@@ -1,38 +1,50 @@
+import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { resolveMedia } from "@/components/commerce/review-card";
-import type { ProductColor } from "@/lib/api/types";
-import { shadeCode } from "@/lib/api/specs";
 import { cn } from "@/lib/utils";
 
 /**
  * Shade picker built for wide colour cards (60+ variants is normal for Indian
- * acrylic ranges). Renders the admin's colour photo when there is one and falls
- * back to the hex swatch, collapses long grids behind a "show all" toggle and
- * adds a filter box once the deck gets big.
+ * acrylic ranges). Each shade is its own product (see product.$id.tsx), so a
+ * swatch is a real link to that product's page, not a piece of local state —
+ * clicking one navigates there directly, with hover-prefetch for a snappy
+ * switch. Renders the admin's shade photo when there is one and falls back to
+ * the hex swatch, collapses long grids behind a "show all" toggle and adds a
+ * filter box once the deck gets big.
  */
+
+export interface ShadeOption {
+  /** Sibling product id — used for the link target and list key. */
+  id: string;
+  name: string;
+  code: string | null;
+  hex: string | null;
+  image: string | null;
+  inStock: boolean;
+}
 
 const COLLAPSED_COUNT = 27;
 const FILTER_THRESHOLD = 30;
 
 export function ShadeGrid({
-  colors,
-  activeName,
-  onSelect,
+  shades,
+  activeId,
 }: {
-  colors: ProductColor[];
-  activeName: string | null;
-  onSelect: (color: ProductColor) => void;
+  shades: ShadeOption[];
+  activeId: string | null;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return colors;
-    return colors.filter((c) => c.name.toLowerCase().includes(q));
-  }, [colors, query]);
+    if (!q) return shades;
+    return shades.filter(
+      (s) => s.name.toLowerCase().includes(q) || (s.code ?? "").toLowerCase().includes(q),
+    );
+  }, [shades, query]);
 
   const visible =
     expanded || filtered.length <= COLLAPSED_COUNT ? filtered : filtered.slice(0, COLLAPSED_COUNT);
@@ -40,13 +52,13 @@ export function ShadeGrid({
 
   return (
     <div>
-      {colors.length > FILTER_THRESHOLD ? (
+      {shades.length > FILTER_THRESHOLD ? (
         <label className="mt-3 flex items-center gap-2 rounded-full border border-border px-3 py-2">
           <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" aria-hidden />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={`Find a shade in ${colors.length}`}
+            placeholder={`Find a shade in ${shades.length}`}
             aria-label="Search shades"
             className="min-w-0 flex-1 bg-transparent font-data text-2xs text-foreground outline-none placeholder:text-muted-foreground/60"
           />
@@ -54,28 +66,30 @@ export function ShadeGrid({
       ) : null}
 
       <ul className="mt-3 grid grid-cols-6 gap-2 sm:grid-cols-8 lg:grid-cols-9">
-        {visible.map((c) => {
-          const active = c.name === activeName;
-          const img = resolveMedia(c.images?.[0] ?? null);
-          const soldOut = c.stock === 0 && !c.sizes.some((s) => s.stock > 0);
+        {visible.map((s) => {
+          const active = s.id === activeId;
+          const img = resolveMedia(s.image);
+          const soldOut = !s.inStock;
+          const label = shadeOptionLabel(s);
           return (
-            <li key={c.name}>
-              <button
-                type="button"
-                onClick={() => onSelect(c)}
-                disabled={soldOut}
-                title={soldOut ? `${c.name} — sold out` : c.name}
-                aria-label={c.name}
-                aria-pressed={active}
+            <li key={s.id}>
+              <Link
+                to="/product/$id"
+                params={{ id: s.id }}
+                preload="intent"
+                aria-disabled={soldOut}
+                title={soldOut ? `${label} — sold out` : label}
+                aria-label={label}
+                aria-current={active ? "true" : undefined}
                 data-cursor="link"
                 className={cn(
-                  "group relative aspect-square w-full overflow-hidden rounded-full border transition-all duration-[var(--dur-standard)] ease-[var(--ease-enter)]",
+                  "group relative block aspect-square w-full overflow-hidden rounded-full border transition-all duration-[var(--dur-standard)] ease-[var(--ease-enter)]",
                   active
                     ? "border-foreground ring-1 ring-foreground ring-offset-2 ring-offset-background"
                     : "border-transparent hover:-translate-y-0.5",
                   soldOut && "opacity-40",
                 )}
-                style={img ? undefined : { backgroundColor: c.hex ?? "transparent" }}
+                style={img ? undefined : { backgroundColor: s.hex ?? "transparent" }}
               >
                 {img ? (
                   <img
@@ -96,7 +110,7 @@ export function ShadeGrid({
                     }}
                   />
                 ) : null}
-              </button>
+              </Link>
             </li>
           );
         })}
@@ -129,8 +143,7 @@ export function ShadeGrid({
   );
 }
 
-export function shadeLabel(color: ProductColor | undefined): string {
-  if (!color) return "";
-  const code = shadeCode(color as unknown as { name: string } & Record<string, unknown>);
-  return code ? `${code} · ${color.name}` : color.name;
+export function shadeOptionLabel(shade: ShadeOption | null | undefined): string {
+  if (!shade) return "";
+  return shade.code ? `${shade.code} · ${shade.name}` : shade.name;
 }

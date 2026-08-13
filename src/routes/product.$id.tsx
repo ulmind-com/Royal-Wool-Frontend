@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -10,7 +10,7 @@ import { ProductCard } from "@/components/commerce/product-card";
 import { ProductGallery } from "@/components/commerce/product-gallery";
 import { RatingStars } from "@/components/commerce/rating-stars";
 import { ReviewCard } from "@/components/commerce/review-card";
-import { ShadeGrid, shadeLabel } from "@/components/commerce/shade-grid";
+import { ShadeGrid, shadeOptionLabel, type ShadeOption } from "@/components/commerce/shade-grid";
 import { SpecTiles } from "@/components/commerce/spec-tiles";
 import { DataError } from "@/components/data-state";
 import { Glass } from "@/components/ui/glass";
@@ -28,14 +28,26 @@ import { productSpecs, washCare } from "@/lib/api/specs";
 
 import {
   type Product,
-  type ProductColor,
-  type ProductSize,
+  discountPct,
+  displayPrice,
+  isInStock,
   primaryImage,
-  variantPrice,
-  variantStock,
+  struckPrice,
 } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { waAskAboutProduct } from "@/lib/whatsapp";
+
+/** A product-as-shade for the grid — every shade is its own product. */
+function toShadeOption(p: Product): ShadeOption {
+  return {
+    id: p.id,
+    name: p.primary_color_name || p.title,
+    code: p.primary_shade_code ?? null,
+    hex: p.primary_color_hex ?? null,
+    image: primaryImage(p),
+    inStock: isInStock(p),
+  };
+}
 
 export const Route = createFileRoute("/product/$id")({
   head: ({ params }) => ({
@@ -62,37 +74,58 @@ function ProductPage() {
   const { formatMoney, shop, settings } = useSettings();
   const { isAuthenticated, setLoginModalOpen } = useAuthStore();
   const { data: product, isPending, isError, error, refetch } = useQuery(productQuery(id));
+  const queryClient = useQueryClient();
 
-  const [colorName, setColorName] = useState<string | null>(null);
-  const [sizeName, setSizeName] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(1);
 
   const addItem = useCartStore((s) => s.addItem);
 
-  // A new product id means a clean slate for every selection.
+  // A new product id means a clean slate for the gallery and quantity.
   useEffect(() => {
-    setColorName(null);
-    setSizeName(null);
     setActiveImage(0);
     setQty(1);
   }, [id]);
 
-  const colors = product?.colors ?? [];
-  const color: ProductColor | undefined = colors.find((c) => c.name === colorName) ?? colors[0];
-  const sizes = color?.sizes ?? [];
-  const size: ProductSize | undefined = sizes.find((s) => s.size === sizeName) ?? sizes[0];
+  // Every shade is its own product, so the "variant matrix" is just this
+  // product's own server-computed pricing/stock — nothing to resolve locally.
+  const price = product ? displayPrice(product) : 0;
+  const stock = product?.total_stock ?? 0;
+  const mrp = product ? struckPrice(product) : null;
+  const off = product ? discountPct(product) : 0;
+  const soldOut = product ? !isInStock(product) : true;
 
-  // Every price here comes from the server-resolved variant matrix.
-  const price = product ? variantPrice(product, color, size) : 0;
-  const stock = variantStock(color, size) || (product?.total_stock ?? 0);
-  const mrp = size?.mrp ?? color?.mrp ?? product?.struck_price ?? product?.mrp ?? null;
-  const off = mrp && mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+  const gallery = useMemo(
+    () => Array.from(new Set((product?.images ?? []).filter(Boolean))),
+    [product],
+  );
 
-  const gallery = useMemo(() => {
-    const all = [...(color?.images ?? []), ...(product?.images ?? [])].filter(Boolean);
-    return Array.from(new Set(all));
-  }, [color, product]);
+  // Sibling shades: same brand + product line + ball weight, so switching
+  // shade never silently changes pack size. Only fetched once we know both.
+  const siblings = useQuery({
+    ...productsQuery({
+      limit: 200,
+      ...(product?.brand ? { brand: product.brand } : {}),
+      ...(product?.product_line ? { product_line: product.product_line } : {}),
+      ...(product?.skein_weight != null ? { skein_weight: product.skein_weight } : {}),
+    }),
+    enabled: Boolean(product?.brand && product?.product_line),
+  });
+
+  // Seed each sibling into the cache so clicking a shade swatch renders
+  // instantly instead of flashing a loading skeleton.
+  useEffect(() => {
+    if (!siblings.data) return;
+    for (const sibling of siblings.data) {
+      queryClient.setQueryData(productQuery(sibling.id).queryKey, sibling);
+    }
+  }, [siblings.data, queryClient]);
+
+  const selfShade = product ? toShadeOption(product) : null;
+  const shades: ShadeOption[] = useMemo(() => {
+    const list = siblings.data?.length ? siblings.data.map(toShadeOption) : [];
+    return list.sort((a, b) => (a.code ?? a.name).localeCompare(b.code ?? b.name));
+  }, [siblings.data]);
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -103,8 +136,7 @@ function ProductPage() {
       addItem({
         productId: product.id,
         title: product.title,
-        color: color?.name,
-        size: size?.size,
+        color: product.primary_color_name ?? undefined,
         price,
         qty,
         image: gallery[0] || product.images?.[0],
@@ -148,7 +180,6 @@ function ProductPage() {
   }
 
   const shareUrl = typeof window === "undefined" ? `/product/${id}` : window.location.href;
-  const soldOut = stock === 0;
   const relatedItems = (similar.data?.length ? similar.data : (related.data ?? []))
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
@@ -229,6 +260,12 @@ function ProductPage() {
             {product.title}
           </h1>
 
+          {product.short_description ? (
+            <p className="mt-2 max-w-[48ch] text-sm text-muted-foreground">
+              {product.short_description}
+            </p>
+          ) : null}
+
           {feed?.count ? (
             <div className="mt-3 flex items-center gap-2">
               <RatingStars value={feed.average} />
@@ -260,63 +297,25 @@ function ProductPage() {
             </span>
           </div>
 
-          {colors.length ? (
+          {selfShade && (selfShade.name || selfShade.code) ? (
             <div className="mt-6 border-t border-border pt-6">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <p className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
                   Shade
                 </p>
-                <p className="font-data text-2xs text-foreground">{shadeLabel(color)}</p>
-                <p className="font-data text-2xs text-muted-foreground/70">
-                  {colors.length} shade{colors.length > 1 ? "s" : ""}
-                </p>
+                <p className="font-data text-2xs text-foreground">{shadeOptionLabel(selfShade)}</p>
+                {shades.length > 1 ? (
+                  <p className="font-data text-2xs text-muted-foreground/70">
+                    {shades.length} shades
+                  </p>
+                ) : null}
               </div>
-              <ShadeGrid
-                colors={colors}
-                activeName={color?.name ?? null}
-                onSelect={(c) => {
-                  setColorName(c.name);
-                  setSizeName(null);
-                  setActiveImage(0);
-                  setQty(1);
-                }}
-              />
+              {shades.length > 1 ? <ShadeGrid shades={shades} activeId={product.id} /> : null}
             </div>
           ) : null}
 
-          {sizes.length ? (
-            <fieldset className="mt-8">
-              <legend className="font-data text-2xs uppercase tracking-[0.16em] text-muted-foreground">
-                Weight / pack
-              </legend>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {sizes.map((s) => (
-                  <button
-                    key={s.size}
-                    type="button"
-                    aria-pressed={s.size === size?.size}
-                    disabled={s.stock === 0}
-                    onClick={() => {
-                      setSizeName(s.size);
-                      setQty(1);
-                    }}
-                    data-cursor="link"
-                    className={cn(
-                      "rounded-full border px-4 py-2 font-data text-2xs transition-colors disabled:line-through disabled:opacity-40",
-                      s.size === size?.size
-                        ? "border-marigold text-foreground"
-                        : "border-border text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {s.size}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          ) : null}
-
           {soldOut ? (
-            <RestockNotify productId={product.id} colorName={color?.name ?? null} />
+            <RestockNotify productId={product.id} colorName={product.primary_color_name ?? null} />
           ) : (
             <p className="mt-6 font-data text-2xs text-muted-foreground">
               {stock <= (product.low_stock_threshold ?? 5) ? `Only ${stock} left` : "In stock"}
@@ -332,6 +331,11 @@ function ProductPage() {
           <CertificationStrip />
 
           <div className="mt-8 divide-y divide-border border-y border-border">
+            {product.description ? (
+              <Accordion title="Description">
+                <p className="whitespace-pre-line">{product.description}</p>
+              </Accordion>
+            ) : null}
             <Accordion title="Name & Address of Manufacturer">
               <p className="whitespace-pre-line">
                 {shop
@@ -422,7 +426,7 @@ function ProductPage() {
       >
         <div className="flex items-center gap-3">
           <div className="min-w-0">
-            <p className="truncate font-data text-2xs text-muted-foreground">{shadeLabel(color)}</p>
+            <p className="truncate font-data text-2xs text-muted-foreground">{shadeOptionLabel(selfShade)}</p>
             <p className="font-display text-lg font-light text-foreground">
               {formatMoney(price * qty)}
             </p>
