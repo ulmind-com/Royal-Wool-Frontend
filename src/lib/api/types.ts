@@ -73,6 +73,8 @@ export interface ProductColor {
   /** Broad shade bucket set in the admin editor, e.g. "Blue", "Multi". */
   color_family?: string | null;
   name: string;
+  /** Admin-assigned wool shade code, e.g. "OLV001". */
+  shade_code?: string | null;
   hex: string | null;
   images: string[];
   price: number | null;
@@ -87,8 +89,11 @@ export interface Product {
   id: string;
   title: string;
   brand?: string | null;
+  /** Brand + product_line + skein_weight groups a product's shade siblings. */
+  product_line?: string | null;
   category_id?: string | null;
   description?: string | null;
+  short_description?: string | null;
   mrp?: number | null;
   price: number;
   sizes?: string[];
@@ -96,6 +101,8 @@ export interface Product {
   primary_color_name?: string | null;
   primary_color_hex?: string | null;
   primary_color_family?: string | null;
+  /** Admin-assigned wool shade code, e.g. "OLV001". */
+  primary_shade_code?: string | null;
   images?: string[];
   rating?: number;
   review_count?: number;
@@ -183,17 +190,6 @@ export function primaryImage(p: Product): string | null {
   if (p.images?.length) return p.images[0]!;
   const fromColor = p.colors?.find((c) => c.images?.length);
   return fromColor?.images[0] ?? null;
-}
-
-/** Resolved price for one colour+size selection, falling back up the matrix. */
-export function variantPrice(p: Product, color?: ProductColor, size?: ProductSize): number {
-  return size?.price ?? color?.price ?? p.final_price ?? p.price;
-}
-
-export function variantStock(color?: ProductColor, size?: ProductSize): number {
-  if (size) return size.stock;
-  if (color) return color.stock || color.sizes.reduce((n, s) => n + s.stock, 0);
-  return 0;
 }
 
 /** Flattens a category tree into a lookup-friendly list. */

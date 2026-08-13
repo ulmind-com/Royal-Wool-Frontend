@@ -54,6 +54,10 @@ export interface ProductFilters extends QueryParams {
   max_price?: number;
   limit?: number;
   skip?: number;
+  /** Exact-match sibling lookup — same brand + line (+ ball weight) groups shades on the PDP. */
+  brand?: string;
+  product_line?: string;
+  skein_weight?: number;
 }
 
 export const productsQuery = (filters: ProductFilters = {}) =>
