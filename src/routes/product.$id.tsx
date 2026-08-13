@@ -604,7 +604,8 @@ function resolveColorPricing(product: Product, color: ProductColor): { price: nu
   return { price: final, mrp: struck, off };
 }
 
-/** Swatch grid for a product's colours — click to select a shade. */
+/** Swatch grid for a product's colours — each swatch shows that shade's own
+ * yarn image (like a colour picker); click to select. */
 function ColorSwatches({
   colors,
   activeIdx,
@@ -619,6 +620,7 @@ function ColorSwatches({
       {colors.map((c, i) => {
         const active = i === activeIdx;
         const out = (c.stock ?? 0) <= 0;
+        const thumb = c.swatch_image || c.images?.[0] || null;
         return (
           <button
             key={(c.shade_code || c.name) + i}
@@ -628,15 +630,22 @@ function ColorSwatches({
             data-cursor="link"
             aria-pressed={active}
             className={cn(
-              "relative h-9 w-9 overflow-hidden rounded-full border transition-transform",
-              active ? "border-madder ring-2 ring-madder ring-offset-2 ring-offset-background" : "border-border hover:scale-105",
+              "relative h-14 w-14 overflow-hidden rounded-xl border bg-fleece transition-transform sm:h-16 sm:w-16",
+              active
+                ? "border-madder ring-2 ring-madder ring-offset-2 ring-offset-background"
+                : "border-border hover:scale-105",
+              out && "opacity-45",
             )}
-            style={c.swatch_image ? undefined : { backgroundColor: c.hex || "#ccc" }}
+            style={thumb ? undefined : { backgroundColor: c.hex || "#ccc" }}
           >
-            {c.swatch_image ? (
-              <img src={c.swatch_image} alt={c.name} className="h-full w-full object-cover" />
+            {thumb ? (
+              <img src={thumb} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
             ) : null}
-            {out ? <span className="absolute inset-0 grid place-items-center bg-fleece/60 text-[9px] text-foreground">✕</span> : null}
+            {out ? (
+              <span className="absolute inset-x-0 bottom-0 bg-background/80 py-0.5 text-center font-data text-[8px] uppercase tracking-wide text-muted-foreground">
+                Sold out
+              </span>
+            ) : null}
           </button>
         );
       })}
