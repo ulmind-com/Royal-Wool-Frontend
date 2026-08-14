@@ -110,7 +110,7 @@ function CategoryTile({ tile, index, reduced }: { tile: Tile; index: number; red
               alt={tile.name}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)] group-hover:scale-[1.06]"
+              className="h-full w-full object-contain transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)] group-hover:scale-[1.06]"
               style={tile.imageScale ? { transform: `scale(${tile.imageScale})` } : undefined}
             />
             <span
