@@ -29,17 +29,31 @@ type CardData = {
   image: string;
   imageAlt: string;
   slug: string;
+  specs: { label: string; value: string }[];
+  cta: string;
 };
 
 function categoryToCard(cat: CategoryNode, index: number): CardData {
+  // Derive a fibre-type hint from the category name for the specs row
+  const nameLower = cat.name.toLowerCase();
+  const fibre = nameLower.includes("cotton") ? "Cotton blend"
+    : nameLower.includes("acrylic") ? "Premium acrylic"
+    : "Blended fibre";
+
   return {
     key: cat.id,
-    eyebrow: `Range ${String(index + 1).padStart(2, "0")}`,
+    eyebrow: `Range ${String(index + 1).padStart(2, "0")} · ${cat.name}`,
     title: cat.name,
     copy: cat.blurb ?? "Explore this range — tap to see all shades, weights and live stock.",
     image: cat.image ?? "",
     imageAlt: cat.name,
     slug: cat.slug,
+    specs: [
+      { label: "Fibre", value: fibre },
+      { label: "Shades", value: "Multiple colours" },
+      { label: "Care", value: "See product label" },
+    ],
+    cta: `Shop ${cat.name}`,
   };
 }
 
@@ -196,6 +210,17 @@ function RangeCard({ card, index }: { card: CardData; index: number }) {
             {card.copy}
           </p>
 
+          <dl className="grid grid-cols-3 gap-2 border-t border-border pt-4 sm:gap-3 sm:pt-5">
+            {card.specs.map((spec) => (
+              <div key={spec.label} className="min-w-0">
+                <dt className="font-data text-2xs text-marigold">{spec.label}</dt>
+                <dd className="mt-1 text-[0.7rem] leading-snug text-foreground sm:text-xs">
+                  {spec.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
           <div className="flex flex-wrap items-center gap-4 pt-1 sm:gap-5">
             <Link
               to="/collections/$slug"
@@ -203,7 +228,7 @@ function RangeCard({ card, index }: { card: CardData; index: number }) {
               data-cursor="link"
               className="sheen inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
             >
-              Shop {card.title}
+              {card.cta}
               <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
             </Link>
             <Link
