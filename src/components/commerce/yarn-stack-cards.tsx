@@ -1,11 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { type MotionStyle, motion, useScroll, useSpring, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 import { Glass } from "@/components/ui/glass";
 import { type StackCardData, YARN_STACK_CARDS } from "@/data/yarn-stack";
 import { useReducedMotion } from "@/hooks/use-motion";
+import { siteMediaQuery } from "@/lib/api/queries";
 
 /**
  * Scroll-stacking range cards. Each card sticks to the top of the viewport while
@@ -17,6 +19,25 @@ import { useReducedMotion } from "@/hooks/use-motion";
  */
 export function YarnStackCards() {
   const reduced = useReducedMotion();
+  const { data: media } = useQuery(siteMediaQuery);
+
+  // Merge admin-managed range_cards media over the static fallback cards.
+  // Admin images override the static ones by order (0→card 1, 1→card 2, 2→card 3).
+  const cards = useMemo(() => {
+    const rangeMedia = media?.["range_cards"]?.filter((m) => m.active !== false)
+      ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) ?? [];
+    if (rangeMedia.length === 0) return YARN_STACK_CARDS;
+    return YARN_STACK_CARDS.map((card, i) => {
+      const m = rangeMedia[i];
+      if (!m) return card;
+      return {
+        ...card,
+        ...(m.url ? { image: m.url } : {}),
+        ...(m.title ? { title: m.title, imageAlt: m.title } : {}),
+        ...(m.subtitle ? { copy: m.subtitle } : {}),
+      };
+    });
+  }, [media]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -60,7 +81,7 @@ export function YarnStackCards() {
       </div>
 
       <div ref={containerRef} className="relative mt-10">
-        {YARN_STACK_CARDS.map((card, i) => (
+        {cards.map((card, i) => (
           <motion.div
             key={card.key}
             style={flat ? {} : (stackStyles[i] ?? {})}

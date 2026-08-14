@@ -9,6 +9,7 @@ import { YARN_FAN_FALLBACKS, type FanCardData } from "@/data/yarn-fan";
 import { useReducedMotion } from "@/hooks/use-motion";
 import { productsQuery } from "@/lib/api/queries";
 import { primaryImage } from "@/lib/api/types";
+import { shortProductName } from "@/lib/short-name";
 
 /**
  * Fanned lookbook carousel — cards spread in a shallow arc, the centre card
@@ -20,7 +21,7 @@ import { primaryImage } from "@/lib/api/types";
  * products exist. Flip PREFER_LOCAL_IMAGES to false once /products returns real
  * wool products and the admin-managed images take over.
  */
-const PREFER_LOCAL_IMAGES = true;
+const PREFER_LOCAL_IMAGES = false;
 const AUTOPLAY_MS = 4000;
 /** Slots visible on each side of the centre card. */
 const SPREAD = 2;
@@ -148,7 +149,7 @@ export function YarnFanCarousel() {
           key: p.id,
           image: primaryImage(p) ?? "",
           label: "New",
-          title: p.title,
+          title: shortProductName(p.title),
           caption: "Fresh off the winder.",
           href: `/product/${p.id}`,
         }))

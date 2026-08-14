@@ -7,6 +7,7 @@ import { FEATURED_YARN_FALLBACK, type FeaturedYarnItem } from "@/data/featured-y
 import { useReducedMotion } from "@/hooks/use-motion";
 import { productsQuery } from "@/lib/api/queries";
 import { displayPrice, primaryImage, struckPrice } from "@/lib/api/types";
+import { shortProductName } from "@/lib/short-name";
 
 /**
  * Featured yarn — an endless right → left marquee of background-removed skein
@@ -16,7 +17,7 @@ import { displayPrice, primaryImage, struckPrice } from "@/lib/api/types";
  * wool products exist. Until then PREFER_LOCAL keeps the client's own
  * photography (cut out to transparent PNGs) on screen.
  */
-const PREFER_LOCAL = true;
+const PREFER_LOCAL = false;
 /** px per second the track travels leftwards. */
 const SPEED = 46;
 
@@ -94,7 +95,7 @@ export function FeaturedYarn() {
           return {
             key: p.id,
             image: primaryImage(p) ?? "",
-            name: p.title,
+            name: shortProductName(p.title),
             price: displayPrice(p),
             ...(struck ? { mrp: struck } : {}),
             glow: GLOWS[i % GLOWS.length]!,

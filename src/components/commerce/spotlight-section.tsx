@@ -1,9 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import delightPink from "@/assets/yarn/delight-pink.jpg.asset.json";
 import { InteractiveTravelCard } from "@/components/ui/3d-card";
+import { siteMediaQuery } from "@/lib/api/queries";
 
 /**
  * Editorial spotlight: one hero range presented as a 3D tilt card beside
@@ -51,7 +53,22 @@ const fadeUp = {
   }),
 };
 
-export function SpotlightSection({ content = DEFAULT_CONTENT }: { content?: SpotlightContent }) {
+export function SpotlightSection({ content: propContent }: { content?: SpotlightContent }) {
+  const { data: media } = useQuery(siteMediaQuery);
+  const spotlightMedia = media?.["spotlight"]?.filter((m) => m.active !== false)?.[0];
+
+  // Merge admin-managed media over the defaults — admin wins for any field it provides.
+  const content: SpotlightContent = propContent ?? (spotlightMedia
+    ? {
+        ...DEFAULT_CONTENT,
+        ...(spotlightMedia.url ? { image: spotlightMedia.url } : {}),
+        ...(spotlightMedia.title ? { titleTop: spotlightMedia.title } : {}),
+        ...(spotlightMedia.subtitle ? { titleBottom: spotlightMedia.subtitle } : {}),
+        ...(spotlightMedia.eyebrow ? { eyebrow: spotlightMedia.eyebrow } : {}),
+        ...(spotlightMedia.cta_href ? { href: spotlightMedia.cta_href } : {}),
+      }
+    : DEFAULT_CONTENT);
+
   return (
     <section
       data-thread-anchor="spotlight"

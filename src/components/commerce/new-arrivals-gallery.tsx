@@ -9,6 +9,7 @@ import { useReducedMotion } from "@/hooks/use-motion";
 
 import { productsQuery } from "@/lib/api/queries";
 import { primaryImage } from "@/lib/api/types";
+import { shortProductName } from "@/lib/short-name";
 import { NEW_ARRIVAL_FALLBACKS } from "@/data/new-arrival-gallery";
 
 import type { CircularGalleryItem } from "@/components/commerce/circular-gallery";
@@ -21,7 +22,7 @@ const CircularGallery = lazy(() => import("@/components/commerce/circular-galler
  * client's own yarn photos for now. Flip to false once /products returns real
  * wool products and the API images (admin-managed) take over automatically.
  */
-const PREFER_LOCAL_IMAGES = true;
+const PREFER_LOCAL_IMAGES = false;
 
 export function NewArrivalsGallery() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export function NewArrivalsGallery() {
     const products = data ?? [];
     if (!PREFER_LOCAL_IMAGES) {
       return products
-        .map((p) => ({ image: primaryImage(p) ?? "", text: p.title, href: `/product/${p.id}` }))
+        .map((p) => ({ image: primaryImage(p) ?? "", text: shortProductName(p.title), href: `/product/${p.id}` }))
         .filter((i) => i.image);
     }
     // Local yarn photos, but titles/links still come from the live catalogue
