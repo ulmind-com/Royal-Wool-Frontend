@@ -146,6 +146,14 @@ function ProductPage() {
   }, [siblings.data, queryClient]);
 
   const selfShade = product ? toShadeOption(product) : null;
+  // The label shown on the sticky action bar must follow the shopper's current
+  // selection — the active colour when this product has colour variants, else
+  // the product's own shade.
+  const selectedShadeLabel = activeColor
+    ? activeColor.shade_code
+      ? `${activeColor.shade_code} · ${activeColor.name}`
+      : activeColor.name
+    : shadeOptionLabel(selfShade);
   const shades: ShadeOption[] = useMemo(() => {
     const list = siblings.data?.length ? siblings.data.map(toShadeOption) : [];
     return list.sort((a, b) => (a.code ?? a.name).localeCompare(b.code ?? b.name));
@@ -582,7 +590,7 @@ function ProductPage() {
       >
         <div className="flex items-center gap-3">
           <div className="min-w-0">
-            <p className="truncate font-data text-2xs text-muted-foreground">{shadeOptionLabel(selfShade)}</p>
+            <p className="truncate font-data text-2xs text-muted-foreground">{selectedShadeLabel}</p>
             <p className="font-display text-lg font-light text-foreground">
               {formatMoney(price * qty)}
             </p>
