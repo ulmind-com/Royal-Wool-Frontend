@@ -195,7 +195,7 @@ function RotatingProductImage({ categoryId, fallback, alt }: { categoryId: strin
   const currentImage = images[idx % images.length] ?? fallback;
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <motion.img
         key={currentImage}
         src={currentImage}
@@ -204,8 +204,8 @@ function RotatingProductImage({ categoryId, fallback, alt }: { categoryId: strin
         initial={reduced ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={reduced ? {} : { opacity: 0 }}
-        transition={{ duration: 0.6, ease: "easeInOut" }}
-        className="absolute inset-0 h-full w-full object-cover"
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[var(--dur-cinematic)] ease-[var(--ease-enter)] group-hover:scale-[1.04]"
       />
     </AnimatePresence>
   );

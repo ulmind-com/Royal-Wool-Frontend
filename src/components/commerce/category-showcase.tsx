@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
 import { CardSkeleton, DataError, EmptyState } from "@/components/data-state";
 import { WOOL_CATEGORIES } from "@/data/wool-categories";
 import { useReducedMotion } from "@/hooks/use-motion";
-import { categoryTreeQuery } from "@/lib/api/queries";
-import type { CategoryNode } from "@/lib/api/types";
+import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
+import { primaryImage, type CategoryNode } from "@/lib/api/types";
 
 /**
  * "Shop by Category" — image tile with the name underneath.
@@ -23,10 +24,10 @@ const USE_STATIC_CATEGORIES = false;
 
 type Tile = {
   key: string;
+  id: string;
   name: string;
   image: string;
   note: string;
-  /** Static tiles search by name until real collection slugs exist. */
   href:
     | { to: "/search"; search: { q: string } }
     | { to: "/collections/$slug"; params: { slug: string } };
@@ -35,6 +36,7 @@ type Tile = {
 
 const STATIC_TILES: Tile[] = WOOL_CATEGORIES.map((c) => ({
   key: c.slug,
+  id: c.slug,
   name: c.name,
   image: c.image,
   note: c.blurb,
@@ -45,6 +47,7 @@ function apiTile(category: CategoryNode): Tile {
   const childCount = category.children?.length ?? 0;
   return {
     key: category.id,
+    id: category.id,
     name: category.name,
     image: category.image ?? WOOL_CATEGORIES[0]!.image,
     note: category.blurb ?? (childCount ? `${childCount} ranges` : "Explore range"),
@@ -79,6 +82,54 @@ function TileLink({
   );
 }
 
+const ROTATE_MS = 3500;
+
+function RotatingTileImage({ categoryId, fallback, alt, reduced }: { categoryId: string; fallback: string; alt: string; reduced: boolean }) {
+  const { data } = useQuery(productsQuery({ category_id: categoryId, limit: 12 }));
+
+  const images = useMemo(() => {
+    const products = data ?? [];
+    const imgs = products
+      .map((p) => primaryImage(p))
+      .filter(Boolean) as string[];
+    if (imgs.length === 0) return [fallback].filter(Boolean);
+    
+    // Shuffle on mount so every visit shows different variants
+    const shuffled = [...imgs];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    }
+    return shuffled;
+  }, [data, fallback]);
+
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    if (images.length < 2) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % images.length), ROTATE_MS);
+    return () => clearInterval(id);
+  }, [images.length]);
+
+  const currentImage = images[idx % images.length] ?? fallback;
+
+  return (
+    <AnimatePresence>
+      <motion.img
+        key={currentImage}
+        src={currentImage}
+        alt={alt}
+        loading="lazy"
+        initial={reduced ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={reduced ? {} : { opacity: 0 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="absolute inset-0 h-full w-full object-contain transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)] group-hover:scale-[1.06]"
+      />
+    </AnimatePresence>
+  );
+}
+
 function CategoryTile({ tile, index, reduced }: { tile: Tile; index: number; reduced: boolean }) {
   return (
     <motion.li
@@ -105,13 +156,11 @@ function CategoryTile({ tile, index, reduced }: { tile: Tile; index: number; red
           />
 
           <div className="relative aspect-[4/5] overflow-hidden">
-            <img
-              src={tile.image}
+            <RotatingTileImage
+              categoryId={tile.id}
+              fallback={tile.image}
               alt={tile.name}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-contain transition-transform duration-[var(--dur-slow)] ease-[var(--ease-enter)] group-hover:scale-[1.06]"
-              style={tile.imageScale ? { transform: `scale(${tile.imageScale})` } : undefined}
+              reduced={reduced}
             />
             <span
               className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
