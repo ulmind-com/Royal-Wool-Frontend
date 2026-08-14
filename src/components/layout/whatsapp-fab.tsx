@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
 
 import { waGeneral } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,10 @@ import { cn } from "@/lib/utils";
  */
 export function WhatsAppFab() {
   const [shown, setShown] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // The product page has a sticky Add / Buy Now bar on mobile — lift the FAB
+  // above it so the green mark doesn't cover the Buy Now button.
+  const isProduct = pathname.startsWith("/product");
 
   useEffect(() => {
     const onScroll = () => setShown(window.scrollY > 600);
@@ -19,7 +24,15 @@ export function WhatsAppFab() {
   }, []);
 
   return (
-    <div className="bottom-[calc(env(safe-area-inset-bottom,0px)+6.25rem)] md:bottom-[calc(env(safe-area-inset-bottom,0px)+1rem)] pointer-events-none fixed right-4 z-40 flex flex-col items-end gap-4 sm:right-6">
+    <div
+      className={cn(
+        "pointer-events-none fixed right-4 z-40 flex flex-col items-end gap-4 sm:right-6",
+        "md:bottom-[calc(env(safe-area-inset-bottom,0px)+1rem)]",
+        isProduct
+          ? "bottom-[calc(env(safe-area-inset-bottom,0px)+12.5rem)]"
+          : "bottom-[calc(env(safe-area-inset-bottom,0px)+6.25rem)]",
+      )}
+    >
       <a
         href={waGeneral()}
         target="_blank"
