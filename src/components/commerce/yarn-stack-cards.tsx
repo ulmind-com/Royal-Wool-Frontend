@@ -2,67 +2,104 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { AnimatePresence, type MotionStyle, motion, useScroll, useTransform } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Glass } from "@/components/ui/glass";
 import { useReducedMotion } from "@/hooks/use-motion";
-import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
+import { useSettings } from "@/hooks/use-settings";
+import { productsQuery } from "@/lib/api/queries";
 import { getRecentCategoryIds } from "@/lib/category-history";
-import { primaryImage } from "@/lib/api/types";
-import type { CategoryNode } from "@/lib/api/types";
+import { displayPrice, type Product } from "@/lib/api/types";
 
 /**
- * Scroll-stacking range cards — **personalised & admin-driven**.
+ * Scroll-stacking range cards — **product-led & shade-cycling**.
  *
- * Shows the top 3 categories most relevant to the current user:
- * - If the user has browsing history → their most-viewed categories
- * - If no history → first 3 categories from the admin panel
+ * Each card is a single yarn (product). The big image cycles continuously
+ * through every shade that yarn comes in (product.colors[].images), so the
+ * card "changes colour" while you look at it. The shade order is shuffled on
+ * mount, and which products appear is shuffled too, so every visit differs.
  *
- * All data (image, name, blurb) comes from /categories/tree (admin panel).
- * Clicking a card takes the user to the category page to shop.
+ * Products are lightly personalised: yarns from categories the visitor has
+ * browsed float to the front (see src/lib/category-history.ts). The card
+ * design — image + copy + specs grid + CTA — is unchanged from the ranges
+ * version; only the data behind it moved from categories to products.
  */
+
+type ShadeImage = { image: string; name: string };
 
 type CardData = {
   key: string;
-  categoryId: string;
+  productId: string;
   eyebrow: string;
   title: string;
   copy: string;
-  fallbackImage: string;
   imageAlt: string;
-  slug: string;
+  shades: ShadeImage[];
+  fallbackImage: string;
   specs: { label: string; value: string }[];
   cta: string;
 };
 
-function categoryToCard(cat: CategoryNode, index: number): CardData {
-  // Derive a fibre-type hint from the category name for the specs row
-  const nameLower = cat.name.toLowerCase();
-  const fibre = nameLower.includes("cotton") ? "Cotton blend"
-    : nameLower.includes("acrylic") ? "Premium acrylic"
-    : "Blended fibre";
+/** All shade images of a product, paired with the shade name, de-duped. */
+function collectShades(p: Product): ShadeImage[] {
+  const out: ShadeImage[] = [];
+  for (const c of p.colors ?? []) {
+    const name = c.name ?? c.color_family ?? "Shade";
+    for (const img of c.images ?? []) {
+      if (img) out.push({ image: img, name });
+    }
+  }
+  if (out.length === 0) {
+    const name = p.primary_color_name ?? p.title;
+    for (const img of p.images ?? []) {
+      if (img) out.push({ image: img, name });
+    }
+  }
+  const seen = new Set<string>();
+  return out.filter((s) => (seen.has(s.image) ? false : (seen.add(s.image), true)));
+}
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j]!, a[i]!];
+  }
+  return a;
+}
+
+function productToCard(
+  p: Product,
+  index: number,
+  formatMoney: (n: number | null | undefined) => string,
+): CardData {
+  const shades = collectShades(p);
+  const colorCount = p.colors?.length ?? shades.length;
   return {
-    key: cat.id,
-    categoryId: cat.id,
-    eyebrow: `Range ${String(index + 1).padStart(2, "0")} · ${cat.name}`,
-    title: cat.name,
-    copy: cat.blurb ?? "Explore this range — tap to see all shades, weights and live stock.",
-    fallbackImage: cat.image ?? "",
-    imageAlt: cat.name,
-    slug: cat.slug,
+    key: p.id,
+    productId: p.id,
+    eyebrow: `Yarn ${String(index + 1).padStart(2, "0")} · ${p.brand ?? p.product_line ?? "Royal Wool"}`,
+    title: p.title,
+    copy:
+      p.short_description ??
+      p.description ??
+      "Every shade this yarn is wound in — cycling through live. Tap to pick your colour.",
+    imageAlt: p.title,
+    shades,
+    fallbackImage: shades[0]?.image ?? "",
     specs: [
-      { label: "Fibre", value: fibre },
-      { label: "Shades", value: "Multiple colours" },
-      { label: "Care", value: "See product label" },
+      { label: "Shades", value: colorCount > 1 ? `${colorCount} colours` : "1 colour" },
+      { label: "Weight", value: p.skein_weight ? `${p.skein_weight} g / skein` : "See label" },
+      { label: "From", value: formatMoney(displayPrice(p)) },
     ],
-    cta: `Shop ${cat.name}`,
+    cta: "Shop this yarn",
   };
 }
 
 export function YarnStackCards() {
   const reduced = useReducedMotion();
-  const { data: tree, isPending } = useQuery(categoryTreeQuery);
+  const { formatMoney } = useSettings();
+  const { data: products, isPending } = useQuery(productsQuery({ sort: "popular", limit: 12 }));
   const [recentIds, setRecentIds] = useState<string[]>([]);
 
   // Read browsing history on mount (client-only)
@@ -70,33 +107,26 @@ export function YarnStackCards() {
     setRecentIds(getRecentCategoryIds());
   }, []);
 
-  // Build the 3 cards — personalised by browsing history
+  const hasHistory = recentIds.length > 0;
+
+  // Build the 3 cards — one product each, shade-cycling, lightly personalised.
   const cards = useMemo(() => {
-    const allCategories = (tree ?? [])
-      .filter((c) => !c.parent_id && c.image)
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const withShades = (products ?? []).filter((p) => collectShades(p).length > 0);
+    if (withShades.length === 0) return [];
 
-    if (allCategories.length === 0) return [];
+    // Prefer yarns that come in more than one shade — the cycling is the point.
+    const multi = withShades.filter((p) => collectShades(p).length > 1);
+    const pool = multi.length >= 3 ? multi : withShades;
 
-    let picked: CategoryNode[];
+    // Float products from browsed categories to the front, shuffle within groups.
+    const recent = new Set(recentIds);
+    const fromHistory = shuffle(pool.filter((p) => p.category_id && recent.has(p.category_id)));
+    const rest = shuffle(pool.filter((p) => !(p.category_id && recent.has(p.category_id))));
 
-    if (recentIds.length > 0) {
-      // User has history — show their most-viewed categories first
-      const byId = new Map(allCategories.map((c) => [c.id, c]));
-      const fromHistory = recentIds
-        .map((id) => byId.get(id))
-        .filter(Boolean) as CategoryNode[];
-      // Fill remaining slots from categories they haven't seen
-      const seen = new Set(fromHistory.map((c) => c.id));
-      const rest = allCategories.filter((c) => !seen.has(c.id));
-      picked = [...fromHistory, ...rest].slice(0, 3);
-    } else {
-      // New user — show the first 3 admin-ordered categories
-      picked = allCategories.slice(0, 3);
-    }
-
-    return picked.map((cat, i) => categoryToCard(cat, i));
-  }, [tree, recentIds]);
+    return [...fromHistory, ...rest].slice(0, 3).map((p, i) => productToCard(p, i, formatMoney));
+    // formatMoney is stable per settings; recompute when data/history change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, recentIds]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -118,7 +148,7 @@ export function YarnStackCards() {
 
   const flat = reduced;
 
-  // Don't render until we have categories
+  // Don't render until we have products
   if (isPending || cards.length === 0) return null;
 
   return (
@@ -128,19 +158,18 @@ export function YarnStackCards() {
       aria-labelledby="yarn-stack-heading"
     >
       <div className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 lg:px-14">
-        <p className="font-data text-2xs text-marigold">Picked for you</p>
+        <p className="font-data text-2xs text-marigold">
+          {hasHistory ? "Picked for you" : "Every shade, live"}
+        </p>
         <h2
           id="yarn-stack-heading"
           className="mt-3 font-display text-3xl font-light tracking-[-0.02em] text-foreground sm:text-4xl"
         >
-          {recentIds.length > 0
-            ? "Your top ranges"
-            : "Explore our ranges"}
+          Explore our ranges
         </h2>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          {recentIds.length > 0
-            ? "Based on your browsing — scroll through and shop your favourites."
-            : "Scroll through our house ranges — each one stacks over the last."}
+          Each yarn cycles through every colour it's wound in — scroll through and shop the shade
+          that catches your eye.
         </p>
       </div>
 
@@ -163,51 +192,77 @@ export function YarnStackCards() {
   );
 }
 
-const ROTATE_MS = 4000;
+const ROTATE_MS = 3200;
 
-function RotatingProductImage({ categoryId, fallback, alt }: { categoryId: string; fallback: string; alt: string }) {
-  const { data } = useQuery(productsQuery({ category_id: categoryId, limit: 20 }));
+/** Cycles through one product's shade images, with a live shade-name badge. */
+function RotatingProductImage({
+  shades,
+  fallback,
+  alt,
+}: {
+  shades: ShadeImage[];
+  fallback: string;
+  alt: string;
+}) {
   const reduced = useReducedMotion();
 
-  // Collect all product images, shuffle on mount
-  const images = useMemo(() => {
-    const products = data ?? [];
-    const imgs = products
-      .map((p) => primaryImage(p))
-      .filter(Boolean) as string[];
-    if (imgs.length === 0) return [fallback].filter(Boolean);
-    // Shuffle so each visit starts differently
-    for (let i = imgs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [imgs[i], imgs[j]] = [imgs[j]!, imgs[i]!];
+  // Shuffle shade order on mount so each visit starts on a different colour.
+  const ordered = useMemo(() => {
+    if (shades.length === 0) {
+      return fallback ? [{ image: fallback, name: alt }] : [];
     }
-    return imgs;
-  }, [data, fallback]);
+    return shuffle(shades);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shades, fallback]);
 
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    if (images.length < 2) return;
-    const id = setInterval(() => setIdx((i) => (i + 1) % images.length), ROTATE_MS);
+    if (ordered.length < 2) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % ordered.length), ROTATE_MS);
     return () => clearInterval(id);
-  }, [images.length]);
+  }, [ordered.length]);
 
-  const currentImage = images[idx % images.length] ?? fallback;
+  const current = ordered[idx % ordered.length] ?? { image: fallback, name: alt };
 
   return (
-    <AnimatePresence>
-      <motion.img
-        key={currentImage}
-        src={currentImage}
-        alt={alt}
-        loading="lazy"
-        initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={reduced ? {} : { opacity: 0 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[var(--dur-cinematic)] ease-[var(--ease-enter)] group-hover:scale-[1.04]"
-      />
-    </AnimatePresence>
+    <>
+      <AnimatePresence>
+        <motion.img
+          key={current.image}
+          src={current.image}
+          alt={alt}
+          loading="lazy"
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={reduced ? {} : { opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[var(--dur-cinematic)] ease-[var(--ease-enter)] group-hover:scale-[1.04]"
+        />
+      </AnimatePresence>
+
+      {/* live shade name — updates as the colour cycles */}
+      {ordered.length > 1 && (
+        <div className="pointer-events-none absolute bottom-3 left-3 z-10 sm:bottom-4 sm:left-4">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={current.name}
+              initial={reduced ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? {} : { opacity: 0, y: -6 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-3 py-1 font-data text-2xs text-foreground backdrop-blur"
+            >
+              <span
+                className="h-2 w-2 rounded-full bg-marigold"
+                aria-hidden
+              />
+              {current.name}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -230,10 +285,10 @@ function RangeCard({ card, index }: { card: CardData; index: number }) {
       />
 
       <div className="relative grid h-full gap-0 lg:grid-cols-2">
-        {/* Left (top on mobile): auto-rotating product images */}
+        {/* Left (top on mobile): auto-cycling shade images of this yarn */}
         <div className="relative h-[150px] shrink-0 overflow-hidden xs:h-[170px] sm:h-[240px] lg:h-auto lg:min-h-full">
           <RotatingProductImage
-            categoryId={card.categoryId}
+            shades={card.shades}
             fallback={card.fallbackImage}
             alt={card.imageAlt}
           />
@@ -273,8 +328,8 @@ function RangeCard({ card, index }: { card: CardData; index: number }) {
 
           <div className="flex flex-wrap items-center gap-4 pt-1 sm:gap-5">
             <Link
-              to="/collections/$slug"
-              params={{ slug: card.slug }}
+              to="/product/$id"
+              params={{ id: card.productId }}
               data-cursor="link"
               className="sheen inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
             >
