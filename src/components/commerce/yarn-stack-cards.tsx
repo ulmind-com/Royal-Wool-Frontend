@@ -1,43 +1,85 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { type MotionStyle, motion, useScroll, useSpring, useTransform } from "framer-motion";
-import { useMemo, useRef } from "react";
+import { type MotionStyle, motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Glass } from "@/components/ui/glass";
-import { type StackCardData, YARN_STACK_CARDS } from "@/data/yarn-stack";
 import { useReducedMotion } from "@/hooks/use-motion";
-import { siteMediaQuery } from "@/lib/api/queries";
+import { categoryTreeQuery } from "@/lib/api/queries";
+import { getRecentCategoryIds } from "@/lib/category-history";
+import type { CategoryNode } from "@/lib/api/types";
 
 /**
- * Scroll-stacking range cards. Each card sticks to the top of the viewport while
- * the next one climbs over it; the outgoing card fades and scales back so the
- * stack reads like a deck of pages. Image sits left, copy + CTA right.
+ * Scroll-stacking range cards — **personalised & admin-driven**.
  *
- * Mobile gets the same swap motion with phone-tuned geometry (shorter sticky
- * height, image strip on top). Only reduced-motion falls back to a flat list.
+ * Shows the top 3 categories most relevant to the current user:
+ * - If the user has browsing history → their most-viewed categories
+ * - If no history → first 3 categories from the admin panel
+ *
+ * All data (image, name, blurb) comes from /categories/tree (admin panel).
+ * Clicking a card takes the user to the category page to shop.
  */
+
+type CardData = {
+  key: string;
+  eyebrow: string;
+  title: string;
+  copy: string;
+  image: string;
+  imageAlt: string;
+  slug: string;
+};
+
+function categoryToCard(cat: CategoryNode, index: number): CardData {
+  return {
+    key: cat.id,
+    eyebrow: `Range ${String(index + 1).padStart(2, "0")}`,
+    title: cat.name,
+    copy: cat.blurb ?? "Explore this range — tap to see all shades, weights and live stock.",
+    image: cat.image ?? "",
+    imageAlt: cat.name,
+    slug: cat.slug,
+  };
+}
+
 export function YarnStackCards() {
   const reduced = useReducedMotion();
-  const { data: media } = useQuery(siteMediaQuery);
+  const { data: tree, isPending } = useQuery(categoryTreeQuery);
+  const [recentIds, setRecentIds] = useState<string[]>([]);
 
-  // Merge admin-managed range_cards media over the static fallback cards.
-  // Admin images override the static ones by order (0→card 1, 1→card 2, 2→card 3).
+  // Read browsing history on mount (client-only)
+  useEffect(() => {
+    setRecentIds(getRecentCategoryIds());
+  }, []);
+
+  // Build the 3 cards — personalised by browsing history
   const cards = useMemo(() => {
-    const rangeMedia = media?.["range_cards"]?.filter((m) => m.active !== false)
-      ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) ?? [];
-    if (rangeMedia.length === 0) return YARN_STACK_CARDS;
-    return YARN_STACK_CARDS.map((card, i) => {
-      const m = rangeMedia[i];
-      if (!m) return card;
-      return {
-        ...card,
-        ...(m.url ? { image: m.url } : {}),
-        ...(m.title ? { title: m.title, imageAlt: m.title } : {}),
-        ...(m.subtitle ? { copy: m.subtitle } : {}),
-      };
-    });
-  }, [media]);
+    const allCategories = (tree ?? [])
+      .filter((c) => !c.parent_id && c.image)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    if (allCategories.length === 0) return [];
+
+    let picked: CategoryNode[];
+
+    if (recentIds.length > 0) {
+      // User has history — show their most-viewed categories first
+      const byId = new Map(allCategories.map((c) => [c.id, c]));
+      const fromHistory = recentIds
+        .map((id) => byId.get(id))
+        .filter(Boolean) as CategoryNode[];
+      // Fill remaining slots from categories they haven't seen
+      const seen = new Set(fromHistory.map((c) => c.id));
+      const rest = allCategories.filter((c) => !seen.has(c.id));
+      picked = [...fromHistory, ...rest].slice(0, 3);
+    } else {
+      // New user — show the first 3 admin-ordered categories
+      picked = allCategories.slice(0, 3);
+    }
+
+    return picked.map((cat, i) => categoryToCard(cat, i));
+  }, [tree, recentIds]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,8 +88,6 @@ export function YarnStackCards() {
     offset: ["start start", "end start"],
   });
 
-  // Use direct scroll progress instead of spring to prevent lag when scrolling up.
-  // This ensures the outgoing cards scale back and fade perfectly in sync with the sticky scroll.
   const opacity1 = useTransform(scrollYProgress, [0, 0.33], [1, 0]);
   const scale1 = useTransform(scrollYProgress, [0, 0.33], [1, 0.9]);
   const opacity2 = useTransform(scrollYProgress, [0.33, 0.66], [1, 0]);
@@ -61,6 +101,9 @@ export function YarnStackCards() {
 
   const flat = reduced;
 
+  // Don't render until we have categories
+  if (isPending || cards.length === 0) return null;
+
   return (
     <section
       data-thread-anchor="ranges"
@@ -68,15 +111,19 @@ export function YarnStackCards() {
       aria-labelledby="yarn-stack-heading"
     >
       <div className="mx-auto w-full max-w-[1200px] px-5 sm:px-8 lg:px-14">
-        <p className="font-data text-2xs text-marigold">04b · The ranges</p>
+        <p className="font-data text-2xs text-marigold">Picked for you</p>
         <h2
           id="yarn-stack-heading"
           className="mt-3 font-display text-3xl font-light tracking-[-0.02em] text-foreground sm:text-4xl"
         >
-          Three ranges, one dye house
+          {recentIds.length > 0
+            ? "Your top ranges"
+            : "Explore our ranges"}
         </h2>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Scroll through the house ranges — each one stacks over the last.
+          {recentIds.length > 0
+            ? "Based on your browsing — scroll through and shop your favourites."
+            : "Scroll through our house ranges — each one stacks over the last."}
         </p>
       </div>
 
@@ -99,7 +146,7 @@ export function YarnStackCards() {
   );
 }
 
-function RangeCard({ card, index }: { card: StackCardData; index: number }) {
+function RangeCard({ card, index }: { card: CardData; index: number }) {
   return (
     <article
       className="group relative w-full overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-[0_50px_110px_-60px_color-mix(in_oklab,var(--ink)_60%,transparent)] sm:rounded-[2rem]"
@@ -149,25 +196,14 @@ function RangeCard({ card, index }: { card: StackCardData; index: number }) {
             {card.copy}
           </p>
 
-          <dl className="grid grid-cols-3 gap-2 border-t border-border pt-4 sm:gap-3 sm:pt-5">
-            {card.specs.map((spec) => (
-              <div key={spec.label} className="min-w-0">
-                <dt className="font-data text-2xs text-marigold">{spec.label}</dt>
-                <dd className="mt-1 text-[0.7rem] leading-snug text-foreground sm:text-xs">
-                  {spec.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
           <div className="flex flex-wrap items-center gap-4 pt-1 sm:gap-5">
             <Link
-              to="/search"
-              search={{ q: card.query }}
+              to="/collections/$slug"
+              params={{ slug: card.slug }}
               data-cursor="link"
               className="sheen inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-data text-2xs text-primary-foreground transition-transform duration-[var(--dur-micro)] hover:-translate-y-0.5"
             >
-              {card.cta}
+              Shop {card.title}
               <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
             </Link>
             <Link
