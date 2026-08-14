@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { Home, ShoppingBag, ShoppingCart, Search, User } from "lucide-react";
 
@@ -59,6 +59,78 @@ export function MobileBottomNav() {
   const activeIndex = NAV_ITEMS.findIndex((i) => i.id === activeId);
   const isSearchActive = activeId === "search";
 
+  // ── Drag-to-move the liquid capsule (finger follows, snaps on release) ──
+  const navRef = useRef<HTMLElement | null>(null);
+  const [dragX, setDragX] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const dragState = useRef<{ startX: number; active: boolean; pointerId: number | null }>({
+    startX: 0,
+    active: false,
+    pointerId: null,
+  });
+  const justDragged = useRef(false);
+
+  // Once navigation settles onto the new tab, drop the manual offset so the
+  // capsule rests on its slot (position is identical, so no visual jump).
+  useEffect(() => {
+    setDragX(null);
+  }, [activeIndex]);
+
+  const slotMetrics = () => {
+    const rect = navRef.current!.getBoundingClientRect();
+    const contentW = rect.width - 8; // minus the 4px padding on each side
+    const slotW = contentW / 4;
+    return { rect, contentW, slotW };
+  };
+
+  const moveTo = (clientX: number) => {
+    const { rect, contentW, slotW } = slotMetrics();
+    const left = clientX - rect.left - 4 - slotW / 2;
+    setDragX(Math.max(0, Math.min(contentW - slotW, left)));
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    justDragged.current = false;
+    dragState.current = { startX: e.clientX, active: true, pointerId: e.pointerId };
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const st = dragState.current;
+    if (!st.active) return;
+    if (!dragging) {
+      if (Math.abs(e.clientX - st.startX) < 6) return; // still a tap, not a drag
+      setDragging(true);
+      try {
+        navRef.current?.setPointerCapture(st.pointerId!);
+      } catch {
+        /* noop */
+      }
+    }
+    moveTo(e.clientX);
+  };
+
+  const endDrag = () => {
+    const st = dragState.current;
+    dragState.current = { startX: 0, active: false, pointerId: null };
+    if (!dragging) {
+      setDragX(null);
+      return; // plain tap → the button's onClick handles navigation
+    }
+    setDragging(false);
+    const { slotW } = slotMetrics();
+    const idx = Math.max(0, Math.min(3, Math.round((dragX ?? 0) / slotW)));
+    justDragged.current = true;
+    triggerHaptic();
+    const item = NAV_ITEMS[idx];
+    if (item.isCart) {
+      toggleCart();
+    } else {
+      closeCart();
+      if (item.path) navigate({ to: item.path });
+    }
+    if (idx === activeIndex) setDragX(null); // no route change → snap back now
+  };
+
   const triggerHaptic = () => {
     try {
       if (typeof window !== "undefined" && window.navigator?.vibrate) {
@@ -68,6 +140,10 @@ export function MobileBottomNav() {
       /* noop */
     }
   };
+
+  // The product page has its own sticky Add / Buy Now bar pinned to the bottom
+  // on mobile. Hide the floating nav there so the two bottom bars don't collide.
+  if (pathname.startsWith("/product")) return null;
 
   return (
     <div className="lg-bottom-wrapper md:hidden">
@@ -89,16 +165,29 @@ export function MobileBottomNav() {
       </svg>
 
       {/* 4-item liquid glass pill */}
-      <nav className="lg-bottom-nav">
-        {/* Active glass capsule — slides to active item */}
+      <nav
+        className="lg-bottom-nav"
+        ref={navRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      >
+        {/* Active glass capsule — slides to active item, or follows the finger */}
         {activeIndex >= 0 && (
           <span
-            className="lg-bottom-active-capsule"
+            className={cn("lg-bottom-active-capsule", dragging && "dragging")}
             aria-hidden
             style={{
-              transform: `translateX(${activeIndex * 100}%)`,
+              transform:
+                dragX != null
+                  ? `translateX(${dragX}px)`
+                  : `translateX(${activeIndex * 100}%)`,
             }}
-          />
+          >
+            {/* keyed inner glass — restarts the liquid stretch on each switch */}
+            <span key={activeIndex} className="lg-bottom-active-glass" />
+          </span>
         )}
 
         {NAV_ITEMS.map((item, index) => {
@@ -110,6 +199,10 @@ export function MobileBottomNav() {
               className={cn("lg-bottom-item", isActive && "active")}
               data-index={index}
               onClick={() => {
+                if (justDragged.current) {
+                  justDragged.current = false;
+                  return; // this "click" is the tail of a drag — ignore it
+                }
                 triggerHaptic();
                 if (item.isCart) {
                   toggleCart();

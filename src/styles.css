@@ -634,6 +634,7 @@
 
   border: none;
   pointer-events: auto;
+  touch-action: none; /* let horizontal finger-drag move the capsule, not scroll */
 
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--glass-reflex-light) * 10%), transparent),
@@ -664,6 +665,30 @@
   pointer-events: none;
   z-index: 0;
 
+  /* Outer layer only handles the position slide — springy so it feels liquid. */
+  transition: transform 540ms cubic-bezier(0.34, 1.42, 0.5, 1);
+  will-change: transform;
+}
+
+/* While the finger is dragging it, the capsule tracks instantly (no easing)
+   and the glass elongates like a liquid blob being pulled across the bar. */
+.lg-bottom-active-capsule.dragging {
+  transition: none;
+}
+.lg-bottom-active-capsule.dragging .lg-bottom-active-glass {
+  animation: none;
+  transform: scaleX(1.1);
+  transition: transform 140ms ease;
+}
+
+/* Inner glass layer — carries all the liquid-glass visuals and the
+   directional stretch/squash. Keyed in React so it restarts on every switch. */
+.lg-bottom-active-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
   background-color: color-mix(in srgb, var(--c-glass, #bbbbbc) 36%, transparent);
 
   backdrop-filter: blur(8px) saturate(var(--saturation, 150%));
@@ -678,16 +703,13 @@
     inset 0 -4px 1px -2px color-mix(in srgb, var(--c-dark, #000) calc(var(--glass-reflex-dark, 1) * 10%), transparent),
     0 3px 6px color-mix(in srgb, var(--c-dark, #000) calc(var(--glass-reflex-dark, 1) * 8%), transparent);
 
-  transition:
-    transform 400ms cubic-bezier(1,0,.4,1),
-    background-color 400ms cubic-bezier(1,0,.4,1),
-    box-shadow 400ms cubic-bezier(1,0,.4,1);
-
-  animation: liquidAppear 440ms ease;
+  transform-origin: center;
+  animation: lgLiquidStretch 560ms cubic-bezier(0.5, 0, 0.15, 1);
+  will-change: transform;
 }
 
 /* EXTRA GLASS REFLECTION */
-.lg-bottom-active-capsule::before {
+.lg-bottom-active-glass::before {
   content: "";
   position: absolute;
   inset: 1px;
@@ -708,7 +730,7 @@
 }
 
 /* LOWER DARK REFRACTION */
-.lg-bottom-active-capsule::after {
+.lg-bottom-active-glass::after {
   content: "";
   position: absolute;
   left: 8%;
@@ -727,10 +749,20 @@
   pointer-events: none;
 }
 
-@keyframes liquidAppear {
-  0% { transform: scaleX(1); }
-  50% { transform: scaleX(1.08); }
-  100% { transform: scaleX(1); }
+/* iOS-style liquid stretch: the glass elongates horizontally and thins
+   vertically mid-travel (as if pulled), then springs back with a tiny
+   overshoot — reads as a liquid blob following the finger between tabs. */
+@keyframes lgLiquidStretch {
+  0%   { transform: scale(1, 1); }
+  38%  { transform: scale(1.22, 0.86); }
+  68%  { transform: scale(0.95, 1.05); }
+  85%  { transform: scale(1.02, 0.99); }
+  100% { transform: scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-bottom-active-glass { animation: none; }
+  .lg-bottom-active-capsule { transition-duration: 200ms; }
 }
 
 /* ── NAV ITEM ── */
