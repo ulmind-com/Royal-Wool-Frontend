@@ -19,7 +19,7 @@ import type { CategoryNode } from "@/lib/api/types";
  * order, names, counts, links and images automatically.
  */
 
-const USE_STATIC_CATEGORIES = true;
+const USE_STATIC_CATEGORIES = false;
 
 type Tile = {
   key: string;
@@ -195,11 +195,14 @@ function StaticShowcase({ reduced }: { reduced: boolean }) {
 function ApiShowcase({ reduced }: { reduced: boolean }) {
   const { data, isPending, isError, error, refetch } = useQuery(categoryTreeQuery);
 
-  const tiles = (data ?? [])
+  const allTiles = (data ?? [])
     .filter((c) => !c.parent_id)
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map(apiTile);
+
+  const visibleTiles = allTiles.slice(0, 4);
+  const hasMore = allTiles.length > 4;
 
   return (
     <section data-thread-anchor="category" className={SECTION} aria-labelledby="shop-by-category">
@@ -216,12 +219,26 @@ function ApiShowcase({ reduced }: { reduced: boolean }) {
           <div className="mt-12">
             <DataError error={error} retry={() => void refetch()} />
           </div>
-        ) : tiles.length ? (
-          <ul className={GRID}>
-            {tiles.map((tile, i) => (
-              <CategoryTile key={tile.key} tile={tile} index={i} reduced={reduced} />
-            ))}
-          </ul>
+        ) : visibleTiles.length ? (
+          <>
+            <ul className={GRID}>
+              {visibleTiles.map((tile, i) => (
+                <CategoryTile key={tile.key} tile={tile} index={i} reduced={reduced} />
+              ))}
+            </ul>
+            {hasMore && (
+              <div className="mt-10 flex justify-center">
+                <Link
+                  to="/collections"
+                  data-cursor="link"
+                  className="sheen inline-flex items-center gap-2.5 rounded-full border border-border px-7 py-3 font-data text-2xs text-foreground transition-all duration-[var(--dur-base)] hover:border-marigold hover:text-marigold hover:-translate-y-0.5"
+                >
+                  See more categories
+                  <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+                </Link>
+              </div>
+            )}
+          </>
         ) : (
           <div className="mt-12">
             <EmptyState

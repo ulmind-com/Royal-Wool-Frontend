@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { ProductGrid } from "@/components/commerce/product-card";
 import { DataError, EmptyState, GridSkeleton } from "@/components/data-state";
+import { trackCategoryView } from "@/lib/category-history";
 import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
 import { findCategoryBySlug } from "@/lib/api/types";
 
@@ -41,6 +43,13 @@ function CategoryPage() {
   });
 
   const title = category?.name ?? slug.replace(/[-_]/g, " ");
+
+  // Track this category view for the home page recommendation section
+  useEffect(() => {
+    if (category?.id) {
+      trackCategoryView(category.id, slug, category.name);
+    }
+  }, [category?.id, slug, category?.name]);
 
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-10 sm:pb-24 sm:pt-16 sm:px-6 lg:px-10">

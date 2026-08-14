@@ -7,6 +7,7 @@ import { SociableKitReviews } from "@/components/commerce/sociablekit-reviews";
 
 import { FeaturedYarn } from "@/components/commerce/featured-yarn";
 import { NewArrivalsGallery } from "@/components/commerce/new-arrivals-gallery";
+import { RecommendedSection } from "@/components/commerce/recommended-section";
 import { SpotlightSection } from "@/components/commerce/spotlight-section";
 import { YarnFanCarousel } from "@/components/commerce/yarn-fan-carousel";
 import { YarnStackCards } from "@/components/commerce/yarn-stack-cards";
@@ -84,6 +85,8 @@ function Home() {
       {/* ── Live catalogue sections; remaining stubs stay in §5 order ── */}
 
       <CategoryShowcase />
+
+      <RecommendedSection />
 
       <AdminHomeSections />
 
