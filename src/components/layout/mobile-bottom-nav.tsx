@@ -141,10 +141,6 @@ export function MobileBottomNav() {
     }
   };
 
-  // The product page has its own sticky Add / Buy Now bar pinned to the bottom
-  // on mobile. Hide the floating nav there so the two bottom bars don't collide.
-  if (pathname.startsWith("/product")) return null;
-
   return (
     <div className="lg-bottom-wrapper md:hidden">
       {/* 

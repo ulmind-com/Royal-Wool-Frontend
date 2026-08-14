@@ -259,7 +259,7 @@ function ProductPage() {
   };
 
   return (
-    <div className="pb-28 lg:pb-0">
+    <div className="pb-[calc(env(safe-area-inset-bottom,0px)+13rem)] lg:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -275,7 +275,7 @@ function ProductPage() {
         </nav>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-5 sm:px-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 md:px-10">
+      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-8 px-4 pt-5 sm:px-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 md:px-10">
         <div className="md:sticky md:top-14 md:self-start">
           <ProductGallery
             images={gallery}
@@ -572,10 +572,13 @@ function ProductPage() {
         </section>
       ) : null}
 
-      {/* Mobile sticky action bar */}
+      {/* Mobile sticky action bar — sits ABOVE the floating liquid nav */}
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border px-4 py-3 backdrop-blur-xl md:hidden"
-        style={{ backgroundColor: "color-mix(in oklab, var(--fleece) 88%, transparent)" }}
+        className="fixed inset-x-2 z-40 rounded-2xl border border-border px-4 py-3 shadow-lg backdrop-blur-xl md:hidden"
+        style={{
+          backgroundColor: "color-mix(in oklab, var(--fleece) 92%, transparent)",
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 108px)",
+        }}
       >
         <div className="flex items-center gap-3">
           <div className="min-w-0">
