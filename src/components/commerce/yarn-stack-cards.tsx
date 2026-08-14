@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { type MotionStyle, motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, type MotionStyle, motion, useScroll, useTransform } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Glass } from "@/components/ui/glass";
 import { useReducedMotion } from "@/hooks/use-motion";
-import { categoryTreeQuery } from "@/lib/api/queries";
+import { categoryTreeQuery, productsQuery } from "@/lib/api/queries";
 import { getRecentCategoryIds } from "@/lib/category-history";
+import { primaryImage } from "@/lib/api/types";
 import type { CategoryNode } from "@/lib/api/types";
 
 /**
@@ -23,10 +24,11 @@ import type { CategoryNode } from "@/lib/api/types";
 
 type CardData = {
   key: string;
+  categoryId: string;
   eyebrow: string;
   title: string;
   copy: string;
-  image: string;
+  fallbackImage: string;
   imageAlt: string;
   slug: string;
   specs: { label: string; value: string }[];
@@ -42,10 +44,11 @@ function categoryToCard(cat: CategoryNode, index: number): CardData {
 
   return {
     key: cat.id,
+    categoryId: cat.id,
     eyebrow: `Range ${String(index + 1).padStart(2, "0")} · ${cat.name}`,
     title: cat.name,
     copy: cat.blurb ?? "Explore this range — tap to see all shades, weights and live stock.",
-    image: cat.image ?? "",
+    fallbackImage: cat.image ?? "",
     imageAlt: cat.name,
     slug: cat.slug,
     specs: [
@@ -160,6 +163,54 @@ export function YarnStackCards() {
   );
 }
 
+const ROTATE_MS = 4000;
+
+function RotatingProductImage({ categoryId, fallback, alt }: { categoryId: string; fallback: string; alt: string }) {
+  const { data } = useQuery(productsQuery({ category_id: categoryId, limit: 20 }));
+  const reduced = useReducedMotion();
+
+  // Collect all product images, shuffle on mount
+  const images = useMemo(() => {
+    const products = data ?? [];
+    const imgs = products
+      .map((p) => primaryImage(p))
+      .filter(Boolean) as string[];
+    if (imgs.length === 0) return [fallback].filter(Boolean);
+    // Shuffle so each visit starts differently
+    for (let i = imgs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [imgs[i], imgs[j]] = [imgs[j]!, imgs[i]!];
+    }
+    return imgs;
+  }, [data, fallback]);
+
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    if (images.length < 2) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % images.length), ROTATE_MS);
+    return () => clearInterval(id);
+  }, [images.length]);
+
+  const currentImage = images[idx % images.length] ?? fallback;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.img
+        key={currentImage}
+        src={currentImage}
+        alt={alt}
+        loading="lazy"
+        initial={reduced ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={reduced ? {} : { opacity: 0 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    </AnimatePresence>
+  );
+}
+
 function RangeCard({ card, index }: { card: CardData; index: number }) {
   return (
     <article
@@ -179,13 +230,12 @@ function RangeCard({ card, index }: { card: CardData; index: number }) {
       />
 
       <div className="relative grid h-full gap-0 lg:grid-cols-2">
-        {/* Left (top on mobile): image */}
+        {/* Left (top on mobile): auto-rotating product images */}
         <div className="relative h-[150px] shrink-0 overflow-hidden xs:h-[170px] sm:h-[240px] lg:h-auto lg:min-h-full">
-          <img
-            src={card.image}
+          <RotatingProductImage
+            categoryId={card.categoryId}
+            fallback={card.fallbackImage}
             alt={card.imageAlt}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-[var(--dur-cinematic)] ease-[var(--ease-enter)] group-hover:scale-[1.04]"
           />
           <span
             aria-hidden
