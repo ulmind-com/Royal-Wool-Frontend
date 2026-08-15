@@ -89,15 +89,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "author", content: "Royal Wool" },
+      { title: "Royaall Wool - Every stitch has a story" },
+      { name: "description", content: "Shop premium quality wool, shirts, and related items at Royaall Wool. Discover the finest selection of yarns where every stitch has a story." },
+      { name: "keywords", content: "wool, royaall, royaall wool, wool shirt, premium wool, knitting yarn, crochet yarn, buy wool online, luxury wool" },
+      { name: "author", content: "Royaall Wool" },
       { name: "theme-color", content: "#F7F3EA" },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Royal Wool" },
+      { property: "og:site_name", content: "Royaall Wool" },
+      { property: "og:title", content: "Royaall Wool - Every stitch has a story" },
+      { property: "og:description", content: "Shop premium quality wool, shirts, and related items at Royaall Wool. Discover the finest selection of yarns where every stitch has a story." },
+      { property: "og:image", content: "https://royaallwool.com/logo.jpeg" },
+      { property: "og:url", content: "https://royaallwool.com/" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Royaall Wool - Every stitch has a story" },
+      { name: "twitter:description", content: "Shop premium quality wool, shirts, and related items at Royaall Wool. Discover the finest selection of yarns where every stitch has a story." },
+      { name: "twitter:image", content: "https://royaallwool.com/logo.jpeg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/logo.jpeg", type: "image/jpeg" },
+      { rel: "canonical", href: "https://royaallwool.com/" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://api.fontshare.com" },
@@ -116,11 +127,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Royal Wool",
-          description: "Premium knitting & crochet yarn brand in India.",
+          name: "Royaall Wool",
+          url: "https://royaallwool.com",
+          logo: "https://royaallwool.com/logo.jpeg",
+          description: "Premium knitting & crochet yarn brand in India. Every stitch has a story.",
+          sameAs: [
+            "https://www.facebook.com/royaallwool",
+            "https://www.instagram.com/royaallwool",
+            "https://twitter.com/royaallwool"
+          ],
           areaServed: "IN",
         }),
       },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Royaall Wool",
+          url: "https://royaallwool.com",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://royaallwool.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }),
+      }
     ],
   }),
   shellComponent: RootShell,
