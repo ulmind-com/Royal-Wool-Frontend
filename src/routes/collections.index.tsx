@@ -133,13 +133,10 @@ function ShopPage() {
 
       <ShopFilters
         categories={catList}
-        colors={colors}
         weights={weights}
         category={category || ""}
-        color={color || ""}
         weight={weight || ""}
         onCategory={(slug) => set({ category: slug })}
-        onColor={(id) => set({ color: id })}
         onWeight={(id) => set({ weight: id })}
       />
     </div>
