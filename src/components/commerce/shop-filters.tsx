@@ -1,6 +1,5 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ColorFacet } from "@/lib/api/brands";
 import type { CategoryNode } from "@/lib/api/types";
 import type { YarnWeight } from "@/data/yarn-weights";
 
@@ -11,26 +10,20 @@ import type { YarnWeight } from "@/data/yarn-weights";
  */
 export function ShopFilters({
   categories,
-  colors,
   weights,
   category,
-  color,
   weight,
   onCategory,
-  onColor,
   onWeight,
 }: {
   categories: CategoryNode[];
-  colors: ColorFacet[];
   weights: YarnWeight[];
   category: string;
-  color: string;
   weight: string;
   onCategory: (slug: string) => void;
-  onColor: (id: string) => void;
   onWeight: (id: string) => void;
 }) {
-  if (!categories.length && !colors.length && !weights.length) return null;
+  if (!categories.length && !weights.length) return null;
 
   return (
     <>
@@ -47,34 +40,7 @@ export function ShopFilters({
         </FilterGroup>
       ) : null}
 
-      {colors.length ? (
-        <FilterGroup
-          label="Colour"
-          action={
-            color ? (
-              <button
-                type="button"
-                data-cursor="link"
-                onClick={() => onColor("")}
-                className="font-data text-[10px] uppercase tracking-[0.14em] text-marigold transition-colors hover:text-foreground"
-              >
-                Reset
-              </button>
-            ) : null
-          }
-        >
-          <li className="flex flex-wrap gap-2">
-            {colors.map((c) => (
-              <Swatch
-                key={c.id}
-                facet={c}
-                active={color === c.id}
-                onClick={() => onColor(color === c.id ? "" : c.id)}
-              />
-            ))}
-          </li>
-        </FilterGroup>
-      ) : null}
+
 
       {weights.length ? (
         <FilterGroup label="Yarn weight">
