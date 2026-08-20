@@ -14,13 +14,17 @@ export function CartDrawer() {
   const totalPrice = useMemo(() => items.reduce((acc, i) => acc + (i.price * i.qty), 0), [items]);
 
   useEffect(() => {
+    const lenis = (window as any).__lenis;
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      lenis?.stop(); // pause inertial smooth-scroll so the page doesn't scroll behind the drawer
     } else {
       document.body.style.overflow = "";
+      lenis?.start();
     }
     return () => {
       document.body.style.overflow = "";
+      (window as any).__lenis?.start();
     };
   }, [isOpen]);
 
@@ -88,7 +92,7 @@ export function CartDrawer() {
             </div>
 
             {/* Scrollable Items Container */}
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-5 divide-y divide-border/40 space-y-4">
+            <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-5 divide-y divide-border/40 space-y-4">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center px-4">
                   <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-secondary/50 border border-border/50 text-muted-foreground/30 mb-4">

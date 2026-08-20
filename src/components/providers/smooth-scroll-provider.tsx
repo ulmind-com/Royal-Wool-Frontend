@@ -37,9 +37,15 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
 
+      // Expose so modals/drawers can pause inertial scroll while open —
+      // otherwise Lenis keeps hijacking the wheel and the page scrolls
+      // behind the overlay instead of the drawer's own list.
+      (window as any).__lenis = lenis;
+
       cleanup = () => {
         gsap.ticker.remove(tick);
         lenis.destroy();
+        if ((window as any).__lenis === lenis) delete (window as any).__lenis;
       };
     })();
 
