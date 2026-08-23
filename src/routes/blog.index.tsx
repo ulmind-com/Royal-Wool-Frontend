@@ -11,22 +11,45 @@ import { blogFeedQuery, splitFeed } from "@/lib/api/blog";
 export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
-      { title: "From the Dye House — Royal Wool Blog" },
+      { title: "Knitting & Crochet Blog — Tips, Patterns & Yarn Stories | Royaall Wool" },
       {
         name: "description",
         content:
-          "Stories, tutorials and colour notes from Royal Wool's small-batch dye house in West Bengal.",
+          "Free knitting patterns, crochet tutorials, amigurumi guides & yarn reviews from Royaall Wool's small-batch dye house in India.",
       },
-      { property: "og:title", content: "From the Dye House — Royal Wool Blog" },
+      { property: "og:title", content: "Knitting & Crochet Blog — Tips, Patterns & Yarn Stories | Royaall Wool" },
       {
         property: "og:description",
-        content: "Stories, tutorials and colour notes from Royal Wool.",
+        content: "Stories, tutorials and colour notes from Royaall Wool's dye house.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://royal-yarn-threads.lovable.app/blog" },
+      { property: "og:url", content: "https://royaallwool.com/blog" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://royal-yarn-threads.lovable.app/blog" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/blog" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://royaallwool.com/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Blog",
+              item: "https://royaallwool.com/blog",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: BlogPage,
 });

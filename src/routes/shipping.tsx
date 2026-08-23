@@ -6,20 +6,20 @@ import { useSettings } from "@/hooks/use-settings";
 export const Route = createFileRoute("/shipping")({
   head: () => ({
     meta: [
-      { title: "Shipping & delivery — Royal Wool" },
+      { title: "Shipping & Delivery — Pan-India Yarn Delivery | Royaall Wool" },
       {
         name: "description",
         content:
-          "How Royal Wool ships across India: dispatch times, distance-based delivery fees and free-delivery thresholds.",
+          "How Royaall Wool ships yarn across India: dispatch times, distance-based delivery fees and free-delivery thresholds. Tracked dispatch from Howrah, West Bengal.",
       },
-      { property: "og:title", content: "Shipping & delivery — Royal Wool" },
+      { property: "og:title", content: "Shipping & Delivery — Pan-India Yarn Delivery | Royaall Wool" },
       {
         property: "og:description",
-        content: "Dispatch times, delivery fees and free-delivery rules.",
+        content: "Dispatch times, delivery fees and free-delivery rules for Royaall Wool.",
       },
-      { property: "og:url", content: "/shipping" },
+      { property: "og:url", content: "https://royaallwool.com/shipping" },
     ],
-    links: [{ rel: "canonical", href: "/shipping" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/shipping" }],
   }),
   component: ShippingPage,
 });

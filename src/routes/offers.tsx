@@ -100,17 +100,40 @@ const PREVIEW_BUNDLES = [
 export const Route = createFileRoute("/offers")({
   head: () => ({
     meta: [
-      { title: "Offers & bundles — Royal Wool" },
+      { title: "Yarn Offers & Bundles — Coupons & Discounts | Royaall Wool India" },
       {
         name: "description",
         content:
-          "Live coupons and yarn bundles — build a bundle and the offer price applies at checkout.",
+          "Save on premium yarn with live coupons, bundle deals & combo offers. Buy crochet & knitting yarn at best prices. Royaall Wool India.",
       },
-      { property: "og:title", content: "Offers & bundles — Royal Wool" },
-      { property: "og:description", content: "Live coupons and yarn bundles from Royal Wool." },
-      { property: "og:url", content: "/offers" },
+      { property: "og:title", content: "Yarn Offers & Bundles — Coupons & Discounts | Royaall Wool India" },
+      { property: "og:description", content: "Live coupons and yarn bundles from Royaall Wool. Flat price on combo sets." },
+      { property: "og:url", content: "https://royaallwool.com/offers" },
     ],
-    links: [{ rel: "canonical", href: "/offers" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/offers" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://royaallwool.com/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Offers",
+              item: "https://royaallwool.com/offers",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: OffersPage,
 });

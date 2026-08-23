@@ -19,20 +19,20 @@ import { AdminHomeSections } from "@/components/commerce/admin-home-sections";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Royal Wool — Premium Knitting & Crochet Yarn in India" },
+      { title: "Royaall Wool — Premium Knitting & Crochet Yarn in India | Buy Online" },
       {
         name: "description",
         content:
-          "Small-batch dyed acrylic, cotton and blended yarn for knitting, crochet and amigurumi. Pan-India delivery.",
+          "Shop premium crochet yarn, knitting wool & amigurumi supplies online at Royaall Wool. Skin-safe, baby-friendly yarn with pan-India delivery. 156+ Google reviews ⭐ 4.9 rating.",
       },
-      { property: "og:title", content: "Royal Wool — Premium Knitting & Crochet Yarn" },
+      { property: "og:title", content: "Royaall Wool — Premium Crochet & Knitting Yarn Online India" },
       {
         property: "og:description",
-        content: "Small-batch dyed yarn for knitting, crochet and amigurumi. Pan-India delivery.",
+        content: "Small-batch dyed yarn for knitting, crochet and amigurumi. Skin-safe, baby-friendly. Pan-India delivery.",
       },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://royaallwool.com/" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/" }],
   }),
   component: Home,
 });

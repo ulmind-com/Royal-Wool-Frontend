@@ -46,22 +46,45 @@ export const Route = createFileRoute("/collections/")({
   }),
   head: () => ({
     meta: [
-      { title: "Shop Yarn by Brand & Weight — Royal Wool" },
+      { title: "Shop Premium Yarn Online — Knitting, Crochet & Amigurumi | Royaall Wool" },
       {
         name: "description",
         content:
-          "Shop Royal Wool yarn by brand — Heartbeats Premium Yarns and Ganga Acrowools — then filter by category and yarn weight.",
+          "Browse & buy premium knitting yarn, crochet thread & amigurumi wool online. Filter by brand, weight & colour. Skin-safe dyes. Pan-India delivery from Royaall Wool.",
       },
-      { property: "og:title", content: "Shop Yarn by Brand & Weight — Royal Wool" },
+      { property: "og:title", content: "Shop Premium Yarn Online — Knitting, Crochet & Amigurumi | Royaall Wool" },
       {
         property: "og:description",
-        content: "Browse every Royal Wool yarn range by brand, category and yarn weight.",
+        content: "Browse every Royaall Wool yarn range by brand, category and yarn weight. Buy online with pan-India delivery.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "/collections" },
+      { property: "og:url", content: "https://royaallwool.com/collections" },
     ],
-    links: [{ rel: "canonical", href: "/collections" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/collections" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://royaallwool.com/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Shop",
+              item: "https://royaallwool.com/collections",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: ShopPage,
 });

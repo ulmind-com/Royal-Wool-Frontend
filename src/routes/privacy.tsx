@@ -5,17 +5,17 @@ import { PageShell, Prose } from "@/components/layout/page-shell";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy policy — Royal Wool" },
+      { title: "Privacy Policy — Royaall Wool" },
       {
         name: "description",
         content:
-          "What Royal Wool collects, why, how long we keep it, and how to ask us to delete it.",
+          "What Royaall Wool collects, why, how long we keep it, and how to ask us to delete it.",
       },
-      { property: "og:title", content: "Privacy policy — Royal Wool" },
+      { property: "og:title", content: "Privacy Policy — Royaall Wool" },
       { property: "og:description", content: "What we collect, why, and how to have it deleted." },
-      { property: "og:url", content: "/privacy" },
+      { property: "og:url", content: "https://royaallwool.com/privacy" },
     ],
-    links: [{ rel: "canonical", href: "/privacy" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/privacy" }],
   }),
   component: () => (
     <PageShell light eyebrow="Legal" title="Privacy policy">

@@ -5,16 +5,16 @@ import { PageShell, Prose } from "@/components/layout/page-shell";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — Royal Wool yarn, dye lots & delivery" },
+      { title: "FAQ — Yarn Care, Delivery & Dye Lots | Royaall Wool India" },
       {
         name: "description",
-        content: "Common questions about Royal Wool dye lots, gauge, washing, and delivery times.",
+        content: "Common questions about Royaall Wool yarn — dye lots, gauge, washing instructions, baby safety, pan-India delivery and more.",
       },
-      { property: "og:title", content: "Royal Wool FAQ" },
-      { property: "og:description", content: "Dye lots, gauge, washing, and delivery." },
-      { property: "og:url", content: "/faq" },
+      { property: "og:title", content: "Frequently Asked Questions — Royaall Wool" },
+      { property: "og:description", content: "Dye lots, gauge, yarn care, baby safety and delivery." },
+      { property: "og:url", content: "https://royaallwool.com/faq" },
     ],
-    links: [{ rel: "canonical", href: "/faq" }],
+    links: [{ rel: "canonical", href: "https://royaallwool.com/faq" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -37,6 +37,51 @@ export const Route = createFileRoute("/faq")({
                 "@type": "Answer",
                 text: "Cold hand wash, no wringing, dry flat. Acrylic tolerates a gentle machine cycle in a mesh bag.",
               },
+            },
+            {
+              "@type": "Question",
+              name: "Is Royaall Wool yarn safe for babies?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. All Royaall Wool yarns use skin-safe, tested dyes that are gentle enough for baby knits. Our Cotton Delight and Cotton Candy ranges are especially popular for baby blankets and amigurumi toys.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Does Royaall Wool deliver across India?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, Royaall Wool offers pan-India delivery with tracked dispatch from our store in Howrah, West Bengal. Delivery fees are distance-based and shown at checkout.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What types of yarn does Royaall Wool sell?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Royaall Wool offers premium acrylic, cotton, and blended yarns for knitting, crochet, and amigurumi. We carry multiple yarn weights from lace to super bulky, all small-batch dyed for colour consistency.",
+              },
+            },
+          ],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://royaallwool.com/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "FAQ",
+              item: "https://royaallwool.com/faq",
             },
           ],
         }),

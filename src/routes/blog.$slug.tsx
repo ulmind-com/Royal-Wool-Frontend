@@ -10,7 +10,7 @@ import { useReducedMotion } from "@/hooks/use-motion";
 import { blogPostsQuery, fetchBlogPost } from "@/lib/api/blog";
 import { whatsappLink } from "@/lib/whatsapp";
 
-const SITE = "https://royal-yarn-threads.lovable.app";
+const SITE = "https://royaallwool.com";
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -53,8 +53,42 @@ export const Route = createFileRoute("/blog/$slug")({
             description,
             image,
             author: { "@type": "Person", name: post.author },
-            publisher: { "@type": "Organization", name: "Royal Wool" },
+            publisher: {
+              "@type": "Organization",
+              name: "Royaall Wool",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://royaallwool.com/logo.jpeg",
+              },
+            },
             mainEntityOfPage: url,
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://royaallwool.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Blog",
+                item: "https://royaallwool.com/blog",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: post.title,
+                item: url,
+              },
+            ],
           }),
         },
       ],

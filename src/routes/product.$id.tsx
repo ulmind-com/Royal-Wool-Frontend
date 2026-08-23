@@ -54,19 +54,19 @@ function toShadeOption(p: Product): ShadeOption {
 export const Route = createFileRoute("/product/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Yarn detail — Royal Wool` },
+      { title: `Premium Yarn — Buy Online | Royaall Wool` },
       {
         name: "description",
         content:
-          "Every shade, weight, gauge and stock level for this Royal Wool yarn, with fast Pan-India delivery.",
+          "Buy premium yarn online at Royaall Wool. Skin-safe, tested dyes with pan-India delivery. View shades, weight, gauge & stock.",
       },
-      { property: "og:title", content: "Yarn detail — Royal Wool" },
+      { property: "og:title", content: "Premium Yarn — Buy Online | Royaall Wool" },
       { property: "og:type", content: "product" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:description", content: "Shades, gauge, stock and reviews for this yarn." },
-      { property: "og:url", content: `/product/${params.id}` },
+      { property: "og:description", content: "Shades, gauge, stock and reviews for this Royaall Wool yarn. Pan-India delivery." },
+      { property: "og:url", content: `https://royaallwool.com/product/${params.id}` },
     ],
-    links: [{ rel: "canonical", href: `/product/${params.id}` }],
+    links: [{ rel: "canonical", href: `https://royaallwool.com/product/${params.id}` }],
   }),
   component: ProductPage,
 });
@@ -91,6 +91,14 @@ function ProductPage() {
     setQty(1);
     setColorIdx(0);
   }, [id]);
+
+  // Dynamically set the page title once the product name is available.
+  // TanStack Router head() only has access to params, not loader/query data.
+  useEffect(() => {
+    if (product?.title) {
+      document.title = `${product.title} — Buy Online | Royaall Wool`;
+    }
+  }, [product?.title]);
 
   // Colour variants (one product, many shades). When present, the selected
   // colour drives the price, gallery, stock and shade label.
@@ -249,11 +257,19 @@ function ProductPage() {
     ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
     ...(product.description ? { description: product.description } : {}),
     ...(primaryImage(product) ? { image: [primaryImage(product)] } : {}),
+    url: `https://royaallwool.com/product/${id}`,
+    sku: product.id,
     offers: {
       "@type": "Offer",
       price,
       priceCurrency: "INR",
       availability: soldOut ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      url: `https://royaallwool.com/product/${id}`,
+      seller: {
+        "@type": "Organization",
+        name: "Royaall Wool",
+        url: "https://royaallwool.com",
+      },
     },
     ...(feed?.count && !feed.isDemo
       ? {
@@ -266,11 +282,40 @@ function ProductPage() {
       : {}),
   };
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://royaallwool.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Shop",
+        item: "https://royaallwool.com/collections",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.title,
+        item: `https://royaallwool.com/product/${id}`,
+      },
+    ],
+  };
+
   return (
     <div className="pb-[calc(env(safe-area-inset-bottom,0px)+13rem)] lg:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <div className="mx-auto w-full max-w-[1600px] px-4 pt-5 sm:px-6 sm:pt-7 lg:px-10">
