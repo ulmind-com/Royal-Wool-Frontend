@@ -333,24 +333,81 @@ function SectionHead({ eyebrow, title, note }: { eyebrow: string; title: string;
 
 /* ── Bundle builder ───────────────────────────────────────────────── */
 
+/** A pickable slot in a bundle — either a whole (colour-less) product, or one
+ *  specific shade of a product (the admin's shade picker saves those as
+ *  `"<product_id>::<color_name>"` in `combo.product_ids`). `pickId` is unique
+ *  per slot (the raw stored string) and doubles as the selection key. */
+interface BundleItem {
+  pickId: string;
+  productId: string;
+  color?: string | undefined;
+  title: string;
+  price: number;
+  image?: string | undefined;
+  stock: number;
+}
+
 function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }) {
   const { formatMoney } = useSettings();
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const [picked, setPicked] = useState<string[]>([]);
 
-  // A bundle either lists its products or qualifies them by skein weight —
-  // both resolve to the same pickable set here.
-  const eligible = useMemo(() => {
+  // A bundle either lists specific products/shades or qualifies yarns by
+  // skein weight — both resolve to the same pickable set here. A listed
+  // entry may be a bare product id, or "<product_id>::<color_name>" for a
+  // shade picked individually in admin — both are resolved against the live
+  // catalogue so price/image/stock always reflect what's true right now.
+  const eligible = useMemo<BundleItem[]>(() => {
     const ids = combo.product_ids ?? [];
-    if (ids.length) return catalogue.filter((p) => ids.includes(p.id));
+    if (ids.length) {
+      const out: BundleItem[] = [];
+      for (const raw of ids) {
+        const sep = raw.indexOf("::");
+        const productId = sep === -1 ? raw : raw.slice(0, sep);
+        const colorName = sep === -1 ? undefined : raw.slice(sep + 2);
+        const p = catalogue.find((x) => x.id === productId);
+        if (!p) continue; // product deleted since the combo was saved
+        if (colorName) {
+          const variant = p.colors?.find((c) => c.name === colorName);
+          if (!variant) continue; // shade renamed/removed since the combo was saved
+          out.push({
+            pickId: raw,
+            productId,
+            color: colorName,
+            title: `${p.title} — ${colorName}`,
+            price: variant.price ?? p.final_price ?? p.price,
+            image: variant.images?.[0] ?? p.images?.[0],
+            stock: variant.stock,
+          });
+        } else {
+          out.push({
+            pickId: raw,
+            productId,
+            title: p.title,
+            price: p.final_price ?? p.price,
+            image: p.images?.[0],
+            stock: p.total_stock ?? 0,
+          });
+        }
+      }
+      return out;
+    }
     if (combo.weight_target != null) {
-      return catalogue.filter((p) => Number(p.skein_weight) === Number(combo.weight_target));
+      return catalogue
+        .filter((p) => Number(p.skein_weight) === Number(combo.weight_target))
+        .map((p) => ({
+          pickId: p.id,
+          productId: p.id,
+          title: p.title,
+          price: p.final_price ?? p.price,
+          image: p.images?.[0],
+          stock: p.total_stock ?? 0,
+        }));
     }
     return [];
   }, [catalogue, combo.product_ids, combo.weight_target]);
 
-  const priceOf = (p: Product) => p.final_price ?? p.price;
   const need = combo.qty;
   // When the admin pinned exactly as many yarns as the bundle needs, the set is
   // already decided — nothing for the shopper to choose.
@@ -361,20 +418,22 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
   // What the picked set would normally cost. Before anything is picked we show
   // the dearest qualifying set, so the headline saving is never overstated.
   const regular = fixed
-    ? eligible.reduce((sum, p) => sum + priceOf(p), 0)
+    ? eligible.reduce((sum, it) => sum + it.price, 0)
     : ready
     ? picked.reduce((sum, id) => {
-        const p = eligible.find((x) => x.id === id);
-        return sum + (p ? priceOf(p) : 0);
+        const it = eligible.find((x) => x.pickId === id);
+        return sum + (it ? it.price : 0);
       }, 0)
     : eligible
-        .map(priceOf)
+        .map((it) => it.price)
         .sort((a, b) => b - a)
         .slice(0, need)
         .reduce((sum, v) => sum + v, 0);
   const saving = Math.max(0, regular - combo.price);
 
   const toggle = (id: string) => {
+    const it = eligible.find((x) => x.pickId === id);
+    if (it && it.stock <= 0) return; // sold out — not pickable
     setPicked((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
       if (prev.length >= need) return [...prev.slice(1), id]; // oldest pick rolls off
@@ -384,17 +443,18 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
 
   /** Straight to checkout with the set in the bag — no cart detour. */
   const buyBundle = () => {
-    const chosenProducts = fixed
+    const chosenItems = fixed
       ? eligible
-      : picked.map((id) => eligible.find((x) => x.id === id)).filter(Boolean as unknown as (p: Product | undefined) => p is Product);
+      : picked.map((id) => eligible.find((x) => x.pickId === id)).filter(Boolean as unknown as (it: BundleItem | undefined) => it is BundleItem);
 
-    chosenProducts.forEach((p) => {
+    chosenItems.forEach((it) => {
       addItem({
-        productId: p.id,
-        title: p.title,
-        price: priceOf(p),
+        productId: it.productId,
+        title: it.title,
+        color: it.color,
+        price: it.price,
         qty: 1,
-        image: p.images?.[0],
+        image: it.image,
       });
     });
     setPicked([]);
@@ -463,48 +523,57 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
             )}
 
             <ul className="mt-3 flex flex-wrap justify-center gap-2">
-              {eligible.map((p) => {
-                const on = fixed || picked.includes(p.id);
+              {eligible.map((it) => {
+                const soldOut = !fixed && it.stock <= 0;
+                const on = fixed || picked.includes(it.pickId);
                 return (
-                  <li key={p.id} className="w-[92px] sm:w-[100px]">
+                  <li key={it.pickId} className="w-[92px] sm:w-[100px]">
                     <button
                       type="button"
-                      onClick={fixed ? undefined : () => toggle(p.id)}
-                      disabled={fixed}
-                      data-cursor={fixed ? undefined : "link"}
+                      onClick={fixed || soldOut ? undefined : () => toggle(it.pickId)}
+                      disabled={fixed || soldOut}
+                      data-cursor={fixed || soldOut ? undefined : "link"}
                       aria-pressed={on}
                       className={cn(
                         "group w-full overflow-hidden rounded-xl border text-left transition-all",
-                        on
-                          ? "border-marigold shadow-[0_0_0_1px_var(--marigold)]"
-                          : "border-border hover:border-marigold/60",
+                        soldOut
+                          ? "border-border opacity-45"
+                          : on
+                            ? "border-marigold shadow-[0_0_0_1px_var(--marigold)]"
+                            : "border-border hover:border-marigold/60",
                       )}
                     >
                       <span className="relative block aspect-square overflow-hidden bg-secondary/40">
-                        {p.images?.[0] ? (
+                        {it.image ? (
                           <img
-                            src={p.images[0]}
-                            alt={p.title}
+                            src={it.image}
+                            alt={it.title}
                             loading="lazy"
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                           />
                         ) : null}
-                        <span
-                          className={cn(
-                            "absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border transition-all",
-                            on
-                              ? "border-marigold bg-marigold text-ink"
-                              : "border-border bg-background/80 text-transparent",
-                          )}
-                          aria-hidden
-                        >
-                          <Check className="h-3 w-3" />
-                        </span>
+                        {soldOut ? (
+                          <span className="absolute inset-x-0 bottom-0 bg-background/85 py-0.5 text-center font-data text-[9px] uppercase tracking-wider text-muted-foreground">
+                            Sold out
+                          </span>
+                        ) : (
+                          <span
+                            className={cn(
+                              "absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border transition-all",
+                              on
+                                ? "border-marigold bg-marigold text-ink"
+                                : "border-border bg-background/80 text-transparent",
+                            )}
+                            aria-hidden
+                          >
+                            <Check className="h-3 w-3" />
+                          </span>
+                        )}
                       </span>
                       <span className="block px-2 py-1.5">
-                        <span className="line-clamp-1 text-2xs text-foreground">{p.title}</span>
+                        <span className="line-clamp-1 text-2xs text-foreground">{it.title}</span>
                         <span className="mt-0.5 block font-data text-2xs text-muted-foreground">
-                          {formatMoney(priceOf(p))}
+                          {formatMoney(it.price)}
                         </span>
                       </span>
                     </button>
