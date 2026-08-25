@@ -63,6 +63,10 @@ interface CartState {
   updateQty: (id: string, qty: number) => void;
   clearCart: () => void;
   setItems: (items: CartItem[]) => void;
+
+  directCheckoutItems: CartItem[] | null;
+  setDirectCheckout: (items: CartItem[]) => void;
+  clearDirectCheckout: () => void;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -126,5 +130,9 @@ export const useCartStore = create<CartState>((set, get) => ({
     saveCart(items);
     set({ items });
   },
+
+  directCheckoutItems: null,
+  setDirectCheckout: (items) => set({ directCheckoutItems: items }),
+  clearDirectCheckout: () => set({ directCheckoutItems: null }),
 }));
 

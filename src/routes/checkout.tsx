@@ -120,8 +120,11 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { formatMoney, codEnabled } = useSettings();
   const { user, isAuthenticated, setLoginModalOpen, setUser } = useAuthStore();
-  const items = useCartStore((s) => s.items);
+  const cartItems = useCartStore((s) => s.items);
+  const directCheckoutItems = useCartStore((s) => s.directCheckoutItems);
+  const items = directCheckoutItems || cartItems;
   const clearCart = useCartStore((s) => s.clearCart);
+  const clearDirectCheckout = useCartStore((s) => s.clearDirectCheckout);
 
   const [address, setAddress] = useState<OrderAddress>(EMPTY);
   const [savedIndex, setSavedIndex] = useState<number | null>(null);
@@ -440,7 +443,11 @@ function CheckoutPage() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-            clearCart();
+            if (directCheckoutItems) {
+              clearDirectCheckout();
+            } else {
+              clearCart();
+            }
             toast.success("Payment successful — order confirmed");
             navigate({ to: "/order/$id/success", params: { id: created.order_id } });
           } catch (err) {

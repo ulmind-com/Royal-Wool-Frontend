@@ -122,11 +122,11 @@ export function MobileBottomNav() {
     justDragged.current = true;
     triggerHaptic();
     const item = NAV_ITEMS[idx];
-    if (item.isCart) {
+    if (item?.isCart) {
       toggleCart();
     } else {
       closeCart();
-      if (item.path) navigate({ to: item.path });
+      if (item?.path) navigate({ to: item.path });
     }
     if (idx === activeIndex) setDragX(null); // no route change → snap back now
   };
