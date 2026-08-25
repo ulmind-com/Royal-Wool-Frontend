@@ -86,54 +86,6 @@ function FilterGroup({
   );
 }
 
-/**
- * Round colour chip. Falls back to a spectrum wheel when the admin saved a
- * shade with no hex, so an un-swatched family still reads as a colour.
- */
-function Swatch({
-  facet,
-  active,
-  onClick,
-}: {
-  facet: ColorFacet;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      data-cursor="link"
-      aria-pressed={active}
-      title={`${facet.name} · ${facet.count} ${facet.count === 1 ? "yarn" : "yarns"}`}
-      onClick={onClick}
-      className={cn(
-        "group relative grid h-9 w-9 place-items-center rounded-full transition-all duration-200",
-        "ring-1 ring-border hover:ring-marigold",
-        active
-          ? "ring-2 ring-marigold ring-offset-2 ring-offset-background"
-          : "hover:-translate-y-0.5",
-      )}
-      style={
-        facet.hex
-          ? { backgroundColor: facet.hex }
-          : {
-              backgroundImage:
-                "conic-gradient(#e0443e,#f0a202,#f2e205,#4f9d69,#2f6f9f,#6b4b9a,#e0443e)",
-            }
-      }
-    >
-      <span className="sr-only">{facet.name}</span>
-      {active ? (
-        <Check
-          className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
-          style={{ color: readableOn(facet.hex) }}
-          strokeWidth={3}
-        />
-      ) : null}
-    </button>
-  );
-}
-
 /** Black tick on pale swatches, white on dark ones, so the check never vanishes. */
 function readableOn(hex: string | null): string {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex ?? "");

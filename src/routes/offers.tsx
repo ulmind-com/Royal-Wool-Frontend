@@ -350,7 +350,7 @@ interface BundleItem {
 function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }) {
   const { formatMoney } = useSettings();
   const navigate = useNavigate();
-  const addItem = useCartStore((s) => s.addItem);
+  const setDirectCheckout = useCartStore((s) => s.setDirectCheckout);
   const [picked, setPicked] = useState<string[]>([]);
 
   // A bundle either lists specific products/shades or qualifies yarns by
@@ -447,16 +447,17 @@ function BundleCard({ combo, catalogue }: { combo: Combo; catalogue: Product[] }
       ? eligible
       : picked.map((id) => eligible.find((x) => x.pickId === id)).filter(Boolean as unknown as (it: BundleItem | undefined) => it is BundleItem);
 
-    chosenItems.forEach((it) => {
-      addItem({
-        productId: it.productId,
-        title: it.title,
-        color: it.color,
-        price: it.price,
-        qty: 1,
-        image: it.image,
-      });
-    });
+    const mappedItems = chosenItems.map((it) => ({
+      id: `${it.productId}-${it.color || "def"}-${Date.now()}-${Math.random()}`,
+      productId: it.productId,
+      title: it.title,
+      color: it.color,
+      price: it.price,
+      qty: 1,
+      image: it.image,
+    }));
+    
+    setDirectCheckout(mappedItems);
     setPicked([]);
     toast.success(`${combo.name} added — bundle price applies at checkout.`);
     void navigate({ to: "/checkout" });
