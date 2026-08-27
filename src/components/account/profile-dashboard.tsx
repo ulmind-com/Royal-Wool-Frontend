@@ -70,6 +70,11 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
       const userRes = await fetch(`${API_BASE_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (userRes.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
       if (userRes.ok) {
         const u = await userRes.json();
         setUser(u);
@@ -77,6 +82,11 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
       const ordRes = await fetch(`${API_BASE_URL}/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (ordRes.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
       if (ordRes.ok) {
         const ords = await ordRes.json();
         rememberStatuses(ords || []);
@@ -116,6 +126,11 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
       const res = await fetch(`${API_BASE_URL}/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (res.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
       if (!res.ok) return;
       const next: any[] = (await res.json()) || [];
       next.forEach((o) => {
@@ -156,7 +171,7 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
 
   const totalSpent = useMemo(() => {
     return orders
-      .filter((o) => ["confirmed", "shipped", "out_for_delivery", "delivered"].includes(o.status))
+      .filter((o) => ["placed", "confirmed", "shipped", "out_for_delivery", "delivered"].includes(o.status))
       .reduce((acc, o) => acc + (Number(o.amount) || 0), 0);
   }, [orders]);
 
@@ -180,6 +195,12 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
         body: formData,
       });
 
+      if (res.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: "Upload failed" }));
         throw new Error(err.detail || "Failed to upload picture");
@@ -195,6 +216,12 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
         },
         body: JSON.stringify({ avatar: url }),
       });
+
+      if (patchRes.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
 
       if (patchRes.ok) {
         const updatedUser = await patchRes.json();
@@ -225,6 +252,12 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
           phone: editPhone.trim() || null,
         }),
       });
+
+      if (res.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to update profile details.");
@@ -271,6 +304,12 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
         body: JSON.stringify({ addresses: updatedAddresses }),
       });
 
+      if (res.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
+
       if (res.ok) {
         const u = await res.json();
         setUser(u);
@@ -295,6 +334,11 @@ export function ProfileDashboard({ defaultTab = "overview" }: ProfileDashboardPr
         },
         body: JSON.stringify({ addresses: updated }),
       });
+      if (res.status === 401) {
+        logout();
+        toast.error("Your session expired — please log in again.");
+        return;
+      }
       if (res.ok) {
         const u = await res.json();
         setUser(u);
