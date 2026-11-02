@@ -95,9 +95,8 @@ export function AboutHero() {
             {...rise(0.2)}
             className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
           >
-            Royal Wool started with a simple complaint: you buy five skeins, and the sixth one —
-            bought two weeks later — is a shade off. So we work in small lots, log every dye batch,
-            and keep skeins from the same lot together.
+            Royaall Wool is operated by JLB Traders (MSME Registered Enterprise) based in West
+            Bengal, India. All products, billing and support are managed by JLB Traders.
           </motion.p>
 
           <motion.dl {...rise(0.28)} className="mt-7 flex flex-wrap gap-3">

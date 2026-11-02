@@ -241,7 +241,7 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col gap-6 border-t border-border pb-28 pt-6 md:pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] sm:flex-row sm:items-center sm:justify-between">
           <p className="font-data text-2xs text-muted-foreground">
-            © {new Date().getFullYear()} Royaall Wool. All rights reserved.
+            © {new Date().getFullYear()} Royaall Wool is a registered brand owned and operated by JLB Traders
           </p>
           <a
             href="https://www.ulmind.com"
